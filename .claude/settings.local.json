@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(if [ -f \"package.json\" ])",
+      "Bash(then cat package.json)",
+      "Bash(else echo \"No package.json found\")",
+      "Bash(fi)",
+      "Bash(npm install)",
+      "Bash(npm run build:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs"
+    ]
+  }
+}

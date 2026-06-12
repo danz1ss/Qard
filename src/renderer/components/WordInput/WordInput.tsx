@@ -1,0 +1,113 @@
+import React, { useRef, useState } from 'react';
+import { useStore } from '../../store';
+import Button from '../common/Button';
+import './WordInput.css';
+
+// Split raw text into a clean word list (newlines, commas, semicolons)
+const parseText = (text: string): string[] =>
+  text
+    .split(/[\n,;]+/)
+    .map((w) => w.trim())
+    .filter((w) => w.length > 0);
+
+const WordInput: React.FC = () => {
+  const [inputText, setInputText] = useState('');
+  const { words, setWords } = useStore();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleParse = () => {
+    setWords(parseText(inputText));
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = String(reader.result || '');
+      const combined = inputText ? `${inputText}\n${text}` : text;
+      setInputText(combined);
+      setWords(parseText(combined));
+    };
+    reader.onerror = () => {
+      console.error('Failed to read file:', reader.error);
+    };
+    reader.readAsText(file);
+
+    // Reset so selecting the same file again still triggers onChange
+    e.target.value = '';
+  };
+
+  const handleClear = () => {
+    setInputText('');
+    setWords([]);
+  };
+
+  return (
+    <div className="word-input">
+      <h2>Input Words</h2>
+      <p className="description">
+        Enter words to generate flashcards. Separate them by new lines or commas,
+        or import a .txt/.csv file.
+      </p>
+
+      <div className="form-group">
+        <label htmlFor="word-textarea">Word List</label>
+        <textarea
+          id="word-textarea"
+          className="word-textarea"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Example:&#10;hello&#10;world&#10;computer&#10;&#10;Or: hello, world, computer"
+          rows={12}
+        />
+      </div>
+
+      <div className="button-group">
+        <Button onClick={handleParse}>Parse Words</Button>
+        <Button onClick={handleImportClick} variant="secondary">
+          Import from file
+        </Button>
+        <Button onClick={handleClear} variant="secondary">
+          Clear
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".txt,.csv"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+      </div>
+
+      {words.length > 0 && (
+        <div className="word-list">
+          <h3>Parsed Words ({words.length})</h3>
+          <div className="word-chips">
+            {words.map((word, index) => (
+              <span key={index} className="word-chip">
+                {word}
+                <button
+                  className="remove-word"
+                  onClick={() => {
+                    const newWords = words.filter((_, i) => i !== index);
+                    setWords(newWords);
+                  }}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default WordInput;

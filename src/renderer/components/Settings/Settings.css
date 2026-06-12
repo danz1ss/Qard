@@ -1,0 +1,111 @@
+.settings h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.settings .description {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+.settings-section {
+  margin-bottom: 35px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.settings-section:last-of-type {
+  border-bottom: none;
+}
+
+.settings-section h3 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.anki-status {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.status-indicator {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status-indicator.connected {
+  color: #48bb78;
+}
+
+.status-indicator.disconnected {
+  color: #f56565;
+}
+
+.help-text {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.help-text.error {
+  color: #f56565;
+  background-color: #fff5f5;
+  padding: 10px;
+  border-radius: 6px;
+  border-left: 3px solid #f56565;
+}
+
+.help-text a {
+  color: #667eea;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.help-text a:hover {
+  text-decoration: underline;
+}
+
+.field-mapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.field-mapping-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 15px;
+  align-items: center;
+}
+
+.field-name {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.save-section {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.save-message {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.save-message.success {
+  color: #48bb78;
+}
+
+.save-message.error {
+  color: #f56565;
+}
