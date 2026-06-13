@@ -4,8 +4,16 @@ import { setupAnkiHandlers } from './ipc/anki.handlers';
 import { setupGeminiHandlers } from './ipc/gemini.handlers';
 import { setupTTSHandlers } from './ipc/tts.handlers';
 import { setupSettingsHandlers } from './ipc/settings.handlers';
+import { setupCollectionHandlers } from './ipc/collection.handlers';
+import { setupReviewHandlers } from './ipc/review.handlers';
+import { setupImportHandlers } from './ipc/import.handlers';
+import { CollectionStorage } from './services/collection.storage';
+import { SchedulerService } from './services/scheduler.service';
+import { MediaService } from './services/media.service';
+import { ImportService } from './services/import.service';
 
 let mainWindow: BrowserWindow | null = null;
+const storage = new CollectionStorage();
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -37,12 +45,23 @@ function createWindow() {
 }
 
 // App ready
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  await storage.open();
+  const media = new MediaService(
+    path.join(app.getPath('userData'), 'media')
+  );
+  await media.init();
+  const scheduler = new SchedulerService(storage.service);
+  const importService = new ImportService(storage.service, media);
+
   // Setup all IPC handlers
   setupAnkiHandlers(ipcMain);
   setupGeminiHandlers(ipcMain);
   setupTTSHandlers(ipcMain);
   setupSettingsHandlers(ipcMain);
+  setupCollectionHandlers(ipcMain, storage.service, media);
+  setupReviewHandlers(ipcMain, scheduler);
+  setupImportHandlers(ipcMain, importService);
 
   // Handle external links
   ipcMain.handle('shell:openExternal', async (_, url: string) => {
@@ -56,6 +75,21 @@ app.whenReady().then(() => {
       createWindow();
     }
   });
+});
+
+// Сбрасываем несохранённые изменения БД на диск перед выходом
+let dbFlushed = false;
+app.on('will-quit', (event) => {
+  if (dbFlushed) {
+    return;
+  }
+  event.preventDefault();
+  storage
+    .flush()
+    .finally(() => {
+      dbFlushed = true;
+      app.quit();
+    });
 });
 
 // Quit when all windows are closed
