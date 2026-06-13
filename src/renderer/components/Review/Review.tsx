@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  IntervalPreviews,
-  ReviewQueueState,
-  ReviewRating,
-  StoredCard
-} from '../../../shared/types';
+import { ReviewQueueState, StoredCard } from '../../../shared/types';
 import Button from '../common/Button';
+import { blankOut, hasBold, isCorrect, parseBold, stripTags } from './htmlText';
+import '@fontsource/sora/400.css';
+import '@fontsource/sora/600.css';
+import '@fontsource/sora/700.css';
 import './Review.css';
 
 function audioMimeFromFilename(filename: string): string {
@@ -23,6 +22,19 @@ function audioMimeFromFilename(filename: string): string {
   }
 }
 
+/** Рендер строки с <b>…</b> как текст + <strong>. */
+const BoldText: React.FC<{ html: string }> = ({ html }) => (
+  <>
+    {parseBold(html).map((seg, i) =>
+      seg.bold ? (
+        <strong key={i}>{seg.text}</strong>
+      ) : (
+        <React.Fragment key={i}>{seg.text}</React.Fragment>
+      )
+    )}
+  </>
+);
+
 interface ReviewProps {
   deckId: number;
   deckName: string;
@@ -31,99 +43,98 @@ interface ReviewProps {
 
 const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
   const [queue, setQueue] = useState<ReviewQueueState | null>(null);
-  const [showAnswer, setShowAnswer] = useState(false);
-  const [intervals, setIntervals] = useState<IntervalPreviews | null>(null);
+  const [input, setInput] = useState('');
+  const [answered, setAnswered] = useState(false);
+  const [correct, setCorrect] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const answeringRef = useRef<boolean>(false);
-  const revealingRef = useRef<boolean>(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const advancingRef = useRef(false);
 
   const card: StoredCard | null = queue?.current ?? null;
 
   const loadQueue = useCallback(async () => {
     const q = await window.electronAPI.review.getQueue(deckId);
     setQueue(q);
-    setShowAnswer(false);
-    setIntervals(null);
+    setInput('');
+    setAnswered(false);
+    setCorrect(false);
   }, [deckId]);
 
   useEffect(() => {
     loadQueue();
   }, [loadQueue]);
 
-  // Аудио: подгружаем и автопроигрываем при смене карточки
+  // Фокус на поле ввода при новой карточке (состояние вопроса)
   useEffect(() => {
-    const prevAudio = audioRef.current;
+    if (card && !answered) {
+      inputRef.current?.focus();
+    }
+  }, [card?.id, answered]);
+
+  // Аудио: грузим и автопроигрываем при РАСКРЫТИИ ответа
+  useEffect(() => {
+    const prev = audioRef.current;
     audioRef.current = null;
-    if (!card?.audioFilename) {
-      prevAudio?.pause();
+    prev?.pause();
+    if (!answered || !card?.audioFilename) {
       return;
     }
     let cancelled = false;
-    const audioFilename = card.audioFilename;
-    window.electronAPI.media.getAudio(audioFilename).then((b64) => {
+    const fn = card.audioFilename;
+    window.electronAPI.media.getAudio(fn).then((b64) => {
       if (cancelled || !b64) return;
-      const mime = audioMimeFromFilename(audioFilename);
-      const audio = new Audio(`data:${mime};base64,${b64}`);
+      const audio = new Audio(`data:${audioMimeFromFilename(fn)};base64,${b64}`);
       audioRef.current = audio;
       audio.play().catch(() => {});
     });
     return () => {
       cancelled = true;
-      prevAudio?.pause();
     };
-  }, [card?.id]);
+  }, [answered, card?.id]);
 
-  const playAudio = () => {
-    audioRef.current?.play().catch(() => {});
+  const playAudio = () => audioRef.current?.play().catch(() => {});
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!card || answered || !input.trim()) return;
+    setCorrect(isCorrect(input, card.word));
+    setAnswered(true);
   };
 
-  const reveal = async () => {
-    if (!card || showAnswer || revealingRef.current) return;
-    revealingRef.current = true;
+  const next = useCallback(async () => {
+    if (!card || !answered || advancingRef.current) return;
+    advancingRef.current = true;
     try {
-      setShowAnswer(true);
-      const p = await window.electronAPI.review.previewIntervals(card.id);
-      setIntervals(p);
-    } finally {
-      revealingRef.current = false;
-    }
-  };
-
-  const rate = async (rating: ReviewRating) => {
-    if (!card || answeringRef.current) return;
-    answeringRef.current = true;
-    try {
-      const q = await window.electronAPI.review.answer(card.id, rating);
+      const q = await window.electronAPI.review.answer(card.id, correct ? 3 : 1);
       setQueue(q);
-      setShowAnswer(false);
-      setIntervals(null);
+      setInput('');
+      setAnswered(false);
+      setCorrect(false);
     } finally {
-      answeringRef.current = false;
+      advancingRef.current = false;
     }
-  };
+  }, [card, answered, correct]);
 
-  // Хоткеи: пробел = показать ответ / Good; 1-4 = оценки
+  // В состоянии ответа: Enter/Space → следующая карточка
   useEffect(() => {
+    if (!answered) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement) return;
-      if (e.code === 'Space') {
+      if (e.code === 'Enter' || e.code === 'Space') {
         e.preventDefault();
-        if (!showAnswer) {
-          reveal();
-        } else {
-          rate(3);
-        }
-      } else if (showAnswer && ['1', '2', '3', '4'].includes(e.key)) {
-        rate(parseInt(e.key) as ReviewRating);
+        next();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [showAnswer, card?.id]);
+  }, [answered, next]);
 
   if (!queue) {
     return <div className="review">Загрузка...</div>;
   }
+
+  const exampleFront =
+    card && hasBold(card.definitionExample) ? blankOut(card.definitionExample) : '';
+  const capsuleState = answered ? (correct ? 'is-correct' : 'is-wrong') : '';
 
   return (
     <div className="review">
@@ -145,60 +156,79 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
         </div>
       ) : (
         <>
-          <div className="review-card">
-            <div className="review-word">{card.word}</div>
-            {card.wordType && (
-              <div className="review-word-type">{card.wordType}</div>
-            )}
-            {card.audioFilename && (
-              <Button size="small" variant="secondary" onClick={playAudio}>
-                ▶ Аудио
-              </Button>
-            )}
-
-            {showAnswer && (
+          <div className={`review-capsule ${capsuleState}`} key={card.id}>
+            <div className="capsule-label">Определение</div>
+            <p className="capsule-text">{stripTags(card.definition)}</p>
+            {exampleFront && (
               <>
-                <hr className="review-divider" />
-                <div className="review-back">
-                  {card.transcription && (
-                    <p><em>{card.transcription}</em></p>
-                  )}
-                  <p><strong>{card.definition}</strong></p>
-                  {card.definitionExample && <p>{card.definitionExample}</p>}
-                  {card.examples.length > 0 && (
-                    <ul>
-                      {card.examples.map((ex, i) => (
-                        <li key={i}>{ex}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
+                <div className="capsule-label">Пример</div>
+                <p className="capsule-text">{exampleFront}</p>
               </>
             )}
           </div>
 
-          <div className="review-actions">
-            {!showAnswer ? (
-              <Button size="large" onClick={reveal}>
-                Показать ответ (пробел)
+          {!answered ? (
+            <form className="review-input-form" onSubmit={submit}>
+              <input
+                ref={inputRef}
+                className="review-input"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="впиши слово…"
+                autoComplete="off"
+                spellCheck={false}
+              />
+              <div className="review-hint">Enter — проверить</div>
+            </form>
+          ) : (
+            <div className="review-result">
+              <div
+                className={`review-input review-answer ${
+                  correct ? 'is-correct' : 'is-wrong'
+                }`}
+              >
+                <span className="answer-typed">{input || '—'}</span>
+                <span className="answer-badge">
+                  {correct ? '✓ Верно' : '✗ Неверно'}
+                </span>
+              </div>
+
+              <div className="review-reveal">
+                <div className="reveal-word">{card.word}</div>
+                {card.wordType && (
+                  <div className="reveal-type">{card.wordType}</div>
+                )}
+                {card.transcription && (
+                  <div className="reveal-transcription">
+                    {stripTags(card.transcription)}
+                  </div>
+                )}
+                {card.audioFilename && (
+                  <Button size="small" variant="secondary" onClick={playAudio}>
+                    ▶ Аудио
+                  </Button>
+                )}
+                {(card.definitionExample || card.examples.length > 0) && (
+                  <ul className="reveal-examples">
+                    {card.definitionExample && (
+                      <li>
+                        <BoldText html={card.definitionExample} />
+                      </li>
+                    )}
+                    {card.examples.map((ex, i) => (
+                      <li key={i}>
+                        <BoldText html={ex} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <Button size="large" onClick={next}>
+                Дальше (Enter)
               </Button>
-            ) : (
-              <>
-                <button className="rating-btn rating-again" onClick={() => rate(1)}>
-                  Снова<small>{intervals?.again ?? ''}</small>
-                </button>
-                <button className="rating-btn rating-hard" onClick={() => rate(2)}>
-                  Трудно<small>{intervals?.hard ?? ''}</small>
-                </button>
-                <button className="rating-btn rating-good" onClick={() => rate(3)}>
-                  Хорошо<small>{intervals?.good ?? ''}</small>
-                </button>
-                <button className="rating-btn rating-easy" onClick={() => rate(4)}>
-                  Легко<small>{intervals?.easy ?? ''}</small>
-                </button>
-              </>
-            )}
-          </div>
+            </div>
+          )}
         </>
       )}
     </div>
