@@ -47,6 +47,7 @@ export interface AppSettings {
   aiBaseUrl?: string;
   selectedDeck?: string;
   selectedModel?: string;
+  defaultDeckId?: number;
   exampleCount: number;
   fieldMapping: FieldMapping;
 }
@@ -170,6 +171,134 @@ export interface GenerationProgress {
   error?: string;
 }
 
+// ===== Local collection types =====
+
+export interface Deck {
+  id: number;
+  name: string;
+  newPerDay: number;
+  reviewsPerDay: number;
+  createdAt: number;
+}
+
+export interface DeckWithCounts extends Deck {
+  newCount: number;
+  learnCount: number;
+  dueCount: number;
+  totalCards: number;
+}
+
+export enum CardState {
+  New = 0,
+  Learning = 1,
+  Review = 2,
+  Relearning = 3
+}
+
+export interface StoredCard {
+  id: number;
+  deckId: number;
+  word: string;
+  wordType: string;
+  definition: string;
+  definitionExample: string;
+  transcription: string;
+  examples: string[];
+  audioFilename: string | null;
+  tags: string;
+  createdAt: number;
+  state: CardState;
+  due: number;
+  stability: number;
+  difficulty: number;
+  elapsedDays: number;
+  scheduledDays: number;
+  learningSteps: number;
+  reps: number;
+  lapses: number;
+  lastReview: number | null;
+}
+
+export interface NewCardInput {
+  word: string;
+  wordType: string;
+  definition: string;
+  definitionExample: string;
+  transcription: string;
+  examples: string[];
+  audioFilename?: string | null;
+  tags?: string;
+}
+
+export interface CardTextUpdate {
+  id: number;
+  word: string;
+  wordType: string;
+  definition: string;
+  definitionExample: string;
+  transcription: string;
+  examples: string[];
+  tags: string;
+}
+
+export type CardStatusFilter = 'new' | 'learning' | 'review';
+
+export interface CardSearchQuery {
+  text?: string;
+  deckId?: number;
+  status?: CardStatusFilter;
+  tag?: string;
+  limit: number;
+  offset: number;
+}
+
+export interface CardSearchResult {
+  total: number;
+  cards: StoredCard[];
+}
+
+export type ReviewRating = 1 | 2 | 3 | 4; // Again | Hard | Good | Easy
+
+export interface ReviewQueueState {
+  current: StoredCard | null;
+  newCount: number;
+  learnCount: number;
+  dueCount: number;
+}
+
+export interface IntervalPreviews {
+  again: string;
+  hard: string;
+  good: string;
+  easy: string;
+}
+
+export interface AudioUpload {
+  filename: string;
+  data: string; // base64
+}
+
+export interface ImportDeckChoice {
+  name: string;
+  noteCount: number;
+}
+
+export interface ImportProgress {
+  deck: string;
+  done: number;
+  total: number;
+  imported: number;
+  skipped: number;
+  errors: number;
+  finished: boolean;
+}
+
+export interface ImportResult {
+  imported: number;
+  skipped: number;
+  errors: number;
+}
+
 // IPC channel names
 
 export const IPC_CHANNELS = {
@@ -192,5 +321,26 @@ export const IPC_CHANNELS = {
   // Settings
   SETTINGS_GET: 'settings:get',
   SETTINGS_SET: 'settings:set',
-  SETTINGS_GET_ALL: 'settings:getAll'
+  SETTINGS_GET_ALL: 'settings:getAll',
+
+  // Local collection
+  DECK_LIST: 'deck:list',
+  DECK_CREATE: 'deck:create',
+  DECK_RENAME: 'deck:rename',
+  DECK_DELETE: 'deck:delete',
+  DECK_UPDATE_LIMITS: 'deck:updateLimits',
+  CARD_ADD: 'card:add',
+  CARD_UPDATE: 'card:update',
+  CARD_DELETE: 'card:delete',
+  CARD_MOVE: 'card:move',
+  CARD_SEARCH: 'card:search',
+  CARD_GET: 'card:get',
+  CARD_LIST_WORDS: 'card:listWords',
+  REVIEW_GET_QUEUE: 'review:getQueue',
+  REVIEW_ANSWER: 'review:answer',
+  REVIEW_PREVIEW_INTERVALS: 'review:previewIntervals',
+  MEDIA_GET_AUDIO: 'media:getAudio',
+  IMPORT_GET_ANKI_DECKS: 'import:getAnkiDecks',
+  IMPORT_RUN: 'import:run',
+  IMPORT_PROGRESS: 'import:progress'
 } as const;
