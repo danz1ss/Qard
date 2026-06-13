@@ -282,7 +282,240 @@ export class CollectionService {
     )!.n as number;
   }
 
-  deleteCards(_ids: number[]): string[] {
-    throw new Error('not implemented yet (Task 4)');
+  // ===== Cards =====
+
+  addCards(deckId: number, inputs: NewCardInput[], now: number): number[] {
+    const ids: number[] = [];
+    for (const c of inputs) {
+      this.db.run(
+        `INSERT INTO cards (
+          deck_id, word, word_type, definition, definition_example,
+          transcription, examples_json, audio_filename, tags, created_at, due
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          deckId,
+          c.word,
+          c.wordType,
+          c.definition,
+          c.definitionExample,
+          c.transcription,
+          JSON.stringify(c.examples),
+          c.audioFilename ?? null,
+          c.tags ?? '',
+          now,
+          now
+        ]
+      );
+      ids.push(this.one('SELECT last_insert_rowid() AS id')!.id as number);
+    }
+    if (inputs.length > 0) {
+      this.mutated();
+    }
+    return ids;
+  }
+
+  getCard(id: number): StoredCard | null {
+    const row = this.one('SELECT * FROM cards WHERE id = ?', [id]);
+    return row ? this.rowToCard(row) : null;
+  }
+
+  updateCardText(u: CardTextUpdate): void {
+    this.db.run(
+      `UPDATE cards SET word = ?, word_type = ?, definition = ?,
+        definition_example = ?, transcription = ?, examples_json = ?, tags = ?
+       WHERE id = ?`,
+      [
+        u.word,
+        u.wordType,
+        u.definition,
+        u.definitionExample,
+        u.transcription,
+        JSON.stringify(u.examples),
+        u.tags,
+        u.id
+      ]
+    );
+    this.mutated();
+  }
+
+  /** Удаляет карточки; возвращает аудиофайлы, на которые больше никто не ссылается. */
+  deleteCards(ids: number[]): string[] {
+    if (ids.length === 0) {
+      return [];
+    }
+    const placeholders = ids.map(() => '?').join(',');
+    const audio = this.all(
+      `SELECT DISTINCT audio_filename FROM cards
+       WHERE id IN (${placeholders}) AND audio_filename IS NOT NULL`,
+      ids
+    ).map((r) => r.audio_filename as string);
+
+    this.db.run(`DELETE FROM cards WHERE id IN (${placeholders})`, ids);
+
+    const orphans = audio.filter((f) => {
+      const still = this.one(
+        'SELECT COUNT(*) AS n FROM cards WHERE audio_filename = ?',
+        [f]
+      )!.n as number;
+      return still === 0;
+    });
+    this.mutated();
+    return orphans;
+  }
+
+  moveCards(ids: number[], deckId: number): void {
+    if (ids.length === 0) {
+      return;
+    }
+    const placeholders = ids.map(() => '?').join(',');
+    this.db.run(`UPDATE cards SET deck_id = ? WHERE id IN (${placeholders})`, [
+      deckId,
+      ...ids
+    ]);
+    this.mutated();
+  }
+
+  searchCards(q: CardSearchQuery): CardSearchResult {
+    const where: string[] = [];
+    const params: any[] = [];
+
+    if (q.text) {
+      const like = `%${likeEscape(q.text)}%`;
+      where.push(
+        `(word LIKE ? ESCAPE '\\' OR definition LIKE ? ESCAPE '\\'
+          OR definition_example LIKE ? ESCAPE '\\' OR examples_json LIKE ? ESCAPE '\\')`
+      );
+      params.push(like, like, like, like);
+    }
+    if (q.deckId !== undefined) {
+      where.push('deck_id = ?');
+      params.push(q.deckId);
+    }
+    if (q.status) {
+      const states: Record<CardStatusFilter, string> = {
+        new: '(0)',
+        learning: '(1,3)',
+        review: '(2)'
+      };
+      where.push(`state IN ${states[q.status]}`);
+    }
+    if (q.tag) {
+      where.push(`(' ' || tags || ' ') LIKE ? ESCAPE '\\'`);
+      params.push(`% ${likeEscape(q.tag)} %`);
+    }
+
+    const whereSql = where.length > 0 ? `WHERE ${where.join(' AND ')}` : '';
+    const total = this.one(
+      `SELECT COUNT(*) AS n FROM cards ${whereSql}`,
+      params
+    )!.n as number;
+    const cards = this.all(
+      `SELECT * FROM cards ${whereSql} ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?`,
+      [...params, q.limit, q.offset]
+    ).map((r) => this.rowToCard(r));
+
+    return { total, cards };
+  }
+
+  listWords(deckId: number): string[] {
+    return this.all('SELECT word FROM cards WHERE deck_id = ?', [deckId]).map(
+      (r) => (r.word as string).toLowerCase()
+    );
+  }
+
+  /** Ключи "word definition" (lowercase) для дедупликации импорта. */
+  listCardKeys(deckId: number): string[] {
+    return this.all(
+      'SELECT word, definition FROM cards WHERE deck_id = ?',
+      [deckId]
+    ).map(
+      (r) =>
+        `${(r.word as string).toLowerCase()} ${(r.definition as string).toLowerCase()}`
+    );
+  }
+
+  /** Следующая карточка в заданных состояниях; orderBy 'due' или 'id'. */
+  nextCard(
+    deckId: number,
+    states: CardState[],
+    dueBefore: number | undefined,
+    orderBy: 'due' | 'id'
+  ): StoredCard | null {
+    const placeholders = states.map(() => '?').join(',');
+    let sql = `SELECT * FROM cards WHERE deck_id = ? AND state IN (${placeholders})`;
+    const params: any[] = [deckId, ...states];
+    if (dueBefore !== undefined) {
+      sql += ' AND due < ?';
+      params.push(dueBefore);
+    }
+    sql += ` ORDER BY ${orderBy === 'due' ? 'due' : 'id'} LIMIT 1`;
+    const row = this.one(sql, params);
+    return row ? this.rowToCard(row) : null;
+  }
+
+  applyAnswer(u: SchedulingUpdate, log: ReviewLogEntry): void {
+    this.db.run(
+      `UPDATE cards SET state = ?, due = ?, stability = ?, difficulty = ?,
+        elapsed_days = ?, scheduled_days = ?, learning_steps = ?, reps = ?,
+        lapses = ?, last_review = ?
+       WHERE id = ?`,
+      [
+        u.state,
+        u.due,
+        u.stability,
+        u.difficulty,
+        u.elapsedDays,
+        u.scheduledDays,
+        u.learningSteps,
+        u.reps,
+        u.lapses,
+        u.lastReview,
+        u.id
+      ]
+    );
+    this.db.run(
+      `INSERT INTO review_log (
+        card_id, rating, state, due, stability, difficulty,
+        elapsed_days, scheduled_days, reviewed_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        log.cardId,
+        log.rating,
+        log.state,
+        log.due,
+        log.stability,
+        log.difficulty,
+        log.elapsedDays,
+        log.scheduledDays,
+        log.reviewedAt
+      ]
+    );
+    this.mutated();
+  }
+
+  private rowToCard(row: any): StoredCard {
+    return {
+      id: row.id,
+      deckId: row.deck_id,
+      word: row.word,
+      wordType: row.word_type,
+      definition: row.definition,
+      definitionExample: row.definition_example,
+      transcription: row.transcription,
+      examples: JSON.parse(row.examples_json),
+      audioFilename: row.audio_filename ?? null,
+      tags: row.tags,
+      createdAt: row.created_at,
+      state: row.state,
+      due: row.due,
+      stability: row.stability,
+      difficulty: row.difficulty,
+      elapsedDays: row.elapsed_days,
+      scheduledDays: row.scheduled_days,
+      learningSteps: row.learning_steps,
+      reps: row.reps,
+      lapses: row.lapses,
+      lastReview: row.last_review ?? null
+    };
   }
 }
