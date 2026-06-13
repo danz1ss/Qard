@@ -8,6 +8,21 @@ import {
 import Button from '../common/Button';
 import './Review.css';
 
+function audioMimeFromFilename(filename: string): string {
+  const ext = filename.slice(filename.lastIndexOf('.') + 1).toLowerCase();
+  switch (ext) {
+    case 'ogg': return 'audio/ogg';
+    case 'oga': return 'audio/ogg';
+    case 'wav': return 'audio/wav';
+    case 'm4a': return 'audio/mp4';
+    case 'mp4': return 'audio/mp4';
+    case 'webm': return 'audio/webm';
+    case 'flac': return 'audio/flac';
+    case 'mp3':
+    default: return 'audio/mpeg';
+  }
+}
+
 interface ReviewProps {
   deckId: number;
   deckName: string;
@@ -44,9 +59,11 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
       return;
     }
     let cancelled = false;
-    window.electronAPI.media.getAudio(card.audioFilename).then((b64) => {
+    const audioFilename = card.audioFilename;
+    window.electronAPI.media.getAudio(audioFilename).then((b64) => {
       if (cancelled || !b64) return;
-      const audio = new Audio(`data:audio/mpeg;base64,${b64}`);
+      const mime = audioMimeFromFilename(audioFilename);
+      const audio = new Audio(`data:${mime};base64,${b64}`);
       audioRef.current = audio;
       audio.play().catch(() => {});
     });
