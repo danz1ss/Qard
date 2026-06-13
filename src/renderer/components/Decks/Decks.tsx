@@ -4,6 +4,7 @@ import { DeckWithCounts } from '../../../shared/types';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import Review from '../Review/Review';
+import ImportModal from './ImportModal';
 import './Decks.css';
 
 const Decks: React.FC = () => {
@@ -16,6 +17,7 @@ const Decks: React.FC = () => {
   const [renamingId, setRenamingId] = useState<number | null>(null);
   const [renameValue, setRenameValue] = useState('');
   const [studyingDeck, setStudyingDeck] = useState<DeckWithCounts | null>(null);
+  const [importing, setImporting] = useState(false);
 
   useEffect(() => {
     refreshDecks();
@@ -196,6 +198,17 @@ const Decks: React.FC = () => {
         <Button onClick={handleCreate}>Создать</Button>
       </div>
       {error && <p className="help-text error">{error}</p>}
+      <div style={{ marginTop: 16 }}>
+        <Button variant="secondary" onClick={() => setImporting(true)}>
+          Импорт из Anki
+        </Button>
+      </div>
+      {importing && (
+        <ImportModal
+          onClose={() => setImporting(false)}
+          onImported={() => refreshDecks()}
+        />
+      )}
     </div>
   );
 };
