@@ -19,6 +19,8 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
   const [showAnswer, setShowAnswer] = useState(false);
   const [intervals, setIntervals] = useState<IntervalPreviews | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const answeringRef = useRef<boolean>(false);
+  const revealingRef = useRef<boolean>(false);
 
   const card: StoredCard | null = queue?.current ?? null;
 
@@ -35,8 +37,12 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
 
   // Аудио: подгружаем и автопроигрываем при смене карточки
   useEffect(() => {
+    const prevAudio = audioRef.current;
     audioRef.current = null;
-    if (!card?.audioFilename) return;
+    if (!card?.audioFilename) {
+      prevAudio?.pause();
+      return;
+    }
     let cancelled = false;
     window.electronAPI.media.getAudio(card.audioFilename).then((b64) => {
       if (cancelled || !b64) return;
@@ -46,6 +52,7 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
     });
     return () => {
       cancelled = true;
+      prevAudio?.pause();
     };
   }, [card?.id]);
 
@@ -54,18 +61,28 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
   };
 
   const reveal = async () => {
-    if (!card) return;
-    setShowAnswer(true);
-    const p = await window.electronAPI.review.previewIntervals(card.id);
-    setIntervals(p);
+    if (!card || showAnswer || revealingRef.current) return;
+    revealingRef.current = true;
+    try {
+      setShowAnswer(true);
+      const p = await window.electronAPI.review.previewIntervals(card.id);
+      setIntervals(p);
+    } finally {
+      revealingRef.current = false;
+    }
   };
 
   const rate = async (rating: ReviewRating) => {
-    if (!card) return;
-    const q = await window.electronAPI.review.answer(card.id, rating);
-    setQueue(q);
-    setShowAnswer(false);
-    setIntervals(null);
+    if (!card || answeringRef.current) return;
+    answeringRef.current = true;
+    try {
+      const q = await window.electronAPI.review.answer(card.id, rating);
+      setQueue(q);
+      setShowAnswer(false);
+      setIntervals(null);
+    } finally {
+      answeringRef.current = false;
+    }
   };
 
   // Хоткеи: пробел = показать ответ / Good; 1-4 = оценки
