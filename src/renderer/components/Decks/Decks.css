@@ -1,0 +1,58 @@
+.decks-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.decks-table th,
+.decks-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.deck-name {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.count-new {
+  color: #2962ff;
+  font-weight: 600;
+}
+
+.count-learn {
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+.count-due {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.deck-create-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  margin-top: 16px;
+}
+
+.deck-create-row > div {
+  flex: 1;
+}
+
+.deck-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.deck-limits-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.deck-limits-row input {
+  width: 70px;
+}

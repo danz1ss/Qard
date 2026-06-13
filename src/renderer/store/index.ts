@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import {
 	DataSource,
+	DeckWithCounts,
 	FieldMapping,
 	GeneratedCard,
 	GenerationProgress,
@@ -138,6 +139,12 @@ interface AppState {
 	// Anki connection status
 	ankiConnected: boolean
 	setAnkiConnected: (connected: boolean) => void
+
+	// Local collection slice
+	decks: DeckWithCounts[]
+	refreshDecks: () => Promise<void>
+	defaultDeckId: number | null
+	setDefaultDeckId: (id: number | null) => void
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -208,6 +215,7 @@ export const useStore = create<AppState>((set, get) => ({
 				selectedModel: settings.selectedModel || '',
 				exampleCount: settings.exampleCount || 3,
 				fieldMapping: settings.fieldMapping || {},
+				defaultDeckId: settings.defaultDeckId ?? null,
 			})
 
 			// Load available fields if model is selected
@@ -287,4 +295,22 @@ export const useStore = create<AppState>((set, get) => ({
 	// Anki connection
 	ankiConnected: false,
 	setAnkiConnected: connected => set({ ankiConnected: connected }),
+
+	// Local collection
+	decks: [],
+	refreshDecks: async () => {
+		try {
+			const decks = await window.electronAPI.collection.listDecks()
+			set({ decks })
+		} catch (error) {
+			console.error('Failed to load decks:', error)
+		}
+	},
+	defaultDeckId: null,
+	setDefaultDeckId: id => {
+		set({ defaultDeckId: id })
+		window.electronAPI.settings
+			.set('defaultDeckId', id)
+			.catch(error => console.error('Failed to persist defaultDeckId:', error))
+	},
 }))

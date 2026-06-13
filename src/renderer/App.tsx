@@ -3,12 +3,13 @@ import Settings from './components/Settings/Settings';
 import WordInput from './components/WordInput/WordInput';
 import Generation from './components/Generation/Generation';
 import Preview from './components/Preview/Preview';
+import Decks from './components/Decks/Decks';
 import './App.css';
 
-type Tab = 'setup' | 'input' | 'generate' | 'preview';
+type Tab = 'decks' | 'browse' | 'setup' | 'input' | 'generate' | 'preview';
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<Tab>('setup');
+  const [activeTab, setActiveTab] = useState<Tab>('decks');
 
   return (
     <div className="app">
@@ -18,6 +19,18 @@ const App: React.FC = () => {
       </header>
 
       <nav className="app-tabs">
+        <button
+          className={`tab ${activeTab === 'decks' ? 'active' : ''}`}
+          onClick={() => setActiveTab('decks')}
+        >
+          Decks
+        </button>
+        <button
+          className={`tab ${activeTab === 'browse' ? 'active' : ''}`}
+          onClick={() => setActiveTab('browse')}
+        >
+          Browse
+        </button>
         <button
           className={`tab ${activeTab === 'setup' ? 'active' : ''}`}
           onClick={() => setActiveTab('setup')}
@@ -45,6 +58,14 @@ const App: React.FC = () => {
       </nav>
 
       <main className="app-content">
+        {activeTab === 'decks' && (
+          <div className="tab-content">
+            <Decks />
+          </div>
+        )}
+
+        {activeTab === 'browse' && <div className="tab-content" />}
+
         {activeTab === 'setup' && (
           <div className="tab-content">
             <Settings />
