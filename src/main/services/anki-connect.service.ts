@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { AnkiNote } from '../../shared/types'
 
 const ANKI_CONNECT_URL = 'http://127.0.0.1:8765';
 
@@ -87,14 +86,6 @@ class AnkiConnectService {
     return await this.invoke('deckNames');
   }
 
-  async getModelNames(): Promise<string[]> {
-    return await this.invoke('modelNames');
-  }
-
-  async getModelFieldNames(modelName: string): Promise<string[]> {
-    return await this.invoke('modelFieldNames', { modelName });
-  }
-
   /**
    * Returns note IDs matching an Anki search query.
    * Used to detect whether a word already exists in a deck.
@@ -112,67 +103,6 @@ class AnkiConnectService {
     return await this.invoke('retrieveMediaFile', { filename });
   }
 
-  async storeMediaFile(filename: string, data: string): Promise<string> {
-    // data should be base64 encoded
-    await this.invoke('storeMediaFile', {
-      filename,
-      data
-    });
-    return filename;
-  }
-
-  async addNote(note: AnkiNote): Promise<number> {
-    const ankiNote = {
-      deckName: note.deckName,
-      modelName: note.modelName,
-      fields: note.fields,
-      options: {
-        allowDuplicate: true,
-        duplicateScope: 'deck'
-      },
-      tags: note.tags || []
-    };
-
-    // If there's audio, store it first
-    if (note.audio && note.audio.length > 0) {
-      for (const audioItem of note.audio) {
-        await this.storeMediaFile(audioItem.filename, audioItem.data);
-      }
-    }
-
-    const noteId = await this.invoke('addNote', { note: ankiNote });
-    return noteId;
-  }
-
-  /**
-   * Adds multiple notes in a single AnkiConnect request.
-   * Media files are stored first, then all notes are sent at once.
-   * Returns an array of note IDs; entries are null for notes that
-   * could not be added (e.g. rejected duplicates).
-   */
-  async addNotes(notes: AnkiNote[]): Promise<(number | null)[]> {
-    // Store all media files before adding notes
-    for (const note of notes) {
-      if (note.audio && note.audio.length > 0) {
-        for (const audioItem of note.audio) {
-          await this.storeMediaFile(audioItem.filename, audioItem.data);
-        }
-      }
-    }
-
-    const ankiNotes = notes.map((note) => ({
-      deckName: note.deckName,
-      modelName: note.modelName,
-      fields: note.fields,
-      options: {
-        allowDuplicate: true,
-        duplicateScope: 'deck'
-      },
-      tags: note.tags || []
-    }));
-
-    return await this.invoke('addNotes', { notes: ankiNotes });
-  }
 }
 
 export const ankiConnectService = new AnkiConnectService();

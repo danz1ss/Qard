@@ -45,8 +45,6 @@ export interface AppSettings {
   aiProvider?: string;
   aiModel?: string;
   aiBaseUrl?: string;
-  selectedDeck?: string;
-  selectedModel?: string;
   defaultDeckId?: number;
   exampleCount: number;
   fieldMapping: FieldMapping;
@@ -113,28 +111,6 @@ export const AI_PROVIDERS: AIProviderPreset[] = [
 ];
 
 export const DEFAULT_AI_PROVIDER = 'proxyapi';
-
-// Anki types
-
-export interface AnkiDeck {
-  name: string;
-}
-
-export interface AnkiModel {
-  name: string;
-  fields: string[];
-}
-
-export interface AnkiNote {
-  deckName: string;
-  modelName: string;
-  fields: { [key: string]: string };
-  audio?: {
-    filename: string;
-    data: string; // base64
-  }[];
-  tags?: string[];
-}
 
 // API response types
 
@@ -302,16 +278,6 @@ export interface ImportResult {
 // IPC channel names
 
 export const IPC_CHANNELS = {
-  // AnkiConnect
-  ANKI_GET_DECKS: 'anki:getDecks',
-  ANKI_GET_MODELS: 'anki:getModels',
-  ANKI_GET_MODEL_FIELDS: 'anki:getModelFields',
-  ANKI_STORE_MEDIA: 'anki:storeMedia',
-  ANKI_ADD_NOTE: 'anki:addNote',
-  ANKI_ADD_NOTES: 'anki:addNotes',
-  ANKI_FIND_NOTES: 'anki:findNotes',
-  ANKI_CHECK_CONNECTION: 'anki:checkConnection',
-
   // AI (ProxyAPI)
   AI_GENERATE_BATCH: 'ai:generateBatch',
 

@@ -8,9 +8,6 @@ import './Generation.css';
 const Generation: React.FC = () => {
   const {
     words,
-    selectedDeck,
-    selectedModel,
-    fieldMapping,
     exampleCount,
     geminiApiKey,
     generationProgress,
@@ -21,9 +18,6 @@ const Generation: React.FC = () => {
 
   const canGenerate =
     words.length > 0 &&
-    selectedDeck &&
-    selectedModel &&
-    Object.keys(fieldMapping).length > 0 &&
     geminiApiKey;
 
   const handleStartGeneration = () => {
@@ -68,19 +62,11 @@ const Generation: React.FC = () => {
             <span className="summary-value">{words.length}</span>
           </div>
           <div className="summary-item">
-            <span className="summary-label">Deck:</span>
-            <span className="summary-value">{selectedDeck || 'Not selected'}</span>
-          </div>
-          <div className="summary-item">
-            <span className="summary-label">Model:</span>
-            <span className="summary-value">{selectedModel || 'Not selected'}</span>
-          </div>
-          <div className="summary-item">
             <span className="summary-label">Examples per word:</span>
             <span className="summary-value">{exampleCount}</span>
           </div>
           <div className="summary-item">
-            <span className="summary-label">ProxyAPI:</span>
+            <span className="summary-label">AI API Key:</span>
             <span className="summary-value">{geminiApiKey ? '✓ Configured' : '✗ Not configured'}</span>
           </div>
         </div>
@@ -92,10 +78,7 @@ const Generation: React.FC = () => {
           <h4>Please complete the following before generating:</h4>
           <ul>
             {words.length === 0 && <li>Add words in the Input tab</li>}
-            {!selectedDeck && <li>Select a deck in the Setup tab</li>}
-            {!selectedModel && <li>Select a note type in the Setup tab</li>}
-            {Object.keys(fieldMapping).length === 0 && <li>Configure field mapping in the Setup tab</li>}
-            {!geminiApiKey && <li>Enter ProxyAPI key in the Setup tab</li>}
+            {!geminiApiKey && <li>Enter AI API key in the Setup tab</li>}
           </ul>
         </div>
       )}
@@ -149,7 +132,7 @@ const Generation: React.FC = () => {
           <h3>Generation Complete!</h3>
           <p>
             Successfully generated {generationProgress.completedCards} flashcards.
-            Go to the Preview tab to review and add them to Anki.
+            Go to the Preview tab to review and save them to your collection.
           </p>
         </div>
       )}

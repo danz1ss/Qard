@@ -1,5 +1,4 @@
 import {
-  AnkiNote,
   AudioUpload,
   BatchWordResult,
   AppSettings,
@@ -22,16 +21,6 @@ import {
 export interface ElectronAPI {
   shell: {
     openExternal: (url: string) => Promise<void>;
-  };
-  anki: {
-    getDecks: () => Promise<string[]>;
-    getModels: () => Promise<string[]>;
-    getModelFields: (modelName: string) => Promise<string[]>;
-    storeMedia: (filename: string, data: string) => Promise<string>;
-    addNote: (note: AnkiNote) => Promise<number>;
-    addNotes: (notes: AnkiNote[]) => Promise<(number | null)[]>;
-    findNotes: (query: string) => Promise<number[]>;
-    checkConnection: () => Promise<boolean>;
   };
   ai: {
     generateBatch: (parsedWords: ParsedWord[], examplesCount: number) => Promise<BatchWordResult[]>;

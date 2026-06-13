@@ -6,8 +6,6 @@ interface SettingsSchema {
   aiProvider?: string;
   aiModel?: string;
   aiBaseUrl?: string;
-  selectedDeck?: string;
-  selectedModel?: string;
   defaultDeckId?: number;
   exampleCount: number;
   fieldMapping: { [key: string]: DataSource };
@@ -44,8 +42,6 @@ class SettingsService {
       aiProvider: this.store.get('aiProvider', 'proxyapi'),
       aiModel: this.store.get('aiModel', 'gpt-4o-mini'),
       aiBaseUrl: this.store.get('aiBaseUrl'),
-      selectedDeck: this.store.get('selectedDeck'),
-      selectedModel: this.store.get('selectedModel'),
       defaultDeckId: this.store.get('defaultDeckId'),
       exampleCount: this.store.get('exampleCount', 3),
       fieldMapping: this.store.get('fieldMapping', {})

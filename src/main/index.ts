@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron';
 import * as path from 'path';
-import { setupAnkiHandlers } from './ipc/anki.handlers';
 import { setupGeminiHandlers } from './ipc/gemini.handlers';
 import { setupTTSHandlers } from './ipc/tts.handlers';
 import { setupSettingsHandlers } from './ipc/settings.handlers';
@@ -55,7 +54,6 @@ app.whenReady().then(async () => {
   const importService = new ImportService(storage.service, media);
 
   // Setup all IPC handlers
-  setupAnkiHandlers(ipcMain);
   setupGeminiHandlers(ipcMain);
   setupTTSHandlers(ipcMain);
   setupSettingsHandlers(ipcMain);
