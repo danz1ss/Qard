@@ -14,6 +14,13 @@ interface AnkiConnectResponse {
   error: string | null;
 }
 
+export interface AnkiNoteInfo {
+  noteId: number;
+  modelName: string;
+  tags: string[];
+  fields: { [name: string]: { value: string; order: number } };
+}
+
 class AnkiConnectService {
   private async invoke(action: string, params: any = {}): Promise<any> {
     const request: AnkiConnectRequest = {
@@ -94,6 +101,15 @@ class AnkiConnectService {
    */
   async findNotes(query: string): Promise<number[]> {
     return await this.invoke('findNotes', { query });
+  }
+
+  async notesInfo(notes: number[]): Promise<AnkiNoteInfo[]> {
+    return await this.invoke('notesInfo', { notes });
+  }
+
+  /** Возвращает base64 содержимого медиафайла или false, если файла нет. */
+  async retrieveMediaFile(filename: string): Promise<string | false> {
+    return await this.invoke('retrieveMediaFile', { filename });
   }
 
   async storeMediaFile(filename: string, data: string): Promise<string> {
