@@ -3,6 +3,7 @@ import { useStore } from '../../store';
 import { DeckWithCounts } from '../../../shared/types';
 import Button from '../common/Button';
 import Input from '../common/Input';
+import Review from '../Review/Review';
 import './Decks.css';
 
 const Decks: React.FC = () => {
@@ -14,6 +15,7 @@ const Decks: React.FC = () => {
   const [limitRev, setLimitRev] = useState('200');
   const [renamingId, setRenamingId] = useState<number | null>(null);
   const [renameValue, setRenameValue] = useState('');
+  const [studyingDeck, setStudyingDeck] = useState<DeckWithCounts | null>(null);
 
   useEffect(() => {
     refreshDecks();
@@ -88,6 +90,19 @@ const Decks: React.FC = () => {
     }
   };
 
+  if (studyingDeck) {
+    return (
+      <Review
+        deckId={studyingDeck.id}
+        deckName={studyingDeck.name}
+        onExit={() => {
+          setStudyingDeck(null);
+          refreshDecks();
+        }}
+      />
+    );
+  }
+
   return (
     <div className="decks">
       <h2>Колоды</h2>
@@ -135,6 +150,9 @@ const Decks: React.FC = () => {
                 <td>{deck.totalCards}</td>
                 <td>
                   <div className="deck-actions">
+                    <Button size="small" onClick={() => setStudyingDeck(deck)}>
+                      Учить
+                    </Button>
                     <Button size="small" variant="secondary" onClick={() => startRename(deck)}>
                       Переименовать
                     </Button>
