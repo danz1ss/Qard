@@ -4,6 +4,7 @@ import WordInput from './components/WordInput/WordInput';
 import Generation from './components/Generation/Generation';
 import Preview from './components/Preview/Preview';
 import Decks from './components/Decks/Decks';
+import Browser from './components/Browser/Browser';
 import './App.css';
 
 type Tab = 'decks' | 'browse' | 'setup' | 'input' | 'generate' | 'preview';
@@ -64,7 +65,11 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {activeTab === 'browse' && <div className="tab-content" />}
+        {activeTab === 'browse' && (
+          <div className="tab-content">
+            <Browser />
+          </div>
+        )}
 
         {activeTab === 'setup' && (
           <div className="tab-content">
