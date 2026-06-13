@@ -6,7 +6,8 @@ const mainConfig = {
   entry: './src/main/index.ts',
   target: 'electron-main',
   externals: {
-    electron: 'commonjs2 electron'
+    electron: 'commonjs2 electron',
+    'sql.js': 'commonjs2 sql.js'
   },
   output: {
     path: path.resolve(__dirname, 'dist/main'),
