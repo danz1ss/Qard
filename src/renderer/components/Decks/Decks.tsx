@@ -17,7 +17,7 @@ const Decks: React.FC = () => {
 
   useEffect(() => {
     refreshDecks();
-  }, []);
+  }, [refreshDecks]);
 
   const handleCreate = async () => {
     if (!newDeckName.trim()) return;
@@ -26,8 +26,8 @@ const Decks: React.FC = () => {
       await window.electronAPI.collection.createDeck(newDeckName.trim());
       setNewDeckName('');
       await refreshDecks();
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
     }
   };
 
@@ -38,9 +38,14 @@ const Decks: React.FC = () => {
 
   const confirmRename = async (deck: DeckWithCounts) => {
     if (!renameValue.trim()) return;
-    await window.electronAPI.collection.renameDeck(deck.id, renameValue.trim());
-    setRenamingId(null);
-    await refreshDecks();
+    setError(null);
+    try {
+      await window.electronAPI.collection.renameDeck(deck.id, renameValue.trim());
+      setRenamingId(null);
+      await refreshDecks();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
   };
 
   const cancelRename = () => {
@@ -52,8 +57,13 @@ const Decks: React.FC = () => {
       `Удалить колоду «${deck.name}» и все её карточки (${deck.totalCards} шт.)?`
     );
     if (!ok) return;
-    await window.electronAPI.collection.deleteDeck(deck.id);
-    await refreshDecks();
+    setError(null);
+    try {
+      await window.electronAPI.collection.deleteDeck(deck.id);
+      await refreshDecks();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
   };
 
   const openLimits = (deck: DeckWithCounts) => {
@@ -64,13 +74,18 @@ const Decks: React.FC = () => {
 
   const saveLimits = async () => {
     if (!editingLimits) return;
-    await window.electronAPI.collection.updateDeckLimits(
-      editingLimits.id,
-      Math.max(0, parseInt(limitNew) || 0),
-      Math.max(0, parseInt(limitRev) || 0)
-    );
-    setEditingLimits(null);
-    await refreshDecks();
+    setError(null);
+    try {
+      await window.electronAPI.collection.updateDeckLimits(
+        editingLimits.id,
+        Math.max(0, parseInt(limitNew) || 0),
+        Math.max(0, parseInt(limitRev) || 0)
+      );
+      setEditingLimits(null);
+      await refreshDecks();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
   };
 
   return (
