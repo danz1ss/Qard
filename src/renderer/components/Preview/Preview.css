@@ -1,11 +1,12 @@
 .preview h2 {
-  font-size: 24px;
-  color: #333;
-  margin-bottom: 10px;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ivory);
+  margin-bottom: 8px;
 }
 
 .preview .description {
-  color: #666;
+  color: var(--ivory-dim);
   font-size: 14px;
   margin-bottom: 25px;
 }
@@ -13,12 +14,13 @@
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
+  background-color: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 18px;
 }
 
 .empty-state p {
-  color: #666;
+  color: var(--ivory-dim);
   font-size: 16px;
 }
 
@@ -26,21 +28,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
+  padding: 18px 20px;
+  background-color: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
   margin-bottom: 20px;
 }
 
 .card-count {
   font-size: 16px;
-  font-weight: 500;
-  color: #333;
+  font-weight: 600;
+  color: var(--ivory);
 }
 
 .duplicate-count {
-  color: #b8860b;
-  font-weight: 500;
+  color: var(--amber);
+  font-weight: 600;
 }
 
 .duplicate-toggle {
@@ -48,7 +51,7 @@
   align-items: center;
   gap: 6px;
   font-size: 14px;
-  color: #666;
+  color: var(--ivory-dim);
   margin-bottom: 20px;
   cursor: pointer;
   user-select: none;
@@ -57,50 +60,50 @@
 .card-badge {
   display: inline-block;
   margin-left: 8px;
-  padding: 2px 8px;
-  border-radius: 10px;
+  padding: 2px 9px;
+  border-radius: 999px;
   font-size: 11px;
   font-weight: 600;
   vertical-align: middle;
 }
 
 .card-badge.duplicate {
-  background-color: #fff3cd;
-  color: #856404;
+  background-color: rgba(243, 193, 104, 0.16);
+  color: var(--amber);
 }
 
 .card-badge.error {
-  background-color: #f8d7da;
-  color: #842029;
+  background-color: rgba(232, 133, 110, 0.16);
+  color: var(--coral);
 }
 
 .adding-progress {
-  padding: 15px;
-  background-color: #ebf8ff;
-  border-left: 3px solid #667eea;
-  border-radius: 6px;
+  padding: 14px 16px;
+  background-color: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
   margin-bottom: 20px;
-  color: #2c5282;
+  color: #bcd2f5;
   font-size: 14px;
 }
 
 .adding-error {
-  padding: 15px;
-  background-color: #fff5f5;
-  border-left: 3px solid #f56565;
-  border-radius: 6px;
+  padding: 14px 16px;
+  background-color: rgba(232, 133, 110, 0.12);
+  border-left: 3px solid var(--coral);
+  border-radius: 10px;
   margin-bottom: 20px;
-  color: #742a2a;
+  color: #e8b9ac;
   font-size: 14px;
 }
 
 .adding-success {
-  padding: 15px;
-  background-color: #f0fff4;
-  border-left: 3px solid #48bb78;
-  border-radius: 6px;
+  padding: 14px 16px;
+  background-color: rgba(132, 226, 173, 0.1);
+  border-left: 3px solid var(--green);
+  border-radius: 10px;
   margin-bottom: 20px;
-  color: #276749;
+  color: #aee8c8;
   font-size: 14px;
   font-weight: 500;
 }
@@ -108,19 +111,20 @@
 .card-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 14px;
 }
 
 .card-item {
-  background-color: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  background-color: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
   overflow: hidden;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .card-item:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--border);
+  box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.7);
 }
 
 .card-header {
@@ -129,12 +133,12 @@
   align-items: center;
   padding: 15px 20px;
   cursor: pointer;
-  background-color: #fafafa;
+  background-color: var(--surface-hi);
   transition: background-color 0.2s ease;
 }
 
 .card-header:hover {
-  background-color: #f5f5f5;
+  background-color: #474e5f;
 }
 
 .card-title {
@@ -147,12 +151,12 @@
 .card-word {
   font-size: 18px;
   font-weight: 600;
-  color: #333;
+  color: var(--ivory);
 }
 
 .card-transcription {
   font-size: 14px;
-  color: #666;
+  color: var(--accent);
   font-style: italic;
 }
 
@@ -164,13 +168,13 @@
 
 .expand-icon {
   font-size: 12px;
-  color: #999;
+  color: var(--muted);
 }
 
 .card-preview {
   padding: 20px;
-  background-color: white;
-  border-top: 1px solid #e0e0e0;
+  background-color: var(--surface);
+  border-top: 1px solid var(--border-soft);
 }
 
 .card-section {
@@ -182,40 +186,41 @@
 }
 
 .card-section h4 {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  color: #667eea;
+  color: var(--accent);
   margin-bottom: 8px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.06em;
 }
 
 .card-section p {
   font-size: 14px;
-  color: #333;
+  color: var(--ivory);
   margin: 0;
   line-height: 1.6;
 }
 
 .card-section.error {
-  background-color: #fff5f5;
+  background-color: rgba(232, 133, 110, 0.1);
   padding: 12px;
-  border-radius: 6px;
+  border-radius: 10px;
 }
 
 .card-section.error h4 {
-  color: #c53030;
+  color: var(--coral);
 }
 
 .card-section.error p {
-  color: #742a2a;
+  color: #e8b9ac;
 }
 
 .example-item {
-  margin-bottom: 15px;
-  padding: 12px;
-  background-color: #f9f9f9;
-  border-radius: 6px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  background-color: var(--bg-elev);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
 }
 
 .example-item:last-child {
@@ -224,11 +229,11 @@
 
 .example-english {
   font-weight: 500;
-  color: #333;
+  color: var(--ivory);
   margin-bottom: 5px;
 }
 
 .example-russian {
-  color: #666;
+  color: var(--ivory-dim);
   font-style: italic;
 }

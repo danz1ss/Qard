@@ -1,19 +1,20 @@
 .settings h2 {
-  font-size: 24px;
-  color: #333;
-  margin-bottom: 10px;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ivory);
+  margin-bottom: 8px;
 }
 
 .settings .description {
-  color: #666;
+  color: var(--ivory-dim);
   font-size: 14px;
   margin-bottom: 25px;
 }
 
 .settings-section {
-  margin-bottom: 35px;
-  padding-bottom: 25px;
-  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-soft);
 }
 
 .settings-section:last-of-type {
@@ -22,7 +23,8 @@
 
 .settings-section h3 {
   font-size: 18px;
-  color: #333;
+  font-weight: 600;
+  color: var(--ivory);
   margin-bottom: 15px;
 }
 
@@ -35,34 +37,34 @@
 
 .status-indicator {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .status-indicator.connected {
-  color: #48bb78;
+  color: var(--green);
 }
 
 .status-indicator.disconnected {
-  color: #f56565;
+  color: var(--coral);
 }
 
 .help-text {
   font-size: 13px;
-  color: #666;
+  color: var(--ivory-dim);
   line-height: 1.5;
   margin-top: 8px;
 }
 
 .help-text.error {
-  color: #f56565;
-  background-color: #fff5f5;
-  padding: 10px;
-  border-radius: 6px;
-  border-left: 3px solid #f56565;
+  color: #f0a892;
+  background-color: rgba(232, 133, 110, 0.12);
+  padding: 12px;
+  border-radius: 10px;
+  border-left: 3px solid var(--coral);
 }
 
 .help-text a {
-  color: #667eea;
+  color: var(--accent);
   text-decoration: none;
   cursor: pointer;
 }
@@ -86,7 +88,7 @@
 
 .field-name {
   font-weight: 500;
-  color: #333;
+  color: var(--ivory);
   font-size: 14px;
 }
 
@@ -99,13 +101,13 @@
 
 .save-message {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .save-message.success {
-  color: #48bb78;
+  color: var(--green);
 }
 
 .save-message.error {
-  color: #f56565;
+  color: var(--coral);
 }

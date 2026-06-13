@@ -39,6 +39,7 @@
 		"webpack-cli": "^5.1.4"
 	},
 	"dependencies": {
+		"@fontsource/rubik": "^5.2.8",
 		"@fontsource/sora": "^5.2.8",
 		"@google/generative-ai": "^0.24.1",
 		"axios": "^1.6.2",

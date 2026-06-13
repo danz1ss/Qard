@@ -1,11 +1,69 @@
 import React, { useEffect, useState } from 'react';
 import { useStore } from '../../store';
 import { DeckWithCounts } from '../../../shared/types';
-import Button from '../common/Button';
-import Input from '../common/Input';
 import Review from '../Review/Review';
 import ImportModal from './ImportModal';
+import '@fontsource/rubik/400.css';
+import '@fontsource/rubik/500.css';
+import '@fontsource/rubik/700.css';
 import './Decks.css';
+
+const PlayIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+    <path d="M7 5.5v13l11-6.5-11-6.5z" fill="currentColor" />
+  </svg>
+);
+
+const PencilIcon = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"
+    stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 20h4L18.5 9.5a2.12 2.12 0 0 0-3-3L5 17v3z" />
+    <path d="M13.5 6.5l3 3" />
+  </svg>
+);
+
+const SlidersIcon = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"
+    stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 6h14M5 12h14M5 18h14" />
+    <circle cx="9" cy="6" r="2.4" fill="currentColor" stroke="none" />
+    <circle cx="15" cy="12" r="2.4" fill="currentColor" stroke="none" />
+    <circle cx="8" cy="18" r="2.4" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+const TrashIcon = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"
+    stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 7h16" />
+    <path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+    <path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12" />
+    <path d="M10 11v6M14 11v6" />
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"
+    stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 12.5l4.5 4.5L19 7" />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"
+    stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 6l12 12M18 6L6 18" />
+  </svg>
+);
+
+const ImportIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"
+    stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 3v12" />
+    <path d="M7 10l5 5 5-5" />
+    <path d="M5 19h14" />
+  </svg>
+);
 
 const Decks: React.FC = () => {
   const { decks, refreshDecks } = useStore();
@@ -107,102 +165,179 @@ const Decks: React.FC = () => {
 
   return (
     <div className="decks">
-      <h2>Колоды</h2>
-      <p className="description">
-        Новые / Учатся / К повторению. Кликни «Учить», чтобы начать.
-      </p>
+      <header className="decks-head">
+        <h2 className="decks-title">Колоды</h2>
+        <p className="decks-sub">
+          Новые · Учатся · К повторению — нажми «Учить», чтобы начать сессию.
+        </p>
+      </header>
 
       {decks.length === 0 ? (
-        <div className="empty-state">
+        <div className="decks-empty">
+          <div className="decks-empty-glyph">∅</div>
           <p>Пока нет колод. Создай первую ниже или импортируй из Anki.</p>
         </div>
       ) : (
-        <table className="decks-table">
-          <thead>
-            <tr>
-              <th>Колода</th>
-              <th>Новые</th>
-              <th>Учатся</th>
-              <th>Повтор</th>
-              <th>Всего</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {decks.map((deck) => (
-              <tr key={deck.id}>
-                <td className="deck-name">
-                  {renamingId === deck.id ? (
-                    <>
-                      <input
-                        value={renameValue}
-                        onChange={(e) => setRenameValue(e.target.value)}
-                        autoFocus
-                      />
-                      <Button size="small" onClick={() => confirmRename(deck)}>✓</Button>
-                      <Button size="small" variant="secondary" onClick={cancelRename}>✕</Button>
-                    </>
-                  ) : (
-                    deck.name
-                  )}
-                </td>
-                <td className="count-new">{deck.newCount}</td>
-                <td className="count-learn">{deck.learnCount}</td>
-                <td className="count-due">{deck.dueCount}</td>
-                <td>{deck.totalCards}</td>
-                <td>
-                  <div className="deck-actions">
-                    <Button size="small" onClick={() => setStudyingDeck(deck)}>
-                      Учить
-                    </Button>
-                    <Button size="small" variant="secondary" onClick={() => startRename(deck)}>
-                      Переименовать
-                    </Button>
-                    <Button size="small" variant="secondary" onClick={() => openLimits(deck)}>
-                      Лимиты
-                    </Button>
-                    <Button size="small" variant="danger" onClick={() => handleDelete(deck)}>
-                      Удалить
-                    </Button>
+        <ul className="deck-list">
+          {decks.map((deck, i) => (
+            <li
+              className="deck-card"
+              key={deck.id}
+              style={{ animationDelay: `${Math.min(i * 0.05, 0.4)}s` }}
+            >
+              <div className="deck-card-info">
+                {renamingId === deck.id ? (
+                  <div className="deck-rename">
+                    <input
+                      className="deck-rename-input"
+                      value={renameValue}
+                      onChange={(e) => setRenameValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') confirmRename(deck);
+                        if (e.key === 'Escape') cancelRename();
+                      }}
+                      autoFocus
+                    />
+                    <button
+                      className="icon-btn icon-confirm"
+                      title="Сохранить"
+                      onClick={() => confirmRename(deck)}
+                    >
+                      <CheckIcon />
+                    </button>
+                    <button
+                      className="icon-btn"
+                      title="Отмена"
+                      onClick={cancelRename}
+                    >
+                      <CloseIcon />
+                    </button>
                   </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                ) : (
+                  <button
+                    className="deck-name"
+                    title="Переименовать"
+                    onClick={() => startRename(deck)}
+                  >
+                    {deck.name}
+                  </button>
+                )}
+
+                <div className="deck-stats">
+                  <div className="stat">
+                    <span className="stat-num stat-new">{deck.newCount}</span>
+                    <span className="stat-label">Новые</span>
+                  </div>
+                  <div className="stat">
+                    <span className="stat-num stat-learn">{deck.learnCount}</span>
+                    <span className="stat-label">Учатся</span>
+                  </div>
+                  <div className="stat">
+                    <span className="stat-num stat-due">{deck.dueCount}</span>
+                    <span className="stat-label">Повтор</span>
+                  </div>
+                  <div className="stat stat-total">
+                    <span className="stat-num">{deck.totalCards}</span>
+                    <span className="stat-label">Всего</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="deck-actions">
+                <button
+                  className="btn-learn"
+                  onClick={() => setStudyingDeck(deck)}
+                >
+                  <PlayIcon />
+                  <span>Учить</span>
+                </button>
+                <button
+                  className="icon-btn"
+                  title="Переименовать"
+                  onClick={() => startRename(deck)}
+                >
+                  <PencilIcon />
+                </button>
+                <button
+                  className="icon-btn"
+                  title="Лимиты"
+                  onClick={() => openLimits(deck)}
+                >
+                  <SlidersIcon />
+                </button>
+                <button
+                  className="icon-btn icon-danger"
+                  title="Удалить"
+                  onClick={() => handleDelete(deck)}
+                >
+                  <TrashIcon />
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
 
       {editingLimits && (
-        <div className="settings-section">
-          <h3>Лимиты «{editingLimits.name}»</h3>
-          <div className="deck-limits-row">
-            <label>Новых в день:</label>
-            <input value={limitNew} onChange={(e) => setLimitNew(e.target.value)} />
-            <label>Повторений в день:</label>
-            <input value={limitRev} onChange={(e) => setLimitRev(e.target.value)} />
-            <Button size="small" onClick={saveLimits}>Сохранить</Button>
-            <Button size="small" variant="secondary" onClick={() => setEditingLimits(null)}>
-              Отмена
-            </Button>
+        <div className="limits-panel">
+          <h3 className="limits-title">
+            Лимиты <span>«{editingLimits.name}»</span>
+          </h3>
+          <div className="limits-row">
+            <label className="limits-field">
+              <span>Новых в день</span>
+              <input
+                value={limitNew}
+                onChange={(e) => setLimitNew(e.target.value)}
+                inputMode="numeric"
+              />
+            </label>
+            <label className="limits-field">
+              <span>Повторений в день</span>
+              <input
+                value={limitRev}
+                onChange={(e) => setLimitRev(e.target.value)}
+                inputMode="numeric"
+              />
+            </label>
+            <div className="limits-actions">
+              <button className="btn-pill btn-accent" onClick={saveLimits}>
+                Сохранить
+              </button>
+              <button
+                className="btn-pill btn-muted"
+                onClick={() => setEditingLimits(null)}
+              >
+                Отмена
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      <div className="deck-create-row">
-        <Input
-          label="Новая колода"
-          value={newDeckName}
-          onChange={(e) => setNewDeckName(e.target.value)}
-          placeholder="Название колоды"
-        />
-        <Button onClick={handleCreate}>Создать</Button>
+      <div className="decks-footer">
+        <div className="deck-create">
+          <input
+            className="deck-create-input"
+            value={newDeckName}
+            onChange={(e) => setNewDeckName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleCreate();
+            }}
+            placeholder="Название новой колоды"
+          />
+          <button className="btn-pill btn-accent" onClick={handleCreate}>
+            Создать
+          </button>
+        </div>
+        <button className="btn-pill btn-import" onClick={() => setImporting(true)}>
+          <ImportIcon />
+          <span>Импорт из Anki</span>
+        </button>
       </div>
-      {error && <p className="help-text error">{error}</p>}
-      <div style={{ marginTop: 16 }}>
-        <Button variant="secondary" onClick={() => setImporting(true)}>
-          Импорт из Anki
-        </Button>
-      </div>
+
+      {error && <p className="decks-error">{error}</p>}
+
       {importing && (
         <ImportModal
           onClose={() => setImporting(false)}

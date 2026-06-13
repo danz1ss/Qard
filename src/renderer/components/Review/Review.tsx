@@ -35,6 +35,21 @@ const BoldText: React.FC<{ html: string }> = ({ html }) => (
   </>
 );
 
+/** Подсвечивает пропуски (___) неоновым акцентом. */
+const Blanks: React.FC<{ text: string }> = ({ text }) => (
+  <>
+    {text.split(/(_{3,})/g).map((part, i) =>
+      /^_{3,}$/.test(part) ? (
+        <span key={i} className="blank">
+          {part}
+        </span>
+      ) : (
+        <React.Fragment key={i}>{part}</React.Fragment>
+      )
+    )}
+  </>
+);
+
 interface ReviewProps {
   deckId: number;
   deckName: string;
@@ -158,11 +173,15 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
         <>
           <div className={`review-capsule ${capsuleState}`} key={card.id}>
             <div className="capsule-label">Определение</div>
-            <p className="capsule-text">{stripTags(card.definition)}</p>
+            <p className="capsule-text">
+              <Blanks text={stripTags(card.definition)} />
+            </p>
             {exampleFront && (
               <>
                 <div className="capsule-label">Пример</div>
-                <p className="capsule-text">{exampleFront}</p>
+                <p className="capsule-text">
+                  <Blanks text={exampleFront} />
+                </p>
               </>
             )}
           </div>
