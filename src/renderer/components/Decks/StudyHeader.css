@@ -95,12 +95,41 @@
   margin-top: 1px;
 }
 
+/* ---------- Сводка по центру ---------- */
+.sh-summary {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+}
+.sh-sum-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+.sh-sum-num {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ivory);
+}
+.sh-sum-label {
+  font-size: 11.5px;
+  color: var(--ivory-dim);
+  margin-top: 2px;
+}
+.sh-sum-divider {
+  width: 1px;
+  height: 30px;
+  background: var(--border);
+}
+
 /* ---------- Активность за неделю ---------- */
 .sh-week {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-left: auto;
 }
 .sh-week-bars {
   display: flex;

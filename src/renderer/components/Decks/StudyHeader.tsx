@@ -36,7 +36,7 @@ interface StudyHeaderProps {
 }
 
 const StudyHeader: React.FC<StudyHeaderProps> = ({ stats, goal = 30 }) => {
-  const { streakDays, studiedToday, last7Days } = stats;
+  const { streakDays, studiedToday, reviewedTotal, last7Days } = stats;
   const streakActive = streakDays > 0;
   const goalReached = studiedToday >= goal && goal > 0;
 
@@ -79,6 +79,18 @@ const StudyHeader: React.FC<StudyHeaderProps> = ({ stats, goal = 30 }) => {
             <span className="sh-goal-num">{studiedToday}</span>
           )}
           <span className="sh-goal-sub">/ {goal}</span>
+        </div>
+      </div>
+
+      <div className="sh-summary">
+        <div className="sh-sum-item">
+          <span className="sh-sum-num">{studiedToday}</span>
+          <span className="sh-sum-label">сегодня</span>
+        </div>
+        <div className="sh-sum-divider" />
+        <div className="sh-sum-item">
+          <span className="sh-sum-num">{reviewedTotal}</span>
+          <span className="sh-sum-label">всего повторов</span>
         </div>
       </div>
 
