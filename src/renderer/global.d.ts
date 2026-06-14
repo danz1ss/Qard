@@ -15,7 +15,8 @@ import {
   ParsedWord,
   ReviewQueueState,
   ReviewRating,
-  StoredCard
+  StoredCard,
+  StudyStats
 } from '../shared/types';
 
 export interface ElectronAPI {
@@ -54,6 +55,9 @@ export interface ElectronAPI {
   };
   media: {
     getAudio: (filename: string) => Promise<string | null>;
+  };
+  stats: {
+    get: () => Promise<StudyStats>;
   };
   importer: {
     getAnkiDecks: () => Promise<ImportDeckChoice[]>;

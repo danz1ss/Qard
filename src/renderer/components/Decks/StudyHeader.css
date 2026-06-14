@@ -1,0 +1,152 @@
+/* ======================================================================
+   StudyHeader — streak, цель дня, активность за неделю (графит)
+   ====================================================================== */
+.study-header {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+  padding: 16px 22px;
+  margin-bottom: 22px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, var(--surface-hi) 0%, var(--surface) 100%);
+  border: 1px solid var(--border-soft);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 10px 24px -16px rgba(0, 0, 0, 0.65);
+  animation: deck-in 0.4s ease both;
+}
+
+/* ---------- Streak ---------- */
+.sh-streak {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sh-streak-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+.sh-streak-num {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ivory);
+  letter-spacing: -0.01em;
+}
+.sh-streak.is-active .sh-streak-num {
+  background: linear-gradient(180deg, #ffd27a, #ff7a45);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.sh-streak-label {
+  font-size: 12.5px;
+  color: var(--ivory-dim);
+}
+
+/* ---------- Цель дня (кольцо) ---------- */
+.sh-goal {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  flex: 0 0 auto;
+}
+.sh-ring {
+  display: block;
+}
+.sh-ring-track {
+  fill: none;
+  stroke: var(--bg-elev);
+  stroke-width: 7;
+}
+.sh-ring-fill {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 7;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.5s ease, stroke 0.3s ease;
+}
+.sh-ring-fill.is-done {
+  stroke: #4fc78a;
+}
+.sh-goal-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.sh-goal-num {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ivory);
+}
+.sh-goal-done {
+  font-size: 22px;
+  font-weight: 700;
+  color: #4fc78a;
+}
+.sh-goal-sub {
+  font-size: 10.5px;
+  color: var(--ivory-dim);
+  margin-top: 1px;
+}
+
+/* ---------- Активность за неделю ---------- */
+.sh-week {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-left: auto;
+}
+.sh-week-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  height: 46px;
+}
+.sh-bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+}
+.sh-bar {
+  width: 12px;
+  border-radius: 4px;
+  background: var(--border);
+  transition: height 0.3s ease;
+}
+.sh-bar.has {
+  background: linear-gradient(180deg, var(--accent-hi), var(--accent));
+}
+.sh-bar.today.has {
+  background: linear-gradient(180deg, #ffd27a, #ff7a45);
+}
+.sh-bar.today:not(.has) {
+  background: var(--border);
+  box-shadow: 0 0 0 1.5px var(--accent-shade);
+}
+.sh-bar-day {
+  font-size: 10px;
+  color: var(--ivory-dim);
+}
+.sh-bar-day.today {
+  color: var(--accent-hi);
+  font-weight: 600;
+}
+.sh-week-label {
+  font-size: 11px;
+  color: var(--ivory-dim);
+  text-align: right;
+}
+
+@media (max-width: 560px) {
+  .sh-week {
+    margin-left: 0;
+  }
+}

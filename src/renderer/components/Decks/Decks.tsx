@@ -3,6 +3,7 @@ import { useStore } from '../../store';
 import { DeckWithCounts } from '../../../shared/types';
 import Review from '../Review/Review';
 import ImportModal from './ImportModal';
+import StudyHeader from './StudyHeader';
 import '@fontsource/rubik/400.css';
 import '@fontsource/rubik/500.css';
 import '@fontsource/rubik/700.css';
@@ -66,7 +67,7 @@ const ImportIcon = () => (
 );
 
 const Decks: React.FC = () => {
-  const { decks, refreshDecks } = useStore();
+  const { decks, refreshDecks, stats, refreshStats } = useStore();
   const [newDeckName, setNewDeckName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [editingLimits, setEditingLimits] = useState<DeckWithCounts | null>(null);
@@ -79,7 +80,8 @@ const Decks: React.FC = () => {
 
   useEffect(() => {
     refreshDecks();
-  }, [refreshDecks]);
+    refreshStats();
+  }, [refreshDecks, refreshStats]);
 
   const handleCreate = async () => {
     if (!newDeckName.trim()) return;
@@ -158,6 +160,7 @@ const Decks: React.FC = () => {
         onExit={() => {
           setStudyingDeck(null);
           refreshDecks();
+          refreshStats();
         }}
       />
     );
@@ -171,6 +174,10 @@ const Decks: React.FC = () => {
           Новые · Учатся · К повторению — нажми «Учить», чтобы начать сессию.
         </p>
       </header>
+
+      {stats && (stats.reviewedTotal > 0 || stats.studiedToday > 0) && (
+        <StudyHeader stats={stats} />
+      )}
 
       {decks.length === 0 ? (
         <div className="decks-empty">

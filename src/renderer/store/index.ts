@@ -4,6 +4,7 @@ import {
 	GeneratedCard,
 	GenerationProgress,
 	GenerationStage,
+	StudyStats,
 } from '../../shared/types'
 
 interface AppState {
@@ -44,6 +45,10 @@ interface AppState {
 	refreshDecks: () => Promise<void>
 	defaultDeckId: number | null
 	setDefaultDeckId: (id: number | null) => void
+
+	// Study stats slice
+	stats: StudyStats | null
+	refreshStats: () => Promise<void>
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -143,5 +148,16 @@ export const useStore = create<AppState>((set, get) => ({
 		window.electronAPI.settings
 			.set('defaultDeckId', id)
 			.catch(error => console.error('Failed to persist defaultDeckId:', error))
+	},
+
+	// Study stats
+	stats: null,
+	refreshStats: async () => {
+		try {
+			const stats = await window.electronAPI.stats.get()
+			set({ stats })
+		} catch (error) {
+			console.error('Failed to load study stats:', error)
+		}
 	},
 }))

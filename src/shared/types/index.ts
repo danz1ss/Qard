@@ -249,6 +249,26 @@ export interface IntervalPreviews {
   easy: string;
 }
 
+// ===== Study stats (streak / daily goal / activity) =====
+
+export interface DailyCount {
+  /** Локальная полночь дня (мс). */
+  dayStart: number;
+  /** Сколько повторов сделано в этот день. */
+  count: number;
+}
+
+export interface StudyStats {
+  /** Дней подряд с ≥1 повтором, оканчивая сегодня (или вчера, если сегодня ещё не учил). */
+  streakDays: number;
+  /** Повторов сделано сегодня. */
+  studiedToday: number;
+  /** Повторов за всё время. */
+  reviewedTotal: number;
+  /** Активность за последние 7 дней (старый → новый, последний элемент = сегодня). */
+  last7Days: DailyCount[];
+}
+
 export interface AudioUpload {
   filename: string;
   data: string; // base64
@@ -305,6 +325,7 @@ export const IPC_CHANNELS = {
   REVIEW_GET_QUEUE: 'review:getQueue',
   REVIEW_ANSWER: 'review:answer',
   REVIEW_PREVIEW_INTERVALS: 'review:previewIntervals',
+  STATS_GET: 'stats:get',
   MEDIA_GET_AUDIO: 'media:getAudio',
   IMPORT_GET_ANKI_DECKS: 'import:getAnkiDecks',
   IMPORT_RUN: 'import:run',

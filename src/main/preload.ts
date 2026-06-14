@@ -72,6 +72,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.invoke(IPC_CHANNELS.MEDIA_GET_AUDIO, filename)
   },
 
+  // Study stats APIs
+  stats: {
+    get: () => ipcRenderer.invoke(IPC_CHANNELS.STATS_GET)
+  },
+
   // Import APIs
   importer: {
     getAnkiDecks: () => ipcRenderer.invoke(IPC_CHANNELS.IMPORT_GET_ANKI_DECKS),

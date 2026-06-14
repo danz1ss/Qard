@@ -5,11 +5,13 @@ import {
   CardState,
   CardStatusFilter,
   CardTextUpdate,
+  DailyCount,
   Deck,
   DeckWithCounts,
   NewCardInput,
   ReviewRating,
-  StoredCard
+  StoredCard,
+  StudyStats
 } from '../../shared/types';
 
 const SCHEMA = `
@@ -491,6 +493,53 @@ export class CollectionService {
       ]
     );
     this.mutated();
+  }
+
+  // ===== Study stats =====
+
+  /** Глобальная статистика изучения (по всем колодам) на основе review_log. */
+  getStudyStats(now: number): StudyStats {
+    const DAY = 24 * 60 * 60 * 1000;
+    const todayStart = dayStart(now);
+
+    const studiedToday = this.one(
+      'SELECT COUNT(*) AS n FROM review_log WHERE reviewed_at >= ?',
+      [todayStart]
+    )!.n as number;
+    const reviewedTotal = this.one(
+      'SELECT COUNT(*) AS n FROM review_log'
+    )!.n as number;
+
+    // Множество дней (локальных полночей), в которые был хоть один повтор.
+    const studiedDays = new Set<number>(
+      this.all('SELECT DISTINCT reviewed_at FROM review_log').map((r) =>
+        dayStart(r.reviewed_at as number)
+      )
+    );
+
+    // Streak: считаем назад от сегодня; если сегодня ещё не учил — streak ещё
+    // жив со вчерашнего дня, поэтому стартуем со вчера.
+    let streakDays = 0;
+    let cursor = todayStart;
+    if (!studiedDays.has(cursor)) {
+      cursor = dayStart(cursor - DAY);
+    }
+    while (studiedDays.has(cursor)) {
+      streakDays++;
+      cursor = dayStart(cursor - DAY);
+    }
+
+    const last7Days: DailyCount[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const ds = dayStart(todayStart - i * DAY);
+      const count = this.one(
+        'SELECT COUNT(*) AS n FROM review_log WHERE reviewed_at >= ? AND reviewed_at < ?',
+        [ds, ds + DAY]
+      )!.n as number;
+      last7Days.push({ dayStart: ds, count });
+    }
+
+    return { streakDays, studiedToday, reviewedTotal, last7Days };
   }
 
   private rowToCard(row: any): StoredCard {

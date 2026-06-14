@@ -61,4 +61,6 @@ export function setupCollectionHandlers(
   ipcMain.handle(IPC_CHANNELS.MEDIA_GET_AUDIO, (_e, filename: string) =>
     media.getBase64(filename)
   );
+
+  ipcMain.handle(IPC_CHANNELS.STATS_GET, () => col.getStudyStats(Date.now()));
 }
