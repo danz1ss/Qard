@@ -11,7 +11,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // AI APIs (ProxyAPI)
   ai: {
     generateBatch: (parsedWords: ParsedWord[], examplesCount: number) =>
-      ipcRenderer.invoke(IPC_CHANNELS.AI_GENERATE_BATCH, parsedWords, examplesCount)
+      ipcRenderer.invoke(IPC_CHANNELS.AI_GENERATE_BATCH, parsedWords, examplesCount),
+    mnemonic: (word: string, definition: string, wordType: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.AI_MNEMONIC, word, definition, wordType)
   },
 
   // TTS APIs

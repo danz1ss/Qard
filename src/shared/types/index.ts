@@ -301,6 +301,7 @@ export interface ImportResult {
 export const IPC_CHANNELS = {
   // AI (ProxyAPI)
   AI_GENERATE_BATCH: 'ai:generateBatch',
+  AI_MNEMONIC: 'ai:mnemonic',
 
   // TTS
   TTS_GENERATE_AUDIO: 'tts:generateAudio',

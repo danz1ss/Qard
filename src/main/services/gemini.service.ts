@@ -153,6 +153,50 @@ IMPORTANT:
 			throw new Error(`Failed to generate word meanings: ${error.message}`)
 		}
 	}
+
+	/**
+	 * Generates a short, vivid mnemonic to help memorize a single word.
+	 * Returns plain text (1-2 sentences) in the language of the word.
+	 */
+	async generateMnemonic(
+		word: string,
+		definition: string,
+		wordType: string,
+	): Promise<string> {
+		this.ensureInitialized()
+
+		const prompt = `You are a memory coach who creates vivid mnemonics for language learners.
+
+WORD: "${word}"${wordType ? ` (${wordType})` : ''}
+MEANING: ${definition.replace(/_{3,}/g, word)}
+
+TASK: Create ONE short, vivid mnemonic that helps memorize this word and its meaning.
+
+RULES:
+1. **Output language**: Write the mnemonic in the SAME language as the word above.
+   - English word → English mnemonic. Russian word → Russian mnemonic. Default to English.
+2. **Technique**: Use a sound-alike association, a vivid mental image, or a memorable mini-story that links the word's form to its meaning.
+3. **Length**: 1-2 sentences max. Be concrete and visual, not abstract.
+4. **Tone**: Playful and memorable. Slightly absurd images stick better.
+5. Output ONLY the mnemonic text. No labels, no quotes, no preface.`
+
+		try {
+			const completion = await this.client!.chat.completions.create({
+				model: this.model,
+				messages: [{ role: 'user', content: prompt }],
+				temperature: 0.9,
+			})
+
+			const text = completion.choices[0]?.message?.content?.trim() || ''
+			if (!text) {
+				throw new Error('Empty response from AI')
+			}
+			return text
+		} catch (error: any) {
+			console.error('AI mnemonic error:', error)
+			throw new Error(`Failed to generate mnemonic: ${error.message}`)
+		}
+	}
 }
 
 export const geminiService = new AIService()
