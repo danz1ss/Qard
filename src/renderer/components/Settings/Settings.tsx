@@ -13,11 +13,13 @@ const Settings: React.FC = () => {
     aiModel,
     aiBaseUrl,
     exampleCount,
+    dailyGoal,
     setGeminiApiKey,
     setAiProvider,
     setAiModel,
     setAiBaseUrl,
     setExampleCount,
+    setDailyGoal,
     loadSettings,
     saveSettings
   } = useStore();
@@ -71,6 +73,11 @@ const Settings: React.FC = () => {
     { value: '4', label: '4 examples' },
     { value: '5', label: '5 examples' }
   ];
+
+  const dailyGoalOptions = [10, 15, 20, 30, 50, 75, 100].map((n) => ({
+    value: n.toString(),
+    label: `${n} повторов в день`
+  }));
 
   return (
     <div className="settings">
@@ -140,6 +147,20 @@ const Settings: React.FC = () => {
           onChange={(e) => setExampleCount(parseInt(e.target.value))}
           options={exampleCountOptions}
         />
+      </div>
+
+      <div className="settings-section">
+        <h3>Цель обучения</h3>
+        <Select
+          label="Дневная цель"
+          value={dailyGoal.toString()}
+          onChange={(e) => setDailyGoal(parseInt(e.target.value))}
+          options={dailyGoalOptions}
+        />
+        <p className="help-text">
+          Сколько повторов в день нужно сделать, чтобы закрыть кольцо прогресса
+          на экране колод.
+        </p>
       </div>
 
       <div className="save-section">

@@ -67,7 +67,7 @@ const ImportIcon = () => (
 );
 
 const Decks: React.FC = () => {
-  const { decks, refreshDecks, stats, refreshStats } = useStore();
+  const { decks, refreshDecks, stats, refreshStats, dailyGoal, loadSettings } = useStore();
   const [newDeckName, setNewDeckName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [editingLimits, setEditingLimits] = useState<DeckWithCounts | null>(null);
@@ -81,7 +81,8 @@ const Decks: React.FC = () => {
   useEffect(() => {
     refreshDecks();
     refreshStats();
-  }, [refreshDecks, refreshStats]);
+    loadSettings();
+  }, [refreshDecks, refreshStats, loadSettings]);
 
   const handleCreate = async () => {
     if (!newDeckName.trim()) return;
@@ -176,7 +177,7 @@ const Decks: React.FC = () => {
       </header>
 
       {stats && (stats.reviewedTotal > 0 || stats.studiedToday > 0) && (
-        <StudyHeader stats={stats} />
+        <StudyHeader stats={stats} goal={dailyGoal} />
       )}
 
       {decks.length === 0 ? (

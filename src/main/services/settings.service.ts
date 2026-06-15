@@ -8,6 +8,7 @@ interface SettingsSchema {
   aiBaseUrl?: string;
   defaultDeckId?: number;
   exampleCount: number;
+  dailyGoal: number;
   fieldMapping: { [key: string]: DataSource };
 }
 
@@ -15,6 +16,7 @@ const defaultSettings: SettingsSchema = {
   aiProvider: 'proxyapi',
   aiModel: 'gpt-4o-mini',
   exampleCount: 3,
+  dailyGoal: 30,
   fieldMapping: {}
 };
 
@@ -44,6 +46,7 @@ class SettingsService {
       aiBaseUrl: this.store.get('aiBaseUrl'),
       defaultDeckId: this.store.get('defaultDeckId'),
       exampleCount: this.store.get('exampleCount', 3),
+      dailyGoal: this.store.get('dailyGoal', 30),
       fieldMapping: this.store.get('fieldMapping', {})
     };
   }

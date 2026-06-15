@@ -47,6 +47,7 @@ export interface AppSettings {
   aiBaseUrl?: string;
   defaultDeckId?: number;
   exampleCount: number;
+  dailyGoal?: number;
   fieldMapping: FieldMapping;
 }
 

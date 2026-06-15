@@ -18,12 +18,14 @@ interface AppState {
 	aiModel: string
 	aiBaseUrl: string
 	exampleCount: number
+	dailyGoal: number
 
 	setGeminiApiKey: (key: string) => void
 	setAiProvider: (provider: string) => void
 	setAiModel: (model: string) => void
 	setAiBaseUrl: (url: string) => void
 	setExampleCount: (count: number) => void
+	setDailyGoal: (goal: number) => void
 
 	loadSettings: () => Promise<void>
 	saveSettings: () => Promise<void>
@@ -62,12 +64,14 @@ export const useStore = create<AppState>((set, get) => ({
 	aiModel: 'gpt-4o-mini',
 	aiBaseUrl: '',
 	exampleCount: 3,
+	dailyGoal: 30,
 
 	setGeminiApiKey: key => set({ geminiApiKey: key }),
 	setAiProvider: provider => set({ aiProvider: provider }),
 	setAiModel: model => set({ aiModel: model }),
 	setAiBaseUrl: url => set({ aiBaseUrl: url }),
 	setExampleCount: count => set({ exampleCount: count }),
+	setDailyGoal: goal => set({ dailyGoal: goal }),
 
 	loadSettings: async () => {
 		try {
@@ -78,6 +82,7 @@ export const useStore = create<AppState>((set, get) => ({
 				aiModel: settings.aiModel || 'gpt-4o-mini',
 				aiBaseUrl: settings.aiBaseUrl || '',
 				exampleCount: settings.exampleCount || 3,
+				dailyGoal: settings.dailyGoal || 30,
 				defaultDeckId: settings.defaultDeckId ?? null,
 			})
 		} catch (error) {
@@ -93,6 +98,7 @@ export const useStore = create<AppState>((set, get) => ({
 			await window.electronAPI.settings.set('aiBaseUrl', state.aiBaseUrl)
 			await window.electronAPI.settings.set('geminiApiKey', state.geminiApiKey)
 			await window.electronAPI.settings.set('exampleCount', state.exampleCount)
+			await window.electronAPI.settings.set('dailyGoal', state.dailyGoal)
 		} catch (error) {
 			console.error('Failed to save settings:', error)
 			throw error
