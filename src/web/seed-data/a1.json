@@ -1,0 +1,82 @@
+{
+  "name": "Лексика A1",
+  "cards": [
+    {
+      "word": "house",
+      "wordType": "noun",
+      "definition": "A ______ is a building where people live.",
+      "definitionExample": "They live in a big <b>house</b>.",
+      "transcription": "haʊs",
+      "examples": [
+        "My <b>house</b> is small but comfortable.",
+        "Her <b>house</b> has a garden and a garage."
+      ]
+    },
+    {
+      "word": "water",
+      "wordType": "noun",
+      "definition": "______ is the clear liquid that you drink and use for washing.",
+      "definitionExample": "I drink <b>water</b> every day.",
+      "transcription": "ˈwɔːtər",
+      "examples": [
+        "The <b>water</b> in this lake is very cold.",
+        "Can I have a glass of <b>water</b>, please?"
+      ]
+    },
+    {
+      "word": "big",
+      "wordType": "adjective",
+      "definition": "Something ______ is large in size.",
+      "definitionExample": "They live in a <b>big</b> city.",
+      "transcription": "bɪɡ",
+      "examples": [
+        "That is a very <b>big</b> dog.",
+        "She has a <b>big</b> family with six children."
+      ]
+    },
+    {
+      "word": "eat",
+      "wordType": "verb",
+      "definition": "To ______ means to put food in your mouth and swallow it.",
+      "definitionExample": "I <b>eat</b> breakfast every morning.",
+      "transcription": "iːt",
+      "examples": [
+        "We <b>eat</b> dinner together at seven o'clock.",
+        "Do you like to <b>eat</b> fruit?"
+      ]
+    },
+    {
+      "word": "day",
+      "wordType": "noun",
+      "definition": "A ______ is a period of 24 hours.",
+      "definitionExample": "It is a sunny <b>day</b> today.",
+      "transcription": "deɪ",
+      "examples": [
+        "Monday is the first <b>day</b> of the working week.",
+        "I study English every <b>day</b>."
+      ]
+    },
+    {
+      "word": "happy",
+      "wordType": "adjective",
+      "definition": "If you are ______, you feel pleased and satisfied.",
+      "definitionExample": "She was very <b>happy</b> to see her friend.",
+      "transcription": "ˈhæpi",
+      "examples": [
+        "I am <b>happy</b> when the sun is shining.",
+        "The children look very <b>happy</b> today."
+      ]
+    },
+    {
+      "word": "go",
+      "wordType": "verb",
+      "definition": "To ______ means to move or travel somewhere.",
+      "definitionExample": "I <b>go</b> to school every day.",
+      "transcription": "ɡəʊ",
+      "examples": [
+        "We <b>go</b> to the park on weekends.",
+        "She wants to <b>go</b> to the cinema tonight."
+      ]
+    }
+  ]
+}

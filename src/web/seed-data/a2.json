@@ -1,0 +1,82 @@
+{
+  "name": "Лексика A2",
+  "cards": [
+    {
+      "word": "weather",
+      "wordType": "noun",
+      "definition": "The ______ is the condition of the atmosphere — whether it is hot, cold, sunny, or rainy.",
+      "definitionExample": "The <b>weather</b> in summer is warm and sunny.",
+      "transcription": "ˈweðər",
+      "examples": [
+        "What is the <b>weather</b> like today?",
+        "The <b>weather</b> forecast says it will rain tomorrow."
+      ]
+    },
+    {
+      "word": "travel",
+      "wordType": "verb",
+      "definition": "To ______ means to go from one place to another, usually over a long distance.",
+      "definitionExample": "I love to <b>travel</b> to new countries.",
+      "transcription": "ˈtrævəl",
+      "examples": [
+        "She wants to <b>travel</b> around Europe next summer.",
+        "It takes two hours to <b>travel</b> from here to the capital."
+      ]
+    },
+    {
+      "word": "decide",
+      "wordType": "verb",
+      "definition": "To ______ means to choose between two or more possibilities.",
+      "definitionExample": "I need to <b>decide</b> what to study at university.",
+      "transcription": "dɪˈsaɪd",
+      "examples": [
+        "Have you <b>decided</b> where to go on holiday?",
+        "It was difficult to <b>decide</b> between the two jobs."
+      ]
+    },
+    {
+      "word": "busy",
+      "wordType": "adjective",
+      "definition": "If you are ______, you have a lot of things to do and not much free time.",
+      "definitionExample": "She is very <b>busy</b> at work this week.",
+      "transcription": "ˈbɪzi",
+      "examples": [
+        "I can't meet you today — I'm too <b>busy</b>.",
+        "The city centre is always <b>busy</b> on Saturdays."
+      ]
+    },
+    {
+      "word": "remember",
+      "wordType": "verb",
+      "definition": "To ______ something means to keep it in your memory or bring it back to your mind.",
+      "definitionExample": "Do you <b>remember</b> our first English lesson?",
+      "transcription": "rɪˈmembər",
+      "examples": [
+        "I can't <b>remember</b> where I put my keys.",
+        "Please <b>remember</b> to bring your passport."
+      ]
+    },
+    {
+      "word": "explain",
+      "wordType": "verb",
+      "definition": "To ______ means to make something clear so that someone understands it.",
+      "definitionExample": "Can you <b>explain</b> this grammar rule to me?",
+      "transcription": "ɪkˈspleɪn",
+      "examples": [
+        "The teacher <b>explained</b> the new topic clearly.",
+        "He could not <b>explain</b> why he was late."
+      ]
+    },
+    {
+      "word": "message",
+      "wordType": "noun",
+      "definition": "A ______ is a piece of information that you send to or leave for someone.",
+      "definitionExample": "She sent me a <b>message</b> on my phone.",
+      "transcription": "ˈmesɪdʒ",
+      "examples": [
+        "I received a <b>message</b> from my friend this morning.",
+        "Can you leave a <b>message</b> for him, please?"
+      ]
+    }
+  ]
+}
