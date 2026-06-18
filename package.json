@@ -8,7 +8,11 @@
 		"build": "webpack --config webpack.config.js --mode production",
 		"start": "electron .",
 		"test": "vitest run",
-		"package": "npm run build && electron-packager . AnkiGenerator --platform=win32 --arch=x64 --out=release --overwrite --icon=assets/icon.ico"
+		"package": "npm run build && electron-packager . AnkiGenerator --platform=win32 --arch=x64 --out=release --overwrite --icon=assets/icon.ico",
+		"dev:web": "webpack serve --config webpack.web.config.js --mode development",
+		"build:web": "webpack --config webpack.web.config.js --mode production",
+		"worker:dev": "cd worker && wrangler dev",
+		"worker:deploy": "cd worker && wrangler deploy"
 	},
 	"keywords": [
 		"anki",
