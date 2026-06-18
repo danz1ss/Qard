@@ -1,4 +1,4 @@
-import { AppSettings } from '../../shared/types';
+import { AppSettings, FieldMapping } from '../../shared/types';
 
 const KEY = 'qard-settings';
 
@@ -10,7 +10,7 @@ interface SettingsSchema {
   defaultDeckId?: number;
   exampleCount: number;
   dailyGoal: number;
-  fieldMapping: Record<string, string>;
+  fieldMapping: FieldMapping;
 }
 
 const defaults: SettingsSchema = {
