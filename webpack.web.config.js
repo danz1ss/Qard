@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
+const { GenerateSW } = require('workbox-webpack-plugin');
 
 module.exports = {
   mode: process.env.NODE_ENV || 'development',
@@ -36,6 +37,17 @@ module.exports = {
     new webpack.DefinePlugin({
       __AI_PROXY_URL__: JSON.stringify(process.env.AI_PROXY_URL || 'http://localhost:8787'),
     }),
+    ...(process.env.NODE_ENV === 'production'
+      ? [
+          new GenerateSW({
+            swDest: 'sw.js',
+            clientsClaim: true,
+            skipWaiting: true,
+            navigateFallback: '/index.html',
+            maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
+          }),
+        ]
+      : []),
   ],
   devServer: {
     static: path.resolve(__dirname, 'dist/web'),
