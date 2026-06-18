@@ -65,6 +65,10 @@ export interface ElectronAPI {
     run: (deckNames: string[]) => Promise<ImportResult>;
     onProgress: (cb: (p: ImportProgress) => void) => () => void;
   };
+  backup?: {
+    export: () => void;
+    import: (file: File) => Promise<void>;
+  };
 }
 
 declare global {
