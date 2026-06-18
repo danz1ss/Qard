@@ -163,6 +163,35 @@ const Settings: React.FC = () => {
         </p>
       </div>
 
+      {window.electronAPI.backup && (
+        <div className="settings-section">
+          <h3>Резервная копия</h3>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <Button onClick={() => window.electronAPI.backup!.export()}>
+              Экспорт базы
+            </Button>
+            <label className="btn btn-secondary btn-medium" style={{ cursor: 'pointer' }}>
+              Импорт базы
+              <input
+                type="file"
+                accept=".qard,application/octet-stream"
+                style={{ display: 'none' }}
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  await window.electronAPI.backup!.import(f);
+                  location.reload();
+                }}
+              />
+            </label>
+          </div>
+          <p className="help-text">
+            Экспорт сохраняет базу данных в файл .qard. Импорт заменяет текущую
+            базу загруженным файлом и перезагружает приложение.
+          </p>
+        </div>
+      )}
+
       <div className="save-section">
         <Button onClick={handleSave} disabled={isSaving} size="large">
           {isSaving ? 'Saving...' : 'Save Settings'}
