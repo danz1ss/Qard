@@ -22,4 +22,10 @@ describe('webSettings', () => {
     expect(all.dailyGoal).toBe(50);
     expect(all.aiProvider).toBe('proxyapi');
   });
+
+  it('возвращает дефолты при битом JSON в хранилище', async () => {
+    localStorage.setItem('qard-settings', 'invalid json {');
+    expect(await webSettings.get('dailyGoal')).toBe(30);
+    expect(await webSettings.get('aiProvider')).toBe('proxyapi');
+  });
 });

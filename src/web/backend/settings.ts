@@ -34,6 +34,8 @@ function write(s: SettingsSchema): void {
   localStorage.setItem(KEY, JSON.stringify(s));
 }
 
+// localStorage синхронен; методы async только чтобы совпадать с контрактом
+// ElectronAPI (key: string — обязателен для совместимости с интерфейсом).
 export const webSettings = {
   async get(key: string): Promise<any> {
     return (read() as any)[key];
@@ -44,16 +46,18 @@ export const webSettings = {
     write(s);
   },
   async getAll(): Promise<Partial<AppSettings>> {
+    // read() уже сливает дефолты, поэтому отдаём поля как есть —
+    // единый источник дефолтов, без расхождения get vs getAll.
     const s = read();
     return {
       geminiApiKey: s.geminiApiKey,
-      aiProvider: s.aiProvider ?? 'proxyapi',
-      aiModel: s.aiModel ?? 'gpt-4o-mini',
+      aiProvider: s.aiProvider,
+      aiModel: s.aiModel,
       aiBaseUrl: s.aiBaseUrl,
       defaultDeckId: s.defaultDeckId,
-      exampleCount: s.exampleCount ?? 3,
-      dailyGoal: s.dailyGoal ?? 30,
-      fieldMapping: s.fieldMapping ?? {},
+      exampleCount: s.exampleCount,
+      dailyGoal: s.dailyGoal,
+      fieldMapping: s.fieldMapping,
     };
   },
 };
