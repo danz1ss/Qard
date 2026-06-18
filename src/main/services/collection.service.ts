@@ -1,4 +1,4 @@
-import initSqlJs, { Database } from 'sql.js';
+import initSqlJs, { Database, SqlJsStatic } from 'sql.js';
 import {
   CardSearchQuery,
   CardSearchResult,
@@ -119,8 +119,8 @@ export class CollectionService {
   private db!: Database;
   private onChange: () => void = () => {};
 
-  async init(data?: Uint8Array): Promise<void> {
-    const SQL = await initSqlJs();
+  async init(data?: Uint8Array, sqlJs?: SqlJsStatic): Promise<void> {
+    const SQL = sqlJs ?? (await initSqlJs());
     this.db = data ? new SQL.Database(data) : new SQL.Database();
     this.db.run('PRAGMA foreign_keys = ON');
     this.db.run(SCHEMA);
