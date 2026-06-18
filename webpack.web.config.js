@@ -30,6 +30,7 @@ module.exports = {
       patterns: [
         { from: 'node_modules/sql.js/dist/sql-wasm.wasm', to: 'sql-wasm.wasm' },
         { from: 'src/web/manifest.webmanifest', to: 'manifest.webmanifest' },
+        { from: 'src/web/icons', to: 'icons' },
       ],
     }),
     new webpack.DefinePlugin({
