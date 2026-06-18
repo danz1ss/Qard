@@ -1,13 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { buildBatchPrompt, parseBatchResponse, buildMnemonicPrompt } from '../ai-prompts';
-import { ParsedWord } from '../utils/wordParser';
+import { ParsedWord } from '../types';
 
 describe('ai-prompts', () => {
   it('buildBatchPrompt включает слова и количество примеров', () => {
     const words: ParsedWord[] = [{ original: 'run', word: 'run', partOfSpeech: 'any' }];
     const p = buildBatchPrompt(words, 2);
     expect(p).toContain('run');
-    expect(p).toContain('2 additional examples');
+    expect(p).toContain('Provide 2 additional examples');
   });
 
   it('parseBatchResponse извлекает JSON-массив и чистит транскрипцию', () => {
