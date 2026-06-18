@@ -16,6 +16,19 @@ const CardPreview: React.FC<CardPreviewProps> = ({ card }) => {
       setIsPlayingAudio(true);
       // Convert audioData to ArrayBuffer for Blob
       const audioBuffer = card.audioData as unknown as ArrayBuffer;
+      if (audioBuffer.byteLength === 0) {
+        // web: audio was already played by Web Speech API during generation;
+        // on manual replay, speak via Web Speech API if available
+        if ('speechSynthesis' in window && card.word) {
+          const u = new SpeechSynthesisUtterance(card.word);
+          u.lang = /[а-яА-ЯёЁ]/.test(card.word) ? 'ru-RU' : 'en-US';
+          u.onend = () => setIsPlayingAudio(false);
+          window.speechSynthesis.speak(u);
+        } else {
+          setIsPlayingAudio(false);
+        }
+        return;
+      }
       const blob = new Blob([audioBuffer], { type: 'audio/mpeg' });
       const url = URL.createObjectURL(blob);
       const audio = new Audio(url);
