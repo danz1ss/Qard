@@ -1,7 +1,7 @@
 const PROXYAPI_BASE = 'https://api.proxyapi.ru/openai/v1';
 const ALLOWED_ORIGINS = [
   'http://localhost:8080',
-  'https://qard.pages.dev',
+  'https://qard-7rn.pages.dev',
 ];
 
 function corsHeaders(origin: string | null): HeadersInit {
