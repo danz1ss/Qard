@@ -101,7 +101,7 @@
   border: 1px solid transparent;
   border-radius: 999px;
   font-family: var(--font);
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 500;
   color: var(--ivory-dim);
   cursor: pointer;
@@ -139,7 +139,7 @@
 }
 
 .tab-content h2 {
-  font-size: 29px;
+  font-size: 31px;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--ivory);
@@ -147,7 +147,7 @@
 }
 .tab-content p {
   color: var(--ivory-dim);
-  font-size: 15.5px;
+  font-size: 16.5px;
 }
 .description {
   color: var(--ivory-dim);
@@ -161,7 +161,7 @@
   border: none;
   border-radius: 999px;
   font-family: var(--font);
-  font-size: 15.5px;
+  font-size: 16.5px;
   font-weight: 600;
   cursor: pointer;
   transition: filter 0.15s ease, transform 0.06s ease;
@@ -180,7 +180,7 @@
   background: var(--bg-elev);
   border: 1.5px solid var(--border);
   border-radius: 12px;
-  font-size: 15.5px;
+  font-size: 16.5px;
   font-family: var(--font);
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
@@ -195,7 +195,7 @@
   margin-bottom: 5px;
   font-weight: 500;
   color: var(--ivory-dim);
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .form-group {

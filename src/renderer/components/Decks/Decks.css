@@ -12,14 +12,14 @@
   margin-bottom: 26px;
 }
 .decks-title {
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--ivory);
   margin: 0 0 6px;
 }
 .decks-sub {
-  font-size: 14.5px;
+  font-size: 16px;
   color: var(--ivory-dim);
   margin: 0;
 }
@@ -71,7 +71,7 @@
   align-self: flex-start;
   max-width: 100%;
   font-family: inherit;
-  font-size: 19px;
+  font-size: 21px;
   font-weight: 600;
   color: var(--ivory);
   background: transparent;
@@ -128,7 +128,7 @@
   border: 1px solid rgba(255, 255, 255, 0.03);
 }
 .stat-num {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   line-height: 1.1;
   color: var(--ivory);
@@ -136,7 +136,7 @@
 }
 .stat-label {
   margin-top: 2px;
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -165,7 +165,7 @@
   align-items: center;
   gap: 9px;
   font-family: inherit;
-  font-size: 15.5px;
+  font-size: 17px;
   font-weight: 600;
   color: #16233b;
   padding: 12px 24px;
@@ -230,7 +230,7 @@
   align-items: center;
   gap: 8px;
   font-family: inherit;
-  font-size: 14.5px;
+  font-size: 16px;
   font-weight: 600;
   padding: 11px 22px;
   border: none;
@@ -344,7 +344,7 @@
   flex: 1;
   min-width: 0;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 16.5px;
   color: var(--ivory);
   background: var(--bg-soft);
   border: 1.5px solid var(--border);
@@ -387,6 +387,17 @@
   border: 1px solid rgba(232, 133, 110, 0.4);
   color: #f0a892;
   font-size: 14px;
+}
+
+/* ---------- Адаптивность ---------- */
+@media (max-width: 640px) {
+  .decks-title { font-size: 26px; }
+  .deck-card { padding: 16px 16px; gap: 14px; }
+  .deck-actions { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+  .btn-learn { flex: 1 1 auto; justify-content: center; }
+  .decks-footer { gap: 12px; }
+  .deck-create { flex: 1 1 100%; }
+  .decks-footer > .btn-import { flex: 1 1 100%; justify-content: center; }
 }
 
 /* ---------- Анимация появления ---------- */
