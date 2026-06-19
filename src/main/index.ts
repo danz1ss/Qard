@@ -23,7 +23,7 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false
     },
-    title: 'AnkiGenerator',
+    title: 'Qard',
     icon: path.join(__dirname, '../../assets/icon.png')
   });
 

@@ -10,22 +10,10 @@ import '@fontsource/rubik/500.css';
 import '@fontsource/rubik/600.css';
 import '@fontsource/rubik/700.css';
 import './App.css';
+import ydnLogo from './assets/ydn-logo.png';
 
 const LogoMark = () => (
-  <svg viewBox="0 0 32 32" width="26" height="26" fill="none" aria-hidden="true">
-    <rect x="6.5" y="4.5" width="15" height="20" rx="4" fill="#3f5e96"
-      transform="rotate(-9 14 14.5)" />
-    <rect x="9" y="6" width="16" height="21" rx="4.5"
-      fill="url(#lg)" stroke="rgba(255,255,255,.35)" strokeWidth="1" />
-    <path d="M17 12.5l1.4 3.1 3.4.4-2.5 2.3.7 3.3-3-1.7-3 1.7.7-3.3-2.5-2.3 3.4-.4 1.4-3.1z"
-      fill="#16233b" />
-    <defs>
-      <linearGradient id="lg" x1="9" y1="6" x2="25" y2="27" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#9cbcf6" />
-        <stop offset="1" stopColor="#6f9ce8" />
-      </linearGradient>
-    </defs>
-  </svg>
+  <img src={ydnLogo} alt="YDN" className="brand-logo" width={30} height={35} />
 );
 
 type Tab = 'decks' | 'browse' | 'setup' | 'input' | 'generate' | 'preview';
@@ -39,8 +27,8 @@ const App: React.FC = () => {
         <div className="brand">
           <span className="brand-mark"><LogoMark /></span>
           <div className="brand-text">
-            <h1>AnkiGenerator</h1>
-            <p>Automatic Anki flashcard generation</p>
+            <h1>Qard</h1>
+            <p>YDN education</p>
           </div>
         </div>
       </header>

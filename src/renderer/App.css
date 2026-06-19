@@ -66,17 +66,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 46px;
+  width: 44px;
   height: 46px;
-  border-radius: 14px;
-  background: linear-gradient(180deg, var(--surface-hi) 0%, var(--surface) 100%);
-  border: 1px solid var(--border);
-  box-shadow:
-    0 4px 0 var(--key-shadow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.brand-logo {
+  width: 32px;
+  height: 37px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.4));
 }
 .brand-text h1 {
-  font-size: 22px;
+  font-size: 25px;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--ivory);
@@ -84,7 +84,7 @@
   line-height: 1.1;
 }
 .brand-text p {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--muted);
   margin: 2px 0 0;
 }
@@ -96,12 +96,12 @@
   padding: 14px 28px 0;
 }
 .tab {
-  padding: 10px 20px;
+  padding: 11px 22px;
   background: transparent;
   border: 1px solid transparent;
   border-radius: 999px;
   font-family: var(--font);
-  font-size: 14.5px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--ivory-dim);
   cursor: pointer;
@@ -139,7 +139,7 @@
 }
 
 .tab-content h2 {
-  font-size: 26px;
+  font-size: 29px;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--ivory);
@@ -147,7 +147,7 @@
 }
 .tab-content p {
   color: var(--ivory-dim);
-  font-size: 14px;
+  font-size: 15.5px;
 }
 .description {
   color: var(--ivory-dim);
@@ -155,13 +155,13 @@
 
 /* ---------- Глобальные примитивы (нулевая специфичность через :where) ---------- */
 :where(button:not(.tab)) {
-  padding: 10px 20px;
+  padding: 11px 22px;
   background: linear-gradient(180deg, var(--accent-hi) 0%, var(--accent) 100%);
   color: #16233b;
   border: none;
   border-radius: 999px;
   font-family: var(--font);
-  font-size: 14px;
+  font-size: 15.5px;
   font-weight: 600;
   cursor: pointer;
   transition: filter 0.15s ease, transform 0.06s ease;
@@ -175,12 +175,12 @@
 
 :where(input, textarea, select) {
   width: 100%;
-  padding: 10px 14px;
+  padding: 11px 15px;
   color: var(--ivory);
   background: var(--bg-elev);
   border: 1.5px solid var(--border);
   border-radius: 12px;
-  font-size: 14px;
+  font-size: 15.5px;
   font-family: var(--font);
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
@@ -195,7 +195,7 @@
   margin-bottom: 5px;
   font-weight: 500;
   color: var(--ivory-dim);
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .form-group {
@@ -211,3 +211,29 @@
   border: 3px solid var(--bg);
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--border); }
+
+/* ---------- Адаптивность ---------- */
+@media (max-width: 860px) {
+  .app-header { padding: 16px 20px; }
+  .app-tabs {
+    padding: 12px 16px 0;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .app-tabs::-webkit-scrollbar { display: none; }
+  .tab { flex: 0 0 auto; }
+  .app-content { padding: 18px 16px 32px; }
+  .tab-content { padding: 22px 18px; border-radius: 18px; }
+  .tab-content h2 { font-size: 25px; }
+}
+
+@media (max-width: 520px) {
+  .app-header { padding: 14px 14px; }
+  .brand-text h1 { font-size: 22px; }
+  .app-content { padding: 14px 10px 28px; }
+  .tab-content { padding: 18px 14px; }
+  .tab-content h2 { font-size: 22px; }
+  .tab { padding: 9px 16px; font-size: 15px; }
+}
