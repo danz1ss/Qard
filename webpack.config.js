@@ -85,6 +85,13 @@ const rendererConfig = {
         generator: {
           filename: 'fonts/[name][ext]'
         }
+      },
+      {
+        test: /\.(png|jpe?g|svg|gif)$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/[name][ext]'
+        }
       }
     ]
   },

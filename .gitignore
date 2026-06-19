@@ -24,6 +24,10 @@ Thumbs.db
 .env
 .env.local
 
+# Cloudflare Wrangler (local state/cache + secrets)
+.wrangler/
+.dev.vars
+
 # Electron
 out/
 

@@ -19,6 +19,7 @@ module.exports = {
       { test: /\.tsx?$/, use: 'ts-loader', exclude: /node_modules/ },
       { test: /\.css$/, use: ['style-loader', 'css-loader'] },
       { test: /\.(woff2?|ttf|eot)$/, type: 'asset/resource', generator: { filename: 'fonts/[name][ext]' } },
+      { test: /\.(png|jpe?g|svg|gif)$/, type: 'asset/resource', generator: { filename: 'assets/[name][ext]' } },
     ],
   },
   resolve: {
@@ -30,12 +31,18 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         { from: 'node_modules/sql.js/dist/sql-wasm.wasm', to: 'sql-wasm.wasm' },
+        { from: 'node_modules/sql.js/dist/sql-wasm-browser.wasm', to: 'sql-wasm-browser.wasm' },
         { from: 'src/web/manifest.webmanifest', to: 'manifest.webmanifest' },
         { from: 'src/web/icons', to: 'icons' },
       ],
     }),
     new webpack.DefinePlugin({
-      __AI_PROXY_URL__: JSON.stringify(process.env.AI_PROXY_URL || 'http://localhost:8787'),
+      __AI_PROXY_URL__: JSON.stringify(
+        process.env.AI_PROXY_URL ||
+          (process.env.NODE_ENV === 'production'
+            ? 'https://qard-ai-proxy.yudin091006.workers.dev'
+            : 'http://localhost:8787')
+      ),
     }),
     ...(process.env.NODE_ENV === 'production'
       ? [
