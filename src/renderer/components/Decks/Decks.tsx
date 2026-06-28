@@ -1,25 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useStore } from '../../store';
 import { DeckWithCounts } from '../../../shared/types';
 import Review from '../Review/Review';
 import ImportModal from './ImportModal';
 import StudyHeader from './StudyHeader';
+import ConfirmModal from '../common/ConfirmModal';
+import CreateDeckModal from '../common/CreateDeckModal';
 import '@fontsource/rubik/400.css';
 import '@fontsource/rubik/500.css';
 import '@fontsource/rubik/700.css';
 import './Decks.css';
 
+type NavTab = 'decks' | 'browse' | 'setup' | 'input' | 'generate' | 'preview';
+
+interface DecksProps {
+  /** Переключение вкладок (для CTA пустого состояния). */
+  onNavigate: (tab: NavTab) => void;
+}
+
 const PlayIcon = () => (
   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
     <path d="M7 5.5v13l11-6.5-11-6.5z" fill="currentColor" />
-  </svg>
-);
-
-const PencilIcon = () => (
-  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"
-    stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 20h4L18.5 9.5a2.12 2.12 0 0 0-3-3L5 17v3z" />
-    <path d="M13.5 6.5l3 3" />
   </svg>
 );
 
@@ -43,17 +44,10 @@ const TrashIcon = () => (
   </svg>
 );
 
-const CheckIcon = () => (
+const PlusIcon = () => (
   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"
-    stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M5 12.5l4.5 4.5L19 7" />
-  </svg>
-);
-
-const CloseIcon = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"
-    stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M6 6l12 12M18 6L6 18" />
+    stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 5v14M5 12h14" />
   </svg>
 );
 
@@ -66,9 +60,8 @@ const ImportIcon = () => (
   </svg>
 );
 
-const Decks: React.FC = () => {
+const Decks: React.FC<DecksProps> = ({ onNavigate }) => {
   const { decks, refreshDecks, stats, refreshStats, dailyGoal, loadSettings } = useStore();
-  const [newDeckName, setNewDeckName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [editingLimits, setEditingLimits] = useState<DeckWithCounts | null>(null);
   const [limitNew, setLimitNew] = useState('20');
@@ -77,6 +70,10 @@ const Decks: React.FC = () => {
   const [renameValue, setRenameValue] = useState('');
   const [studyingDeck, setStudyingDeck] = useState<DeckWithCounts | null>(null);
   const [importing, setImporting] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [deletingDeck, setDeletingDeck] = useState<DeckWithCounts | null>(null);
+  // Чтобы Escape отменял переименование, а не сохранял его через onBlur.
+  const skipBlurRef = useRef(false);
 
   useEffect(() => {
     refreshDecks();
@@ -84,16 +81,10 @@ const Decks: React.FC = () => {
     loadSettings();
   }, [refreshDecks, refreshStats, loadSettings]);
 
-  const handleCreate = async () => {
-    if (!newDeckName.trim()) return;
-    setError(null);
-    try {
-      await window.electronAPI.collection.createDeck(newDeckName.trim());
-      setNewDeckName('');
-      await refreshDecks();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
+  // Создание колоды (бросает ошибку — CreateDeckModal покажет её инлайн).
+  const createDeck = async (name: string) => {
+    await window.electronAPI.collection.createDeck(name);
+    await refreshDecks();
   };
 
   const startRename = (deck: DeckWithCounts) => {
@@ -102,10 +93,15 @@ const Decks: React.FC = () => {
   };
 
   const confirmRename = async (deck: DeckWithCounts) => {
-    if (!renameValue.trim()) return;
+    if (renamingId !== deck.id) return;
+    const next = renameValue.trim();
+    if (!next || next === deck.name) {
+      setRenamingId(null);
+      return;
+    }
     setError(null);
     try {
-      await window.electronAPI.collection.renameDeck(deck.id, renameValue.trim());
+      await window.electronAPI.collection.renameDeck(deck.id, next);
       setRenamingId(null);
       await refreshDecks();
     } catch (e) {
@@ -114,24 +110,29 @@ const Decks: React.FC = () => {
   };
 
   const cancelRename = () => {
+    skipBlurRef.current = true;
     setRenamingId(null);
   };
 
-  const handleDelete = async (deck: DeckWithCounts) => {
-    const ok = window.confirm(
-      `Delete deck "${deck.name}" and all its cards (${deck.totalCards})?`
-    );
-    if (!ok) return;
+  const confirmDelete = async () => {
+    if (!deletingDeck) return;
     setError(null);
     try {
-      await window.electronAPI.collection.deleteDeck(deck.id);
+      await window.electronAPI.collection.deleteDeck(deletingDeck.id);
+      setDeletingDeck(null);
       await refreshDecks();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
+      setDeletingDeck(null);
     }
   };
 
-  const openLimits = (deck: DeckWithCounts) => {
+  // Поповер лимитов: повторный клик по той же шестерёнке — закрыть.
+  const toggleLimits = (deck: DeckWithCounts) => {
+    if (editingLimits?.id === deck.id) {
+      setEditingLimits(null);
+      return;
+    }
     setEditingLimits(deck);
     setLimitNew(String(deck.newPerDay));
     setLimitRev(String(deck.reviewsPerDay));
@@ -167,13 +168,32 @@ const Decks: React.FC = () => {
     );
   }
 
+  // Суммарные счётчики для легенды-бейджей.
+  const totals = decks.reduce(
+    (acc, d) => ({
+      newCount: acc.newCount + d.newCount,
+      learnCount: acc.learnCount + d.learnCount,
+      dueCount: acc.dueCount + d.dueCount
+    }),
+    { newCount: 0, learnCount: 0, dueCount: 0 }
+  );
+
   return (
     <div className="decks">
       <header className="decks-head">
         <h2 className="decks-title">Decks</h2>
-        <p className="decks-sub">
-          New · Learning · Due — press Study to start a session.
-        </p>
+        <div className="decks-legend">
+          <span className="legend-badge legend-new">
+            <i className="legend-dot" /> New: {totals.newCount}
+          </span>
+          <span className="legend-badge legend-learn">
+            <i className="legend-dot" /> Learning: {totals.learnCount}
+          </span>
+          <span className="legend-badge legend-due">
+            <i className="legend-dot" /> Due: {totals.dueCount}
+          </span>
+          <span className="legend-hint">press Study to start a session</span>
+        </div>
       </header>
 
       {stats && (stats.reviewedTotal > 0 || stats.studiedToday > 0) && (
@@ -181,170 +201,212 @@ const Decks: React.FC = () => {
       )}
 
       {decks.length === 0 ? (
-        <div className="decks-empty">
-          <div className="decks-empty-glyph">∅</div>
-          <p>No decks yet. Create your first one below or import from Anki.</p>
+        /* ---------- Onboarding / Empty State (п.4) ---------- */
+        <div className="decks-onboard">
+          <div className="onboard-spark">✦</div>
+          <h3 className="onboard-title">Welcome to Qard!</h3>
+          <p className="onboard-sub">
+            Build your first deck of smart flashcards in three steps.
+          </p>
+          <ol className="onboard-steps">
+            <li>
+              <span className="onboard-num">1</span>
+              <div className="onboard-step-text">
+                <strong>Set up your API key</strong>
+                <span>Open Setup and add the key for your AI provider.</span>
+              </div>
+              <button className="btn-pill btn-muted" onClick={() => onNavigate('setup')}>
+                Setup
+              </button>
+            </li>
+            <li>
+              <span className="onboard-num">2</span>
+              <div className="onboard-step-text">
+                <strong>Add words</strong>
+                <span>Paste or import the words you want to learn.</span>
+              </div>
+              <button className="btn-pill btn-muted" onClick={() => onNavigate('input')}>
+                Input
+              </button>
+            </li>
+            <li>
+              <span className="onboard-num">3</span>
+              <div className="onboard-step-text">
+                <strong>Generate your first deck</strong>
+                <span>Let AI create translations, examples and audio.</span>
+              </div>
+              <button className="btn-pill btn-muted" onClick={() => onNavigate('generate')}>
+                Generate
+              </button>
+            </li>
+          </ol>
+          <div className="onboard-cta">
+            <button className="btn-pill btn-accent" onClick={() => setCreating(true)}>
+              <PlusIcon />
+              <span>New deck</span>
+            </button>
+            <button className="btn-pill btn-import" onClick={() => setImporting(true)}>
+              <ImportIcon />
+              <span>Import from Anki</span>
+            </button>
+          </div>
         </div>
       ) : (
-        <ul className="deck-list">
-          {decks.map((deck, i) => (
-            <li
-              className="deck-card"
-              key={deck.id}
-              style={{ animationDelay: `${Math.min(i * 0.05, 0.4)}s` }}
-            >
-              <div className="deck-card-info">
-                {renamingId === deck.id ? (
-                  <div className="deck-rename">
+        <>
+          {/* ---------- Sticky-тулбар: Create / Import (п.2) ---------- */}
+          <div className="decks-toolbar">
+            <button className="btn-pill btn-accent" onClick={() => setCreating(true)}>
+              <PlusIcon />
+              <span>New deck</span>
+            </button>
+            <button className="btn-pill btn-import" onClick={() => setImporting(true)}>
+              <ImportIcon />
+              <span>Import from Anki</span>
+            </button>
+          </div>
+
+          <ul className="deck-list">
+            {decks.map((deck, i) => (
+              <li
+                className={`deck-card ${editingLimits?.id === deck.id ? 'has-popover' : ''}`}
+                key={deck.id}
+                style={{ animationDelay: `${Math.min(i * 0.05, 0.4)}s` }}
+              >
+                <div className="deck-card-info">
+                  {renamingId === deck.id ? (
                     <input
                       className="deck-rename-input"
                       value={renameValue}
                       onChange={(e) => setRenameValue(e.target.value)}
+                      onBlur={() => {
+                        if (skipBlurRef.current) {
+                          skipBlurRef.current = false;
+                          return;
+                        }
+                        confirmRename(deck);
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') confirmRename(deck);
                         if (e.key === 'Escape') cancelRename();
                       }}
                       autoFocus
                     />
+                  ) : (
+                    /* Инлайн-редактирование по клику (п.3) */
                     <button
-                      className="icon-btn icon-confirm"
-                      title="Save"
-                      onClick={() => confirmRename(deck)}
+                      className="deck-name"
+                      title="Click to rename"
+                      onClick={() => startRename(deck)}
                     >
-                      <CheckIcon />
+                      {deck.name}
                     </button>
-                    <button
-                      className="icon-btn"
-                      title="Cancel"
-                      onClick={cancelRename}
-                    >
-                      <CloseIcon />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    className="deck-name"
-                    title="Rename"
-                    onClick={() => startRename(deck)}
-                  >
-                    {deck.name}
-                  </button>
-                )}
+                  )}
 
-                <div className="deck-stats">
-                  <div className="stat">
-                    <span className="stat-num stat-new">{deck.newCount}</span>
-                    <span className="stat-label">New</span>
-                  </div>
-                  <div className="stat">
-                    <span className="stat-num stat-learn">{deck.learnCount}</span>
-                    <span className="stat-label">Learning</span>
-                  </div>
-                  <div className="stat">
-                    <span className="stat-num stat-due">{deck.dueCount}</span>
-                    <span className="stat-label">Due</span>
-                  </div>
-                  <div className="stat stat-total">
-                    <span className="stat-num">{deck.totalCards}</span>
-                    <span className="stat-label">Total</span>
+                  <div className="deck-stats">
+                    <div className="stat">
+                      <span className="stat-num stat-new">{deck.newCount}</span>
+                      <span className="stat-label">New</span>
+                    </div>
+                    <div className="stat">
+                      <span className="stat-num stat-learn">{deck.learnCount}</span>
+                      <span className="stat-label">Learning</span>
+                    </div>
+                    <div className="stat">
+                      <span className="stat-num stat-due">{deck.dueCount}</span>
+                      <span className="stat-label">Due</span>
+                    </div>
+                    <div className="stat stat-total">
+                      <span className="stat-num">{deck.totalCards}</span>
+                      <span className="stat-label">Total</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="deck-actions">
-                <button
-                  className="btn-learn"
-                  onClick={() => setStudyingDeck(deck)}
-                >
-                  <PlayIcon />
-                  <span>Study</span>
-                </button>
-                <button
-                  className="icon-btn"
-                  title="Rename"
-                  onClick={() => startRename(deck)}
-                >
-                  <PencilIcon />
-                </button>
-                <button
-                  className="icon-btn"
-                  title="Limits"
-                  onClick={() => openLimits(deck)}
-                >
-                  <SlidersIcon />
-                </button>
-                <button
-                  className="icon-btn icon-danger"
-                  title="Delete"
-                  onClick={() => handleDelete(deck)}
-                >
-                  <TrashIcon />
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+                <div className="deck-actions">
+                  <button className="btn-learn" onClick={() => setStudyingDeck(deck)}>
+                    <PlayIcon />
+                    <span>Study</span>
+                  </button>
+                  <button
+                    className={`icon-btn ${editingLimits?.id === deck.id ? 'is-active' : ''}`}
+                    title="Daily limits"
+                    onClick={() => toggleLimits(deck)}
+                  >
+                    <SlidersIcon />
+                  </button>
+                  <button
+                    className="icon-btn icon-danger"
+                    title="Delete"
+                    onClick={() => setDeletingDeck(deck)}
+                  >
+                    <TrashIcon />
+                  </button>
+                </div>
+
+                {/* ---------- Поповер лимитов под шестерёнкой (п.1) ---------- */}
+                {editingLimits?.id === deck.id && (
+                  <div className="deck-popover">
+                    <h4 className="popover-title">Daily limits</h4>
+                    <div className="popover-fields">
+                      <label className="popover-field">
+                        <span>New per day</span>
+                        <input
+                          value={limitNew}
+                          onChange={(e) => setLimitNew(e.target.value)}
+                          inputMode="numeric"
+                          autoFocus
+                        />
+                      </label>
+                      <label className="popover-field">
+                        <span>Reviews per day</span>
+                        <input
+                          value={limitRev}
+                          onChange={(e) => setLimitRev(e.target.value)}
+                          inputMode="numeric"
+                        />
+                      </label>
+                    </div>
+                    <div className="popover-actions">
+                      <button className="btn-pill btn-muted" onClick={() => setEditingLimits(null)}>
+                        Cancel
+                      </button>
+                      <button className="btn-pill btn-accent" onClick={saveLimits}>
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </>
       )}
 
+      {/* Backdrop поповера на уровне .decks (вне transform'а карточки) */}
       {editingLimits && (
-        <div className="limits-panel">
-          <h3 className="limits-title">
-            Limits <span>"{editingLimits.name}"</span>
-          </h3>
-          <div className="limits-row">
-            <label className="limits-field">
-              <span>New per day</span>
-              <input
-                value={limitNew}
-                onChange={(e) => setLimitNew(e.target.value)}
-                inputMode="numeric"
-              />
-            </label>
-            <label className="limits-field">
-              <span>Reviews per day</span>
-              <input
-                value={limitRev}
-                onChange={(e) => setLimitRev(e.target.value)}
-                inputMode="numeric"
-              />
-            </label>
-            <div className="limits-actions">
-              <button className="btn-pill btn-accent" onClick={saveLimits}>
-                Save
-              </button>
-              <button
-                className="btn-pill btn-muted"
-                onClick={() => setEditingLimits(null)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+        <div className="popover-backdrop" onClick={() => setEditingLimits(null)} />
       )}
-
-      <div className="decks-footer">
-        <div className="deck-create">
-          <input
-            className="deck-create-input"
-            value={newDeckName}
-            onChange={(e) => setNewDeckName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleCreate();
-            }}
-            placeholder="New deck name"
-          />
-          <button className="btn-pill btn-accent" onClick={handleCreate}>
-            Create
-          </button>
-        </div>
-        <button className="btn-pill btn-import" onClick={() => setImporting(true)}>
-          <ImportIcon />
-          <span>Import from Anki</span>
-        </button>
-      </div>
 
       {error && <p className="decks-error">{error}</p>}
+
+      {creating && (
+        <CreateDeckModal onCreate={createDeck} onClose={() => setCreating(false)} />
+      )}
+
+      {deletingDeck && (
+        <ConfirmModal
+          title="Delete deck?"
+          message={
+            <>
+              Delete deck <strong>“{deletingDeck.name}”</strong> and all its cards
+              ({deletingDeck.totalCards})? This cannot be undone.
+            </>
+          }
+          confirmLabel="Delete"
+          onConfirm={confirmDelete}
+          onClose={() => setDeletingDeck(null)}
+        />
+      )}
 
       {importing && (
         <ImportModal

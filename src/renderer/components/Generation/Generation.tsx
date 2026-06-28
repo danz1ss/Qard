@@ -2,6 +2,7 @@ import React from 'react';
 import { useStore } from '../../store';
 import { useCardGeneration } from '../../hooks/useCardGeneration';
 import Button from '../common/Button';
+import { CheckIcon, XIcon } from '../common/icons';
 import { GenerationStage } from '../../../shared/types';
 import './Generation.css';
 
@@ -67,7 +68,13 @@ const Generation: React.FC = () => {
           </div>
           <div className="summary-item">
             <span className="summary-label">AI API Key:</span>
-            <span className="summary-value">{geminiApiKey ? '✓ Configured' : '✗ Not configured'}</span>
+            <span className={`summary-value ${geminiApiKey ? 'is-ok' : 'is-missing'}`}>
+              {geminiApiKey ? (
+                <><CheckIcon size={15} /> Configured</>
+              ) : (
+                <><XIcon size={15} /> Not configured</>
+              )}
+            </span>
           </div>
         </div>
       </div>

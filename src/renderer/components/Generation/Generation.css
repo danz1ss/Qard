@@ -47,10 +47,15 @@
 }
 
 .summary-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: var(--ivory);
   font-weight: 500;
   font-size: 14px;
 }
+.summary-value.is-ok { color: var(--green); }
+.summary-value.is-missing { color: #f0a892; }
 
 /* Блок рекомендаций — без лишнего отступа сверху, плотно к настройкам */
 .validation-errors {
@@ -65,7 +70,8 @@
 .validation-errors h4 {
   font-size: 14px;
   color: #f0a892;
-  margin-bottom: 10px;
+  /* убираем браузерный margin-top у заголовка → отступ сверху = нижнему (п. Generate) */
+  margin: 0 0 10px;
 }
 
 .validation-errors ul {

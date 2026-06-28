@@ -62,8 +62,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   review: {
     getQueue: (deckId: number) =>
       ipcRenderer.invoke(IPC_CHANNELS.REVIEW_GET_QUEUE, deckId),
-    answer: (cardId: number, rating: number) =>
-      ipcRenderer.invoke(IPC_CHANNELS.REVIEW_ANSWER, cardId, rating),
+    answer: (cardId: number, rating: number, forceReview?: boolean) =>
+      ipcRenderer.invoke(IPC_CHANNELS.REVIEW_ANSWER, cardId, rating, forceReview),
     previewIntervals: (cardId: number) =>
       ipcRenderer.invoke(IPC_CHANNELS.REVIEW_PREVIEW_INTERVALS, cardId)
   },

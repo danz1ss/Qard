@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StoredCard } from '../../../shared/types';
 import Button from '../common/Button';
 import Input from '../common/Input';
+import ConfirmModal from '../common/ConfirmModal';
 
 interface CardEditModalProps {
   card: StoredCard;
@@ -18,6 +19,7 @@ const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved })
   const [examples, setExamples] = useState(card.examples.join('\n'));
   const [tags, setTags] = useState(card.tags);
   const [saving, setSaving] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const save = async () => {
     setSaving(true);
@@ -39,7 +41,6 @@ const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved })
   };
 
   const remove = async () => {
-    if (!window.confirm(`Delete card "${card.word}"?`)) return;
     await window.electronAPI.collection.deleteCards([card.id]);
     onSaved();
   };
@@ -62,21 +63,36 @@ const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved })
           onChange={(e) => setTranscription(e.target.value)}
         />
         <label className="input-label">Examples (one per line)</label>
+        {/* resize только по вертикали + max-height со скроллом (п.6) */}
         <textarea
           rows={4}
-          style={{ width: '100%' }}
+          className="examples-textarea"
           value={examples}
           onChange={(e) => setExamples(e.target.value)}
         />
         <Input label="Tags (space-separated)" value={tags} onChange={(e) => setTags(e.target.value)} />
         <div className="modal-actions">
-          <Button variant="danger" onClick={remove}>Delete</Button>
+          <Button variant="danger" onClick={() => setConfirmingDelete(true)}>Delete</Button>
           <Button variant="secondary" onClick={onClose}>Cancel</Button>
           <Button onClick={save} disabled={saving}>
             {saving ? 'Saving...' : 'Save'}
           </Button>
         </div>
       </div>
+
+      {confirmingDelete && (
+        <ConfirmModal
+          title="Delete card?"
+          message={
+            <>
+              Delete card <strong>“{card.word}”</strong>? This cannot be undone.
+            </>
+          }
+          confirmLabel="Delete"
+          onConfirm={remove}
+          onClose={() => setConfirmingDelete(false)}
+        />
+      )}
     </div>
   );
 };

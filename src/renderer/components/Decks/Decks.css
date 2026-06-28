@@ -18,10 +18,38 @@
   color: var(--ivory);
   margin: 0 0 6px;
 }
-.decks-sub {
-  font-size: 16px;
-  color: var(--ivory-dim);
-  margin: 0;
+/* Легенда статусов бейджами с цветными точками (п.10) */
+.decks-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.legend-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ivory);
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--border-soft);
+  font-variant-numeric: tabular-nums;
+}
+.legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.legend-new .legend-dot { background: var(--new); }
+.legend-learn .legend-dot { background: var(--learn); }
+.legend-due .legend-dot { background: var(--due); }
+.legend-hint {
+  font-size: 13.5px;
+  color: var(--muted);
 }
 
 /* ---------- Список колод ---------- */
@@ -35,6 +63,7 @@
 }
 
 .deck-card {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -223,6 +252,10 @@
   color: var(--coral);
   border-color: var(--coral);
 }
+.icon-btn.is-active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
 .icon-confirm {
   color: var(--due);
   border-color: var(--due);
@@ -274,42 +307,66 @@
   box-shadow: 0 0 0 0 var(--key-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-/* ---------- Панель лимитов ---------- */
-.limits-panel {
-  margin-top: 22px;
-  padding: 20px 22px;
-  border-radius: 18px;
-  background: var(--bg-soft);
-  border: 1px solid var(--border-soft);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  animation: deck-in 0.3s ease both;
+/* ---------- Поповер лимитов (под шестерёнкой карточки, п.1) ---------- */
+.popover-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
 }
-.limits-title {
-  font-size: 16px;
+/* Открытая карточка — над backdrop'ом, чтобы поповер и контролы были кликабельны */
+.deck-card.has-popover {
+  z-index: 60;
+}
+.deck-popover {
+  position: absolute;
+  top: calc(100% - 6px);
+  right: 16px;
+  z-index: 50;
+  width: min(320px, calc(100vw - 40px));
+  padding: 18px 18px 16px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #3a404e 0%, #333845 100%);
+  border: 1px solid var(--border);
+  box-shadow: 0 22px 44px -18px rgba(0, 0, 0, 0.75);
+  animation: popover-in 0.16s ease both;
+}
+/* Хвостик-стрелка к шестерёнке */
+.deck-popover::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  right: 60px;
+  width: 13px;
+  height: 13px;
+  background: #3a404e;
+  border-left: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  transform: rotate(45deg);
+}
+.popover-title {
+  font-size: 14px;
   font-weight: 600;
-  margin: 0 0 16px;
+  margin: 0 0 14px;
   color: var(--ivory);
 }
-.limits-title span { color: var(--accent); }
-.limits-row {
+.popover-fields {
   display: flex;
-  align-items: flex-end;
-  gap: 16px;
-  flex-wrap: wrap;
+  gap: 12px;
 }
-.limits-field {
+.popover-field {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  flex: 1;
 }
-.limits-field span {
+.popover-field span {
   font-size: 12px;
   font-weight: 500;
   color: var(--ivory-dim);
   letter-spacing: 0.02em;
 }
-.limits-field input {
-  width: 120px;
+.popover-field input {
+  width: 100%;
   font-family: inherit;
   font-size: 15px;
   font-weight: 600;
@@ -321,31 +378,45 @@
   outline: none;
   transition: border-color 0.15s ease;
 }
-.limits-field input:focus { border-color: var(--accent); }
-.limits-actions {
+.popover-field input:focus { border-color: var(--accent); }
+.popover-actions {
   display: flex;
+  justify-content: flex-end;
   gap: 10px;
-  margin-left: auto;
+  margin-top: 16px;
+}
+.popover-actions .btn-pill {
+  font-size: 14px;
+  padding: 8px 16px;
+}
+@keyframes popover-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ---------- Футер: создание + импорт ---------- */
-.decks-footer {
+/* ---------- Тулбар: Create + Import (в потоке хедера, не sticky) ---------- */
+.decks-toolbar {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
-  margin-top: 28px;
-  padding-top: 22px;
-  border-top: 1px solid var(--border-soft);
+  margin-bottom: 16px;
+  padding: 12px 0;
 }
-.deck-create {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1 1 340px;
+/* Мягкая граница снизу, чтобы список аккуратно отделялся от тулбара */
+.decks-toolbar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--border-soft);
 }
+
+/* Поле имени колоды (используется в CreateDeckModal) */
 .deck-create-input {
-  flex: 1;
   min-width: 0;
   font-family: inherit;
   font-size: 16.5px;
@@ -363,23 +434,95 @@
   box-shadow: 0 0 0 4px rgba(111, 156, 232, 0.14);
 }
 
-/* ---------- Пустое состояние ---------- */
-.decks-empty {
+/* ---------- Онбординг / пустое состояние (п.4) ---------- */
+.decks-onboard {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
-  padding: 60px 20px;
-  border-radius: 20px;
-  background: var(--surface);
-  border: 1px dashed var(--border);
-  color: var(--ivory-dim);
   text-align: center;
+  padding: 44px 28px 36px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, var(--surface-hi) 0%, var(--surface) 100%);
+  border: 1px solid var(--border-soft);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  animation: deck-in 0.4s ease both;
 }
-.decks-empty-glyph {
-  font-size: 44px;
+.onboard-spark {
+  font-size: 34px;
+  color: var(--accent);
+  line-height: 1;
+  filter: drop-shadow(0 0 14px rgba(111, 156, 232, 0.5));
+}
+.onboard-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ivory);
+  margin: 16px 0 6px;
+}
+.onboard-sub {
+  font-size: 15.5px;
+  color: var(--ivory-dim);
+  margin: 0 0 26px;
+}
+.onboard-steps {
+  list-style: none;
+  margin: 0 0 26px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 460px;
+  text-align: left;
+}
+.onboard-steps li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.16);
+  border: 1px solid var(--border-soft);
+}
+.onboard-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 15px;
+  font-weight: 700;
+  color: #16233b;
+  background: linear-gradient(180deg, #8fb2f2 0%, var(--accent) 100%);
+}
+.onboard-step-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.onboard-step-text strong {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ivory);
+}
+.onboard-step-text span {
+  font-size: 13px;
   color: var(--muted);
-  opacity: 0.6;
+}
+.onboard-steps .btn-pill {
+  flex-shrink: 0;
+  font-size: 14px;
+  padding: 8px 16px;
+}
+.onboard-cta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 /* ---------- Ошибка ---------- */
@@ -399,9 +542,11 @@
   .deck-card { padding: 16px 16px; gap: 14px; }
   .deck-actions { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
   .btn-learn { flex: 1 1 auto; justify-content: center; }
-  .decks-footer { gap: 12px; }
-  .deck-create { flex: 1 1 100%; }
-  .decks-footer > .btn-import { flex: 1 1 100%; justify-content: center; }
+  .decks-toolbar { gap: 10px; }
+  .decks-toolbar .btn-pill { flex: 1 1 auto; justify-content: center; }
+  .onboard-steps li { flex-wrap: wrap; }
+  .onboard-steps .btn-pill { width: 100%; justify-content: center; }
+  .deck-popover { right: 8px; left: 8px; width: auto; }
 }
 
 /* ---------- Анимация появления ---------- */
@@ -410,7 +555,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .deck-card, .limits-panel { animation: none !important; }
+  .deck-card, .deck-popover, .decks-onboard { animation: none !important; }
   .deck-card:hover { transform: none; }
 }
 

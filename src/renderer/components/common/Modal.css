@@ -1,0 +1,26 @@
+/* ======================================================================
+   Modal — дополнения к глобальным .modal-overlay / .modal / .modal-actions
+   (структурные классы живут в Decks.css / Browser.css)
+   ====================================================================== */
+
+/* Подтверждение (ConfirmModal) */
+.modal-confirm .modal-confirm-text {
+  color: var(--ivory-dim);
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 0;
+}
+.modal-confirm strong {
+  color: var(--ivory);
+}
+
+/* Создание колоды (CreateDeckModal) */
+.modal-create .deck-create-input {
+  width: 100%;
+  margin-top: 4px;
+}
+.modal-create .modal-error {
+  margin: 10px 0 0;
+  color: #f0a892;
+  font-size: 13.5px;
+}

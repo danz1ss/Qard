@@ -120,7 +120,8 @@ export class SchedulerService {
   answer(
     cardId: number,
     rating: ReviewRating,
-    now: number = Date.now()
+    now: number = Date.now(),
+    forceReview: boolean = false
   ): ReviewQueueState {
     const row = this.col.getCard(cardId);
     if (!row) {
@@ -128,16 +129,32 @@ export class SchedulerService {
     }
     const item = this.f.next(this.toFsrs(row), new Date(now), rating as Grade);
 
+    let state = item.card.state as unknown as CardState;
+    let due = item.card.due.getTime();
+    let scheduledDays = item.card.scheduled_days;
+    let learningSteps = item.card.learning_steps;
+
+    // Принудительный выпуск из learning-цикла: если карточку проваливали слишком
+    // много раз за сессию, не крутим её по минутным шагам, а отправляем в Review
+    // на завтра (встретится как Due). См. п.3 фидбека.
+    if (forceReview && state !== CardState.Review) {
+      const DAY = 86400000;
+      state = CardState.Review;
+      due = dayStart(now) + DAY;
+      scheduledDays = 1;
+      learningSteps = 0;
+    }
+
     this.col.applyAnswer(
       {
         id: cardId,
-        state: item.card.state as unknown as CardState,
-        due: item.card.due.getTime(),
+        state,
+        due,
         stability: item.card.stability,
         difficulty: item.card.difficulty,
         elapsedDays: item.card.elapsed_days,
-        scheduledDays: item.card.scheduled_days,
-        learningSteps: item.card.learning_steps,
+        scheduledDays,
+        learningSteps,
         reps: item.card.reps,
         lapses: item.card.lapses,
         lastReview: now

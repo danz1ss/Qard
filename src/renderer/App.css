@@ -67,12 +67,23 @@
   background: linear-gradient(180deg, rgba(58, 64, 78, 0.55) 0%, rgba(45, 50, 62, 0) 100%);
   border-bottom: 1px solid var(--border-soft);
 }
+/* Кликабельный логотип (button-reset) → возврат на Decks */
 .brand {
   display: flex;
   align-items: center;
   gap: var(--space-3);
   justify-self: start;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  border-radius: var(--space-2);
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
+.brand:hover { opacity: 0.85; }
+.brand:active { transform: scale(0.98); }
+.brand:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .brand-mark {
   display: inline-flex;
   align-items: center;

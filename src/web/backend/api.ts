@@ -60,7 +60,8 @@ export async function initWebBackend(): Promise<WebBackend> {
     },
     review: {
       getQueue: async (deckId: number) => scheduler.getQueue(deckId),
-      answer: async (cardId: number, rating: any) => scheduler.answer(cardId, rating),
+      answer: async (cardId: number, rating: any, forceReview?: boolean) =>
+        scheduler.answer(cardId, rating, undefined, forceReview),
       previewIntervals: async (cardId: number) => scheduler.previewIntervals(cardId),
     },
     media: {

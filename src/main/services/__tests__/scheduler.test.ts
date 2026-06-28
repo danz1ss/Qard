@@ -95,6 +95,24 @@ describe('SchedulerService', () => {
     expect(lapsed.state).not.toBe(CardState.Review);
   });
 
+  it('forceReview graduates a stuck learning card into Review for tomorrow', () => {
+    col.addCards(deckId, [input('w')], t0);
+    const id = sched.getQueue(deckId, t0).current!.id;
+
+    // Первый промах: New → Learning, всё ещё крутится в learning-цикле
+    sched.answer(id, 1, t0);
+    expect(col.getCard(id)!.state).not.toBe(CardState.Review);
+
+    // Второй промах с forceReview: карточку выпускаем в Review на завтра
+    sched.answer(id, 1, t0, true);
+    const card = col.getCard(id)!;
+    expect(card.state).toBe(CardState.Review);
+    expect(card.scheduledDays).toBe(1);
+    expect(card.due).toBeGreaterThan(t0);
+    // Не всплывает сегодня: due — уже следующий день
+    expect(sched.getQueue(deckId, t0).current).toBeNull();
+  });
+
   it('returns null current when queue is empty', () => {
     const q = sched.getQueue(deckId, t0);
     expect(q.current).toBeNull();

@@ -3,7 +3,7 @@ import { useStore } from '../../store';
 import { useSaveToCollection } from '../../hooks/useSaveToCollection';
 import Button from '../common/Button';
 import Select from '../common/Select';
-import Input from '../common/Input';
+import CreateDeckModal from '../common/CreateDeckModal';
 import CardPreview from './CardPreview';
 import './Preview.css';
 
@@ -21,7 +21,6 @@ const Preview: React.FC = () => {
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
   const [includeDuplicates, setIncludeDuplicates] = useState(false);
   const [targetDeckId, setTargetDeckId] = useState<number | null>(defaultDeckId);
-  const [newDeckName, setNewDeckName] = useState('');
   const [creatingDeck, setCreatingDeck] = useState(false);
 
   const duplicateCount = generatedCards.filter((c) => c.isDuplicate).length;
@@ -44,14 +43,10 @@ const Preview: React.FC = () => {
     setDefaultDeckId(id);
   };
 
-  const handleCreateDeck = async () => {
-    if (!newDeckName.trim()) return;
-    const deck = await window.electronAPI.collection.createDeck(
-      newDeckName.trim()
-    );
+  // Создаёт колоду и сразу выбирает её целевой (бросает ошибку — модалка покажет её).
+  const createDeck = async (name: string) => {
+    const deck = await window.electronAPI.collection.createDeck(name);
     await refreshDecks();
-    setNewDeckName('');
-    setCreatingDeck(false);
     setTargetDeckId(deck.id);
     setDefaultDeckId(deck.id);
   };
@@ -129,7 +124,7 @@ const Preview: React.FC = () => {
               options={deckOptions}
             />
             <Button
-              onClick={() => setCreatingDeck(!creatingDeck)}
+              onClick={() => setCreatingDeck(true)}
               variant="secondary"
               size="small"
             >
@@ -144,19 +139,6 @@ const Preview: React.FC = () => {
               {getButtonText()}
             </Button>
           </div>
-
-          {creatingDeck && (
-            <div className="preview-summary">
-              <Input
-                value={newDeckName}
-                onChange={(e) => setNewDeckName(e.target.value)}
-                placeholder="New deck name"
-              />
-              <Button onClick={handleCreateDeck} size="small">
-                Create
-              </Button>
-            </div>
-          )}
 
           {duplicateCount > 0 && (
             <label className="duplicate-toggle">
@@ -209,6 +191,13 @@ const Preview: React.FC = () => {
             ))}
           </div>
         </>
+      )}
+
+      {creatingDeck && (
+        <CreateDeckModal
+          onCreate={createDeck}
+          onClose={() => setCreatingDeck(false)}
+        />
       )}
     </div>
   );

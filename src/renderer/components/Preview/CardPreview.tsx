@@ -1,10 +1,24 @@
 import React, { useState } from 'react';
 import { GeneratedCard } from '../../../shared/types';
 import Button from '../common/Button';
+import { parseBold } from '../Review/htmlText';
 
 interface CardPreviewProps {
   card: GeneratedCard;
 }
+
+/** Рендер строки с сырыми <b>…</b> как текст + визуально жирное слово (п.5). */
+const RichText: React.FC<{ html: string }> = ({ html }) => (
+  <>
+    {parseBold(html).map((seg, i) =>
+      seg.bold ? (
+        <strong key={i}>{seg.text}</strong>
+      ) : (
+        <React.Fragment key={i}>{seg.text}</React.Fragment>
+      )
+    )}
+  </>
+);
 
 const CardPreview: React.FC<CardPreviewProps> = ({ card }) => {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
@@ -54,13 +68,13 @@ const CardPreview: React.FC<CardPreviewProps> = ({ card }) => {
 
       <div className="card-section">
         <h4>Definition</h4>
-        <p>{card.definition}</p>
+        <p><RichText html={card.definition} /></p>
       </div>
 
       {card.definitionExample && (
         <div className="card-section">
           <h4>Definition Example</h4>
-          <p>{card.definitionExample}</p>
+          <p><RichText html={card.definitionExample} /></p>
         </div>
       )}
 
@@ -76,7 +90,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ card }) => {
           <h4>Examples</h4>
           {card.examples.map((example, index) => (
             <div key={index} className="example-item">
-              <p className="example-sentence">{example}</p>
+              <p className="example-sentence"><RichText html={example} /></p>
             </div>
           ))}
         </div>

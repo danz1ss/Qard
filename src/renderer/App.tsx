@@ -24,13 +24,19 @@ const App: React.FC = () => {
   return (
     <div className="app">
       <header className="app-header">
-        <div className="brand">
+        {/* Логотип-ссылка → главная вкладка Decks (п.8) */}
+        <button
+          type="button"
+          className="brand"
+          onClick={() => setActiveTab('decks')}
+          title="Go to Decks"
+        >
           <span className="brand-mark"><LogoMark /></span>
           <div className="brand-text">
             <h1>Qard</h1>
             <p>YDN education</p>
           </div>
-        </div>
+        </button>
 
         <nav className="app-tabs">
         <button
@@ -75,7 +81,7 @@ const App: React.FC = () => {
       <main className="app-content">
         {activeTab === 'decks' && (
           <div className="tab-content">
-            <Decks />
+            <Decks onNavigate={setActiveTab} />
           </div>
         )}
 

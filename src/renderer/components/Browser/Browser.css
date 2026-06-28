@@ -106,3 +106,27 @@
   justify-content: flex-end;
   margin-top: 16px;
 }
+
+/* textarea Examples в редакторе карточки: resize только по вертикали,
+   ограниченная высота со скроллом (п.6) */
+.examples-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  max-height: 220px;
+  min-height: 88px;
+  overflow-y: auto;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ivory);
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.examples-textarea:focus {
+  border-color: var(--accent);
+}

@@ -11,8 +11,8 @@ export function setupReviewHandlers(
   );
   ipcMain.handle(
     IPC_CHANNELS.REVIEW_ANSWER,
-    (_e, cardId: number, rating: ReviewRating) =>
-      scheduler.answer(cardId, rating)
+    (_e, cardId: number, rating: ReviewRating, forceReview?: boolean) =>
+      scheduler.answer(cardId, rating, undefined, forceReview)
   );
   ipcMain.handle(IPC_CHANNELS.REVIEW_PREVIEW_INTERVALS, (_e, cardId: number) =>
     scheduler.previewIntervals(cardId)

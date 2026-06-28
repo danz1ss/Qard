@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ReviewQueueState, StoredCard } from '../../../shared/types';
 import Button from '../common/Button';
+import { CheckIcon, XIcon } from '../common/icons';
 import { blankOut, hasBold, isCorrect, parseBold, stripTags } from './htmlText';
 import './Review.css';
 
@@ -64,11 +65,16 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const advancingRef = useRef(false);
+  // Промахи по карточке за текущую сессию: после MAX_MISSES слово выпускается
+  // в Review (Due) на завтра, а не крутится в learning-цикле. См. п.3 фидбека.
+  const missesRef = useRef<Map<number, number>>(new Map());
+  const MAX_MISSES = 2;
 
   const card: StoredCard | null = queue?.current ?? null;
 
   const loadQueue = useCallback(async () => {
     const q = await window.electronAPI.review.getQueue(deckId);
+    missesRef.current.clear();
     setQueue(q);
     setInput('');
     setAnswered(false);
@@ -134,16 +140,23 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
 
   const playAudio = () => audioRef.current?.play().catch(() => {});
 
+  const registerMiss = (cardId: number) => {
+    missesRef.current.set(cardId, (missesRef.current.get(cardId) ?? 0) + 1);
+  };
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!card || answered) return;
     // Пустой ввод + Enter = «не знаю» → засчитываем как неверно и раскрываем ответ
     if (!input.trim()) {
       setCorrect(false);
+      registerMiss(card.id);
       setAnswered(true);
       return;
     }
-    setCorrect(isCorrect(input, card.word));
+    const ok = isCorrect(input, card.word);
+    setCorrect(ok);
+    if (!ok) registerMiss(card.id);
     setAnswered(true);
   };
 
@@ -151,7 +164,15 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
     if (!card || !answered || advancingRef.current) return;
     advancingRef.current = true;
     try {
-      const q = await window.electronAPI.review.answer(card.id, correct ? 3 : 1);
+      // Слишком много промахов за сессию → выпускаем карточку в Review (Due),
+      // чтобы она не возвращалась снова и снова в этой же сессии.
+      const forceReview =
+        !correct && (missesRef.current.get(card.id) ?? 0) >= MAX_MISSES;
+      const q = await window.electronAPI.review.answer(
+        card.id,
+        correct ? 3 : 1,
+        forceReview
+      );
       setQueue(q);
       setInput('');
       setAnswered(false);
@@ -228,7 +249,7 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
                 autoComplete="off"
                 spellCheck={false}
               />
-              <div className="review-hint">Enter — check · empty = don't know</div>
+              <div className="review-hint">Press Enter to check</div>
             </form>
           ) : (
             <div className="review-result">
@@ -239,7 +260,8 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
               >
                 <span className="answer-typed">{input || '—'}</span>
                 <span className="answer-badge">
-                  {correct ? '✓ Correct' : '✗ Wrong'}
+                  {correct ? <CheckIcon size={15} /> : <XIcon size={15} />}
+                  {correct ? 'Correct' : 'Wrong'}
                 </span>
               </div>
 

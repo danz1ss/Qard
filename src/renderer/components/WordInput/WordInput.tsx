@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useStore } from '../../store';
 import Button from '../common/Button';
+import { XIcon } from '../common/icons';
 import './WordInput.css';
 
 // Split raw text into a clean word list (newlines, commas, semicolons)
@@ -94,12 +95,13 @@ const WordInput: React.FC = () => {
                 {word}
                 <button
                   className="remove-word"
+                  aria-label={`Remove ${word}`}
                   onClick={() => {
                     const newWords = words.filter((_, i) => i !== index);
                     setWords(newWords);
                   }}
                 >
-                  ×
+                  <XIcon size={13} />
                 </button>
               </span>
             ))}

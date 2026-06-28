@@ -51,7 +51,11 @@ export interface ElectronAPI {
   };
   review: {
     getQueue: (deckId: number) => Promise<ReviewQueueState>;
-    answer: (cardId: number, rating: ReviewRating) => Promise<ReviewQueueState>;
+    answer: (
+      cardId: number,
+      rating: ReviewRating,
+      forceReview?: boolean
+    ) => Promise<ReviewQueueState>;
     previewIntervals: (cardId: number) => Promise<IntervalPreviews>;
   };
   media: {

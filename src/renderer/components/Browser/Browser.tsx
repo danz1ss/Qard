@@ -9,7 +9,9 @@ import {
 import Button from '../common/Button';
 import Input from '../common/Input';
 import Select from '../common/Select';
+import ConfirmModal from '../common/ConfirmModal';
 import CardEditModal from './CardEditModal';
+import { stripTags } from '../Review/htmlText';
 import './Browser.css';
 
 const PAGE_SIZE = 50;
@@ -33,6 +35,7 @@ const Browser: React.FC = () => {
   const [editing, setEditing] = useState<StoredCard | null>(null);
   const [moveTarget, setMoveTarget] = useState<string>('');
   const [reloadKey, setReloadKey] = useState(0);
+  const [confirmingBulk, setConfirmingBulk] = useState(false);
 
   useEffect(() => {
     refreshDecks();
@@ -77,9 +80,8 @@ const Browser: React.FC = () => {
   };
 
   const bulkDelete = async () => {
-    if (selected.size === 0) return;
-    if (!window.confirm(`Delete selected cards (${selected.size})?`)) return;
     await window.electronAPI.collection.deleteCards([...selected]);
+    setConfirmingBulk(false);
     refresh();
   };
 
@@ -140,7 +142,7 @@ const Browser: React.FC = () => {
       {selected.size > 0 && (
         <div className="browser-bulk">
           <span>Selected: {selected.size}</span>
-          <Button size="small" variant="danger" onClick={bulkDelete}>
+          <Button size="small" variant="danger" onClick={() => setConfirmingBulk(true)}>
             Delete
           </Button>
           <Select
@@ -176,7 +178,7 @@ const Browser: React.FC = () => {
                 />
               </td>
               <td>{card.word}</td>
-              <td className="browser-def">{card.definition}</td>
+              <td className="browser-def">{stripTags(card.definition)}</td>
               <td>{deckName(card.deckId)}</td>
               <td>{STATE_LABELS[card.state]}</td>
               <td>
@@ -214,6 +216,21 @@ const Browser: React.FC = () => {
             setEditing(null);
             refresh();
           }}
+        />
+      )}
+
+      {confirmingBulk && (
+        <ConfirmModal
+          title="Delete cards?"
+          message={
+            <>
+              Delete <strong>{selected.size}</strong> selected card
+              {selected.size === 1 ? '' : 's'}? This cannot be undone.
+            </>
+          }
+          confirmLabel="Delete"
+          onConfirm={bulkDelete}
+          onClose={() => setConfirmingBulk(false)}
         />
       )}
     </div>
