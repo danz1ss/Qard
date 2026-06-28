@@ -31,9 +31,8 @@ const App: React.FC = () => {
             <p>YDN education</p>
           </div>
         </div>
-      </header>
 
-      <nav className="app-tabs">
+        <nav className="app-tabs">
         <button
           className={`tab ${activeTab === 'decks' ? 'active' : ''}`}
           onClick={() => setActiveTab('decks')}
@@ -70,7 +69,8 @@ const App: React.FC = () => {
         >
           Preview
         </button>
-      </nav>
+        </nav>
+      </header>
 
       <main className="app-content">
         {activeTab === 'decks' && (

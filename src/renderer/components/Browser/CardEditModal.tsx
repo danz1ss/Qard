@@ -39,7 +39,7 @@ const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved })
   };
 
   const remove = async () => {
-    if (!window.confirm(`Удалить карточку «${card.word}»?`)) return;
+    if (!window.confirm(`Delete card "${card.word}"?`)) return;
     await window.electronAPI.collection.deleteCards([card.id]);
     onSaved();
   };
@@ -47,33 +47,33 @@ const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved })
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h3>Редактирование карточки</h3>
-        <Input label="Слово" value={word} onChange={(e) => setWord(e.target.value)} />
-        <Input label="Часть речи" value={wordType} onChange={(e) => setWordType(e.target.value)} />
-        <Input label="Определение" value={definition} onChange={(e) => setDefinition(e.target.value)} />
+        <h3>Edit card</h3>
+        <Input label="Word" value={word} onChange={(e) => setWord(e.target.value)} />
+        <Input label="Part of speech" value={wordType} onChange={(e) => setWordType(e.target.value)} />
+        <Input label="Definition" value={definition} onChange={(e) => setDefinition(e.target.value)} />
         <Input
-          label="Пример определения"
+          label="Definition example"
           value={definitionExample}
           onChange={(e) => setDefinitionExample(e.target.value)}
         />
         <Input
-          label="Транскрипция"
+          label="Transcription"
           value={transcription}
           onChange={(e) => setTranscription(e.target.value)}
         />
-        <label className="input-label">Примеры (по одному на строку)</label>
+        <label className="input-label">Examples (one per line)</label>
         <textarea
           rows={4}
           style={{ width: '100%' }}
           value={examples}
           onChange={(e) => setExamples(e.target.value)}
         />
-        <Input label="Теги (через пробел)" value={tags} onChange={(e) => setTags(e.target.value)} />
+        <Input label="Tags (space-separated)" value={tags} onChange={(e) => setTags(e.target.value)} />
         <div className="modal-actions">
-          <Button variant="danger" onClick={remove}>Удалить</Button>
-          <Button variant="secondary" onClick={onClose}>Отмена</Button>
+          <Button variant="danger" onClick={remove}>Delete</Button>
+          <Button variant="secondary" onClick={onClose}>Cancel</Button>
           <Button onClick={save} disabled={saving}>
-            {saving ? 'Сохранение...' : 'Сохранить'}
+            {saving ? 'Saving...' : 'Save'}
           </Button>
         </div>
       </div>

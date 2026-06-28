@@ -75,13 +75,13 @@ const Preview: React.FC = () => {
   const getButtonText = () => {
     switch (status) {
       case 'saving':
-        return 'Сохранение...';
+        return 'Saving...';
       case 'success':
-        return `Сохранено ${savedCount} карточек!`;
+        return `Saved ${savedCount} cards!`;
       case 'error':
-        return 'Ошибка — повторить';
+        return 'Error — retry';
       default:
-        return 'Сохранить в колоду';
+        return 'Save to deck';
     }
   };
 
@@ -97,29 +97,29 @@ const Preview: React.FC = () => {
   };
 
   const deckOptions = [
-    { value: '', label: 'Выбери колоду...' },
+    { value: '', label: 'Select a deck...' },
     ...decks.map((d) => ({ value: String(d.id), label: d.name }))
   ];
 
   return (
     <div className="preview">
-      <h2>Просмотр и сохранение</h2>
+      <h2>Review &amp; Save</h2>
       <p className="description">
-        Проверь сгенерированные карточки и сохрани их в колоду.
+        Review the generated cards and save them to a deck.
       </p>
 
       {generatedCards.length === 0 ? (
         <div className="empty-state">
-          <p>Карточек пока нет. Сгенерируй их на вкладке Generate.</p>
+          <p>No cards yet. Generate them in the Generate tab.</p>
         </div>
       ) : (
         <>
           <div className="preview-summary">
             <span className="card-count">
-              {generatedCards.length} карточек
+              {generatedCards.length} cards
               {duplicateCount > 0 && (
                 <span className="duplicate-count">
-                  {' '}· {duplicateCount} уже в колоде
+                  {' '}· {duplicateCount} already in deck
                 </span>
               )}
             </span>
@@ -133,7 +133,7 @@ const Preview: React.FC = () => {
               variant="secondary"
               size="small"
             >
-              + Новая колода
+              + New deck
             </Button>
             <Button
               onClick={status === 'error' ? resetStatus : handleSave}
@@ -150,10 +150,10 @@ const Preview: React.FC = () => {
               <Input
                 value={newDeckName}
                 onChange={(e) => setNewDeckName(e.target.value)}
-                placeholder="Название новой колоды"
+                placeholder="New deck name"
               />
               <Button onClick={handleCreateDeck} size="small">
-                Создать
+                Create
               </Button>
             </div>
           )}
@@ -165,11 +165,11 @@ const Preview: React.FC = () => {
                 checked={includeDuplicates}
                 onChange={(e) => setIncludeDuplicates(e.target.checked)}
               />
-              {' '}Сохранить дубликаты тоже ({duplicateCount})
+              {' '}Save duplicates too ({duplicateCount})
             </label>
           )}
 
-          {error && <div className="adding-error">Ошибка: {error}</div>}
+          {error && <div className="adding-error">Error: {error}</div>}
 
           <div className="card-list">
             {generatedCards.map((card) => (
@@ -181,10 +181,10 @@ const Preview: React.FC = () => {
                       <span className="card-transcription">{card.transcription}</span>
                     )}
                     {card.isDuplicate && (
-                      <span className="card-badge duplicate">Уже в колоде</span>
+                      <span className="card-badge duplicate">Already in deck</span>
                     )}
                     {card.error && (
-                      <span className="card-badge error">Ошибка</span>
+                      <span className="card-badge error">Error</span>
                     )}
                   </div>
                   <div className="card-actions">
@@ -196,7 +196,7 @@ const Preview: React.FC = () => {
                       variant="danger"
                       size="small"
                     >
-                      Убрать
+                      Remove
                     </Button>
                     <span className="expand-icon">
                       {expandedCard === card.id ? '▼' : '▶'}

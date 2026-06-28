@@ -1,13 +1,23 @@
 .browser-filters {
   display: flex;
-  gap: 12px;
+  gap: var(--space-3);
   align-items: flex-end;
   flex-wrap: wrap;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
 
 .browser-filters > div {
   min-width: 160px;
+}
+
+/* Поиск растягивается на свободное место — набираемый текст всегда виден,
+   ничего не обрезается на :focus/:hover */
+.browser-filters > .input-wrapper:first-child {
+  flex: 1 1 280px;
+  min-width: 240px;
+}
+.browser-search {
+  text-overflow: clip;
 }
 
 .browser-table {

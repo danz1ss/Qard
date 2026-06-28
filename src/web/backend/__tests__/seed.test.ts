@@ -12,10 +12,10 @@ describe('seed', () => {
     await seedIfEmpty(col);
     const decks = col.listDecks(Date.now());
     const names = decks.map((d) => d.name).sort();
-    expect(names).toContain('Лексика A1');
-    expect(names).toContain('Лексика A2');
-    expect(names).toContain('Лексика B1');
-    expect(decks.find((d) => d.name === 'Лексика A1')!.totalCards).toBeGreaterThan(0);
+    expect(names).toContain('Vocabulary A1');
+    expect(names).toContain('Vocabulary A2');
+    expect(names).toContain('Vocabulary B1');
+    expect(decks.find((d) => d.name === 'Vocabulary A1')!.totalCards).toBeGreaterThan(0);
   });
 
   it('не дублирует колоды при повторном вызове', async () => {

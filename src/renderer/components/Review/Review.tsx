@@ -2,9 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ReviewQueueState, StoredCard } from '../../../shared/types';
 import Button from '../common/Button';
 import { blankOut, hasBold, isCorrect, parseBold, stripTags } from './htmlText';
-import '@fontsource/sora/400.css';
-import '@fontsource/sora/600.css';
-import '@fontsource/sora/700.css';
 import './Review.css';
 
 function audioMimeFromFilename(filename: string): string {
@@ -108,7 +105,7 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
       );
       setMnemonic(text);
     } catch (err: any) {
-      setMnemonicError(err?.message || 'Не удалось сгенерировать мнемонику');
+      setMnemonicError(err?.message || 'Failed to generate a mnemonic');
     } finally {
       setMnemonicLoading(false);
     }
@@ -139,7 +136,13 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!card || answered || !input.trim()) return;
+    if (!card || answered) return;
+    // Пустой ввод + Enter = «не знаю» → засчитываем как неверно и раскрываем ответ
+    if (!input.trim()) {
+      setCorrect(false);
+      setAnswered(true);
+      return;
+    }
     setCorrect(isCorrect(input, card.word));
     setAnswered(true);
   };
@@ -172,7 +175,7 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
   }, [answered, next]);
 
   if (!queue) {
-    return <div className="review">Загрузка...</div>;
+    return <div className="review">Loading...</div>;
   }
 
   const exampleFront =
@@ -194,19 +197,19 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
 
       {!card ? (
         <div className="review-done">
-          <p>🎉 Поздравляем! На сегодня в этой колоде всё.</p>
-          <Button onClick={onExit}>К колодам</Button>
+          <p>🎉 Congrats! You're done with this deck for today.</p>
+          <Button onClick={onExit}>To decks</Button>
         </div>
       ) : (
         <>
           <div className={`review-capsule ${capsuleState}`} key={card.id}>
-            <div className="capsule-label">Определение</div>
+            <div className="capsule-label">Definition</div>
             <p className="capsule-text">
               <Blanks text={stripTags(card.definition)} />
             </p>
             {exampleFront && (
               <>
-                <div className="capsule-label">Пример</div>
+                <div className="capsule-label">Example</div>
                 <p className="capsule-text">
                   <Blanks text={exampleFront} />
                 </p>
@@ -221,11 +224,11 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
                 className="review-input"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="впиши слово…"
+                placeholder="type the word…"
                 autoComplete="off"
                 spellCheck={false}
               />
-              <div className="review-hint">Enter — проверить</div>
+              <div className="review-hint">Enter — check · empty = don't know</div>
             </form>
           ) : (
             <div className="review-result">
@@ -236,7 +239,7 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
               >
                 <span className="answer-typed">{input || '—'}</span>
                 <span className="answer-badge">
-                  {correct ? '✓ Верно' : '✗ Неверно'}
+                  {correct ? '✓ Correct' : '✗ Wrong'}
                 </span>
               </div>
 
@@ -252,7 +255,7 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
                 )}
                 {card.audioFilename && (
                   <Button size="small" variant="secondary" onClick={playAudio}>
-                    ▶ Аудио
+                    ▶ Audio
                   </Button>
                 )}
                 {(card.definitionExample || card.examples.length > 0) && (
@@ -284,7 +287,7 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
                     onClick={genMnemonic}
                     disabled={mnemonicLoading}
                   >
-                    {mnemonicLoading ? '💭 Придумываю…' : '💡 Мнемоника'}
+                    {mnemonicLoading ? '💭 Thinking…' : '💡 Mnemonic'}
                   </button>
                 )}
                 {mnemonicError && (
@@ -293,7 +296,7 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
               </div>
 
               <Button size="large" onClick={next}>
-                Дальше (Enter)
+                Next (Enter)
               </Button>
             </div>
           )}

@@ -15,10 +15,10 @@ import './Browser.css';
 const PAGE_SIZE = 50;
 
 const STATE_LABELS: Record<CardState, string> = {
-  [CardState.New]: 'Новая',
-  [CardState.Learning]: 'Учится',
-  [CardState.Review]: 'Повтор',
-  [CardState.Relearning]: 'Переучивается'
+  [CardState.New]: 'New',
+  [CardState.Learning]: 'Learning',
+  [CardState.Review]: 'Review',
+  [CardState.Relearning]: 'Relearning'
 };
 
 const Browser: React.FC = () => {
@@ -78,7 +78,7 @@ const Browser: React.FC = () => {
 
   const bulkDelete = async () => {
     if (selected.size === 0) return;
-    if (!window.confirm(`Удалить выбранные карточки (${selected.size})?`)) return;
+    if (!window.confirm(`Delete selected cards (${selected.size})?`)) return;
     await window.electronAPI.collection.deleteCards([...selected]);
     refresh();
   };
@@ -93,62 +93,63 @@ const Browser: React.FC = () => {
   const pages = Math.max(1, Math.ceil(result.total / PAGE_SIZE));
 
   const deckOptions = [
-    { value: '', label: 'Все колоды' },
+    { value: '', label: 'All decks' },
     ...decks.map((d) => ({ value: String(d.id), label: d.name }))
   ];
   const statusOptions = [
-    { value: '', label: 'Любой статус' },
-    { value: 'new', label: 'Новые' },
-    { value: 'learning', label: 'Учатся' },
-    { value: 'review', label: 'Повтор' }
+    { value: '', label: 'Any status' },
+    { value: 'new', label: 'New' },
+    { value: 'learning', label: 'Learning' },
+    { value: 'review', label: 'Review' }
   ];
 
   return (
     <div className="browser">
-      <h2>Карточки</h2>
+      <h2>Cards</h2>
 
       <div className="browser-filters">
         <Input
-          label="Поиск"
+          label="Search"
+          className="browser-search"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Слово, определение, пример..."
+          placeholder="Word, definition, example..."
         />
         <Select
-          label="Колода"
+          label="Deck"
           value={deckId}
           onChange={(e) => setDeckId(e.target.value)}
           options={deckOptions}
         />
         <Select
-          label="Статус"
+          label="Status"
           value={status}
           onChange={(e) => setStatus(e.target.value)}
           options={statusOptions}
         />
         <Input
-          label="Тег"
+          label="Tag"
           value={tag}
           onChange={(e) => setTag(e.target.value)}
           placeholder="imported"
         />
       </div>
 
-      <p>{result.total} карточек найдено</p>
+      <p>{result.total} cards found</p>
 
       {selected.size > 0 && (
         <div className="browser-bulk">
-          <span>Выбрано: {selected.size}</span>
+          <span>Selected: {selected.size}</span>
           <Button size="small" variant="danger" onClick={bulkDelete}>
-            Удалить
+            Delete
           </Button>
           <Select
             value={moveTarget}
             onChange={(e) => setMoveTarget(e.target.value)}
-            options={[{ value: '', label: 'Переместить в...' }, ...decks.map((d) => ({ value: String(d.id), label: d.name }))]}
+            options={[{ value: '', label: 'Move to...' }, ...decks.map((d) => ({ value: String(d.id), label: d.name }))]}
           />
           <Button size="small" onClick={bulkMove} disabled={!moveTarget}>
-            Переместить
+            Move
           </Button>
         </div>
       )}
@@ -157,11 +158,11 @@ const Browser: React.FC = () => {
         <thead>
           <tr>
             <th></th>
-            <th>Слово</th>
-            <th>Определение</th>
-            <th>Колода</th>
-            <th>Статус</th>
-            <th>Повтор</th>
+            <th>Word</th>
+            <th>Definition</th>
+            <th>Deck</th>
+            <th>Status</th>
+            <th>Due</th>
           </tr>
         </thead>
         <tbody>
@@ -190,10 +191,10 @@ const Browser: React.FC = () => {
 
       <div className="browser-pagination">
         <Button size="small" variant="secondary" disabled={page === 0} onClick={() => setPage(page - 1)}>
-          ← Назад
+          ← Prev
         </Button>
         <span>
-          Стр. {page + 1} из {pages}
+          Page {page + 1} of {pages}
         </span>
         <Button
           size="small"
@@ -201,7 +202,7 @@ const Browser: React.FC = () => {
           disabled={page >= pages - 1}
           onClick={() => setPage(page + 1)}
         >
-          Вперёд →
+          Next →
         </Button>
       </div>
 

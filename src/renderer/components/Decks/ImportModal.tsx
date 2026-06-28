@@ -66,22 +66,22 @@ const ImportModal: React.FC<ImportModalProps> = ({ onClose, onImported }) => {
   return (
     <div className="modal-overlay" onClick={phase === 'running' ? undefined : onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h3>Импорт из Anki</h3>
+        <h3>Import from Anki</h3>
 
-        {phase === 'loading' && <p>Подключение к Anki...</p>}
+        {phase === 'loading' && <p>Connecting to Anki...</p>}
 
         {phase === 'error' && (
           <>
             <p className="help-text error">{error}</p>
             <div className="modal-actions">
-              <Button variant="secondary" onClick={onClose}>Закрыть</Button>
+              <Button variant="secondary" onClick={onClose}>Close</Button>
             </div>
           </>
         )}
 
         {phase === 'choose' && (
           <>
-            <p>Выбери колоды для импорта (прогресс изучения не переносится):</p>
+            <p>Choose decks to import (study progress is not transferred):</p>
             {ankiDecks.map((d) => (
               <label key={d.name} style={{ display: 'block', margin: '6px 0' }}>
                 <input
@@ -93,9 +93,9 @@ const ImportModal: React.FC<ImportModalProps> = ({ onClose, onImported }) => {
               </label>
             ))}
             <div className="modal-actions">
-              <Button variant="secondary" onClick={onClose}>Отмена</Button>
+              <Button variant="secondary" onClick={onClose}>Cancel</Button>
               <Button onClick={run} disabled={chosen.size === 0}>
-                Импортировать
+                Import
               </Button>
             </div>
           </>
@@ -104,24 +104,24 @@ const ImportModal: React.FC<ImportModalProps> = ({ onClose, onImported }) => {
         {phase === 'running' && progress && (
           <>
             <p>
-              Колода «{progress.deck}»: {progress.done} / {progress.total}
+              Deck "{progress.deck}": {progress.done} / {progress.total}
             </p>
             <p>
-              Импортировано: {progress.imported} · Пропущено: {progress.skipped} ·
-              Ошибок: {progress.errors}
+              Imported: {progress.imported} · Skipped: {progress.skipped} ·
+              Errors: {progress.errors}
             </p>
           </>
         )}
-        {phase === 'running' && !progress && <p>Импорт начался...</p>}
+        {phase === 'running' && !progress && <p>Import started...</p>}
 
         {phase === 'done' && progress && (
           <>
             <p>
-              Готово! Импортировано: {progress.imported}, пропущено: {progress.skipped},
-              ошибок: {progress.errors}.
+              Done! Imported: {progress.imported}, skipped: {progress.skipped},
+              errors: {progress.errors}.
             </p>
             <div className="modal-actions">
-              <Button onClick={onClose}>Закрыть</Button>
+              <Button onClick={onClose}>Close</Button>
             </div>
           </>
         )}

@@ -5,18 +5,19 @@
   margin-bottom: 8px;
 }
 
+/* Меньше воздуха над блоком «Current Settings» — не висит низко */
 .generation .description {
   color: var(--ivory-dim);
   font-size: 14px;
-  margin-bottom: 25px;
+  margin-bottom: var(--space-4);
 }
 
 .settings-summary {
   background-color: var(--surface);
   border: 1px solid var(--border-soft);
-  padding: 20px;
+  padding: var(--space-5);
   border-radius: 16px;
-  margin-bottom: 25px;
+  margin-bottom: var(--space-4);
 }
 
 .settings-summary h3 {
@@ -51,12 +52,14 @@
   font-size: 14px;
 }
 
+/* Блок рекомендаций — без лишнего отступа сверху, плотно к настройкам */
 .validation-errors {
   background-color: rgba(232, 133, 110, 0.12);
   border-left: 3px solid var(--coral);
-  padding: 15px 20px;
+  padding: var(--space-3) var(--space-5);
   border-radius: 10px;
-  margin-bottom: 25px;
+  margin-top: 0;
+  margin-bottom: var(--space-5);
 }
 
 .validation-errors h4 {

@@ -119,7 +119,7 @@ const Decks: React.FC = () => {
 
   const handleDelete = async (deck: DeckWithCounts) => {
     const ok = window.confirm(
-      `Удалить колоду «${deck.name}» и все её карточки (${deck.totalCards} шт.)?`
+      `Delete deck "${deck.name}" and all its cards (${deck.totalCards})?`
     );
     if (!ok) return;
     setError(null);
@@ -170,9 +170,9 @@ const Decks: React.FC = () => {
   return (
     <div className="decks">
       <header className="decks-head">
-        <h2 className="decks-title">Колоды</h2>
+        <h2 className="decks-title">Decks</h2>
         <p className="decks-sub">
-          Новые · Учатся · К повторению — нажми «Учить», чтобы начать сессию.
+          New · Learning · Due — press Study to start a session.
         </p>
       </header>
 
@@ -183,7 +183,7 @@ const Decks: React.FC = () => {
       {decks.length === 0 ? (
         <div className="decks-empty">
           <div className="decks-empty-glyph">∅</div>
-          <p>Пока нет колод. Создай первую ниже или импортируй из Anki.</p>
+          <p>No decks yet. Create your first one below or import from Anki.</p>
         </div>
       ) : (
         <ul className="deck-list">
@@ -208,14 +208,14 @@ const Decks: React.FC = () => {
                     />
                     <button
                       className="icon-btn icon-confirm"
-                      title="Сохранить"
+                      title="Save"
                       onClick={() => confirmRename(deck)}
                     >
                       <CheckIcon />
                     </button>
                     <button
                       className="icon-btn"
-                      title="Отмена"
+                      title="Cancel"
                       onClick={cancelRename}
                     >
                       <CloseIcon />
@@ -224,7 +224,7 @@ const Decks: React.FC = () => {
                 ) : (
                   <button
                     className="deck-name"
-                    title="Переименовать"
+                    title="Rename"
                     onClick={() => startRename(deck)}
                   >
                     {deck.name}
@@ -234,19 +234,19 @@ const Decks: React.FC = () => {
                 <div className="deck-stats">
                   <div className="stat">
                     <span className="stat-num stat-new">{deck.newCount}</span>
-                    <span className="stat-label">Новые</span>
+                    <span className="stat-label">New</span>
                   </div>
                   <div className="stat">
                     <span className="stat-num stat-learn">{deck.learnCount}</span>
-                    <span className="stat-label">Учатся</span>
+                    <span className="stat-label">Learning</span>
                   </div>
                   <div className="stat">
                     <span className="stat-num stat-due">{deck.dueCount}</span>
-                    <span className="stat-label">Повтор</span>
+                    <span className="stat-label">Due</span>
                   </div>
                   <div className="stat stat-total">
                     <span className="stat-num">{deck.totalCards}</span>
-                    <span className="stat-label">Всего</span>
+                    <span className="stat-label">Total</span>
                   </div>
                 </div>
               </div>
@@ -257,25 +257,25 @@ const Decks: React.FC = () => {
                   onClick={() => setStudyingDeck(deck)}
                 >
                   <PlayIcon />
-                  <span>Учить</span>
+                  <span>Study</span>
                 </button>
                 <button
                   className="icon-btn"
-                  title="Переименовать"
+                  title="Rename"
                   onClick={() => startRename(deck)}
                 >
                   <PencilIcon />
                 </button>
                 <button
                   className="icon-btn"
-                  title="Лимиты"
+                  title="Limits"
                   onClick={() => openLimits(deck)}
                 >
                   <SlidersIcon />
                 </button>
                 <button
                   className="icon-btn icon-danger"
-                  title="Удалить"
+                  title="Delete"
                   onClick={() => handleDelete(deck)}
                 >
                   <TrashIcon />
@@ -289,11 +289,11 @@ const Decks: React.FC = () => {
       {editingLimits && (
         <div className="limits-panel">
           <h3 className="limits-title">
-            Лимиты <span>«{editingLimits.name}»</span>
+            Limits <span>"{editingLimits.name}"</span>
           </h3>
           <div className="limits-row">
             <label className="limits-field">
-              <span>Новых в день</span>
+              <span>New per day</span>
               <input
                 value={limitNew}
                 onChange={(e) => setLimitNew(e.target.value)}
@@ -301,7 +301,7 @@ const Decks: React.FC = () => {
               />
             </label>
             <label className="limits-field">
-              <span>Повторений в день</span>
+              <span>Reviews per day</span>
               <input
                 value={limitRev}
                 onChange={(e) => setLimitRev(e.target.value)}
@@ -310,13 +310,13 @@ const Decks: React.FC = () => {
             </label>
             <div className="limits-actions">
               <button className="btn-pill btn-accent" onClick={saveLimits}>
-                Сохранить
+                Save
               </button>
               <button
                 className="btn-pill btn-muted"
                 onClick={() => setEditingLimits(null)}
               >
-                Отмена
+                Cancel
               </button>
             </div>
           </div>
@@ -332,15 +332,15 @@ const Decks: React.FC = () => {
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleCreate();
             }}
-            placeholder="Название новой колоды"
+            placeholder="New deck name"
           />
           <button className="btn-pill btn-accent" onClick={handleCreate}>
-            Создать
+            Create
           </button>
         </div>
         <button className="btn-pill btn-import" onClick={() => setImporting(true)}>
           <ImportIcon />
-          <span>Импорт из Anki</span>
+          <span>Import from Anki</span>
         </button>
       </div>
 

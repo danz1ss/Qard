@@ -76,12 +76,16 @@
   color: var(--ivory);
   background: transparent;
   border: none;
-  padding: 2px 0;
+  /* боковой padding + компенсирующий отрицательный margin: текст не липнет к краю
+     и не подрезается overflow:hidden, при этом визуально выровнен по левому краю */
+  padding: var(--space-1) var(--space-2);
+  margin-left: calc(-1 * var(--space-2));
   cursor: pointer;
   text-align: left;
   letter-spacing: -0.005em;
   border-bottom: 1.5px dashed transparent;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  border-radius: var(--space-2);
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

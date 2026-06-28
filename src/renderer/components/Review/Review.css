@@ -10,7 +10,7 @@
   --text: #e8eefc;
   --text-dim: #8aa0c4;
 
-  font-family: 'Sora', system-ui, sans-serif;
+  font-family: var(--font);
   color: var(--text);
   display: flex;
   flex-direction: column;
@@ -95,8 +95,8 @@
 .capsule-label:first-child { margin-top: 0; }
 
 .capsule-text {
-  font-size: 2.2rem;
-  line-height: 1.5;
+  font-size: 2.85rem;
+  line-height: 1.45;
   font-weight: 500;
   margin: 0;
   color: #f2f7ff;
@@ -299,7 +299,7 @@
   .review { padding: 18px 12px 36px; min-height: 70vh; }
   .review-header { margin-bottom: 26px; }
   .review-capsule { padding: 30px 22px; border-radius: 20px; }
-  .capsule-text { font-size: 1.55rem; }
+  .capsule-text { font-size: 2rem; }
   .capsule-label { font-size: 0.78rem; margin: 18px 0 6px; }
   .review-input { font-size: 1.4rem; }
   .reveal-word { font-size: 2rem; }

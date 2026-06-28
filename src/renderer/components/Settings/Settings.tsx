@@ -76,7 +76,7 @@ const Settings: React.FC = () => {
 
   const dailyGoalOptions = [10, 15, 20, 30, 50, 75, 100].map((n) => ({
     value: n.toString(),
-    label: `${n} повторов в день`
+    label: `${n} reviews per day`
   }));
 
   return (
@@ -150,28 +150,28 @@ const Settings: React.FC = () => {
       </div>
 
       <div className="settings-section">
-        <h3>Цель обучения</h3>
+        <h3>Study Goal</h3>
         <Select
-          label="Дневная цель"
+          label="Daily goal"
           value={dailyGoal.toString()}
           onChange={(e) => setDailyGoal(parseInt(e.target.value))}
           options={dailyGoalOptions}
         />
         <p className="help-text">
-          Сколько повторов в день нужно сделать, чтобы закрыть кольцо прогресса
-          на экране колод.
+          How many reviews per day you need to close the progress ring on the
+          Decks screen.
         </p>
       </div>
 
       {window.electronAPI.backup && (
-        <div className="settings-section">
-          <h3>Резервная копия</h3>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+        <div className="settings-section settings-backup">
+          <h3>Backup</h3>
+          <div className="backup-actions">
             <Button onClick={() => window.electronAPI.backup!.export()}>
-              Экспорт базы
+              Export database
             </Button>
             <label className="btn btn-secondary btn-medium" style={{ cursor: 'pointer' }}>
-              Импорт базы
+              Import database
               <input
                 type="file"
                 accept=".qard,application/octet-stream"
@@ -186,8 +186,8 @@ const Settings: React.FC = () => {
             </label>
           </div>
           <p className="help-text">
-            Экспорт сохраняет базу данных в файл .qard. Импорт заменяет текущую
-            базу загруженным файлом и перезагружает приложение.
+            Export saves the database to a .qard file. Import replaces the current
+            database with the uploaded file and reloads the app.
           </p>
         </div>
       )}

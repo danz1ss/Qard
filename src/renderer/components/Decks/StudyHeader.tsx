@@ -2,15 +2,11 @@ import React from 'react';
 import { StudyStats } from '../../../shared/types';
 import './StudyHeader.css';
 
-const DAY_LABELS = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-/** Склонение «день/дня/дней». */
+/** «day/days» plural. */
 function pluralDays(n: number): string {
-  const mod10 = n % 10;
-  const mod100 = n % 100;
-  if (mod10 === 1 && mod100 !== 11) return 'день';
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'дня';
-  return 'дней';
+  return n === 1 ? 'day' : 'days';
 }
 
 const FlameIcon: React.FC<{ active: boolean }> = ({ active }) => (
@@ -55,12 +51,12 @@ const StudyHeader: React.FC<StudyHeaderProps> = ({ stats, goal = 30 }) => {
         <div className="sh-streak-text">
           <span className="sh-streak-num">{streakDays}</span>
           <span className="sh-streak-label">
-            {pluralDays(streakDays)} подряд
+            {pluralDays(streakDays)} streak
           </span>
         </div>
       </div>
 
-      <div className="sh-goal" title={`Сегодня ${studiedToday} из ${goal}`}>
+      <div className="sh-goal" title={`Today ${studiedToday} of ${goal}`}>
         <svg viewBox="0 0 64 64" width="64" height="64" className="sh-ring">
           <circle className="sh-ring-track" cx="32" cy="32" r={R} />
           <circle
@@ -85,12 +81,12 @@ const StudyHeader: React.FC<StudyHeaderProps> = ({ stats, goal = 30 }) => {
       <div className="sh-summary">
         <div className="sh-sum-item">
           <span className="sh-sum-num">{studiedToday}</span>
-          <span className="sh-sum-label">сегодня</span>
+          <span className="sh-sum-label">today</span>
         </div>
         <div className="sh-sum-divider" />
         <div className="sh-sum-item">
           <span className="sh-sum-num">{reviewedTotal}</span>
-          <span className="sh-sum-label">всего повторов</span>
+          <span className="sh-sum-label">total reviews</span>
         </div>
       </div>
 
@@ -106,7 +102,7 @@ const StudyHeader: React.FC<StudyHeaderProps> = ({ stats, goal = 30 }) => {
                     isToday ? 'today' : ''
                   }`}
                   style={{ height: `${h}px` }}
-                  title={`${d.count} повт.`}
+                  title={`${d.count} reviews`}
                 />
                 <span className={`sh-bar-day ${isToday ? 'today' : ''}`}>
                   {DAY_LABELS[new Date(d.dayStart).getDay()]}
@@ -115,7 +111,7 @@ const StudyHeader: React.FC<StudyHeaderProps> = ({ stats, goal = 30 }) => {
             );
           })}
         </div>
-        <span className="sh-week-label">Активность за неделю</span>
+        <span className="sh-week-label">Weekly activity</span>
       </div>
     </div>
   );
