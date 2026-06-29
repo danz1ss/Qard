@@ -1,13 +1,7 @@
 import React from 'react';
 import { StudyStats } from '../../../shared/types';
+import { useT } from '../../prefs/PreferencesProvider';
 import './StudyHeader.css';
-
-const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-/** «day/days» plural. */
-function pluralDays(n: number): string {
-  return n === 1 ? 'day' : 'days';
-}
 
 const FlameIcon: React.FC<{ active: boolean }> = ({ active }) => (
   <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true">
@@ -32,6 +26,16 @@ interface StudyHeaderProps {
 }
 
 const StudyHeader: React.FC<StudyHeaderProps> = ({ stats, goal = 30 }) => {
+  const t = useT();
+  const DAY_LABELS = [
+    t('studyHeader.daySun'),
+    t('studyHeader.dayMon'),
+    t('studyHeader.dayTue'),
+    t('studyHeader.dayWed'),
+    t('studyHeader.dayThu'),
+    t('studyHeader.dayFri'),
+    t('studyHeader.daySat'),
+  ];
   const { streakDays, studiedToday, reviewedTotal, last7Days } = stats;
   const streakActive = streakDays > 0;
   const goalReached = studiedToday >= goal && goal > 0;
@@ -51,12 +55,12 @@ const StudyHeader: React.FC<StudyHeaderProps> = ({ stats, goal = 30 }) => {
         <div className="sh-streak-text">
           <span className="sh-streak-num">{streakDays}</span>
           <span className="sh-streak-label">
-            {pluralDays(streakDays)} streak
+            {streakDays === 1 ? t('studyHeader.streakSingular') : t('studyHeader.streakPlural')}
           </span>
         </div>
       </div>
 
-      <div className="sh-goal" title={`Today ${studiedToday} of ${goal}`}>
+      <div className="sh-goal" title={t('studyHeader.todayOf').replace('{n}', String(studiedToday)).replace('{goal}', String(goal))}>
         <svg viewBox="0 0 64 64" width="64" height="64" className="sh-ring">
           <circle className="sh-ring-track" cx="32" cy="32" r={R} />
           <circle
@@ -81,12 +85,12 @@ const StudyHeader: React.FC<StudyHeaderProps> = ({ stats, goal = 30 }) => {
       <div className="sh-summary">
         <div className="sh-sum-item">
           <span className="sh-sum-num">{studiedToday}</span>
-          <span className="sh-sum-label">today</span>
+          <span className="sh-sum-label">{t('studyHeader.today')}</span>
         </div>
         <div className="sh-sum-divider" />
         <div className="sh-sum-item">
           <span className="sh-sum-num">{reviewedTotal}</span>
-          <span className="sh-sum-label">total reviews</span>
+          <span className="sh-sum-label">{t('studyHeader.totalReviews')}</span>
         </div>
       </div>
 
@@ -102,7 +106,7 @@ const StudyHeader: React.FC<StudyHeaderProps> = ({ stats, goal = 30 }) => {
                     isToday ? 'today' : ''
                   }`}
                   style={{ height: `${h}px` }}
-                  title={`${d.count} reviews`}
+                  title={t('studyHeader.nReviews').replace('{n}', String(d.count))}
                 />
                 <span className={`sh-bar-day ${isToday ? 'today' : ''}`}>
                   {DAY_LABELS[new Date(d.dayStart).getDay()]}
@@ -111,7 +115,7 @@ const StudyHeader: React.FC<StudyHeaderProps> = ({ stats, goal = 30 }) => {
             );
           })}
         </div>
-        <span className="sh-week-label">Weekly activity</span>
+        <span className="sh-week-label">{t('studyHeader.weeklyActivity')}</span>
       </div>
     </div>
   );

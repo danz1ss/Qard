@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Modal from './Modal';
 import Button from './Button';
+import { useT } from '../../prefs/PreferencesProvider';
 
 interface CreateDeckModalProps {
   /** Создаёт колоду. Должен бросать ошибку при неудаче — модалка покажет её инлайн. */
@@ -10,6 +11,7 @@ interface CreateDeckModalProps {
 
 /** Модалка создания колоды (вызывается из sticky-тулбара). */
 const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ onCreate, onClose }) => {
+  const t = useT();
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,12 +32,12 @@ const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ onCreate, onClose }) 
 
   return (
     <Modal onClose={onClose} className="modal-create" width={420}>
-      <h3>New deck</h3>
+      <h3>{t('decks.newDeck')}</h3>
       <input
         className="deck-create-input"
         value={name}
         autoFocus
-        placeholder="Deck name"
+        placeholder={t('decks.deckNamePlaceholder')}
         onChange={(e) => setName(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Enter') submit();
@@ -44,10 +46,10 @@ const CreateDeckModal: React.FC<CreateDeckModalProps> = ({ onCreate, onClose }) 
       {error && <p className="modal-error">{error}</p>}
       <div className="modal-actions">
         <Button variant="secondary" onClick={onClose}>
-          Cancel
+          {t('modal.cancel')}
         </Button>
         <Button onClick={submit} disabled={!name.trim() || busy}>
-          {busy ? 'Creating...' : 'Create'}
+          {busy ? t('modal.creating') : t('modal.create')}
         </Button>
       </div>
     </Modal>

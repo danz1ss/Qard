@@ -12,19 +12,21 @@ import Select from '../common/Select';
 import ConfirmModal from '../common/ConfirmModal';
 import CardEditModal from './CardEditModal';
 import { stripTags } from '../Review/htmlText';
+import { useT } from '../../prefs/PreferencesProvider';
 import './Browser.css';
 
 const PAGE_SIZE = 50;
 
-const STATE_LABELS: Record<CardState, string> = {
-  [CardState.New]: 'New',
-  [CardState.Learning]: 'Learning',
-  [CardState.Review]: 'Review',
-  [CardState.Relearning]: 'Relearning'
-};
-
 const Browser: React.FC = () => {
+  const t = useT();
   const { decks, refreshDecks } = useStore();
+
+  const STATE_LABELS: Record<CardState, string> = {
+    [CardState.New]: t('browse.stateNew'),
+    [CardState.Learning]: t('browse.stateLearning'),
+    [CardState.Review]: t('browse.stateReview'),
+    [CardState.Relearning]: t('browse.stateRelearning')
+  };
   const [text, setText] = useState('');
   const [deckId, setDeckId] = useState<string>('');
   const [status, setStatus] = useState<string>('');
@@ -95,63 +97,63 @@ const Browser: React.FC = () => {
   const pages = Math.max(1, Math.ceil(result.total / PAGE_SIZE));
 
   const deckOptions = [
-    { value: '', label: 'All decks' },
+    { value: '', label: t('browse.allDecks') },
     ...decks.map((d) => ({ value: String(d.id), label: d.name }))
   ];
   const statusOptions = [
-    { value: '', label: 'Any status' },
-    { value: 'new', label: 'New' },
-    { value: 'learning', label: 'Learning' },
-    { value: 'review', label: 'Review' }
+    { value: '', label: t('browse.anyStatus') },
+    { value: 'new', label: t('browse.stateNew') },
+    { value: 'learning', label: t('browse.stateLearning') },
+    { value: 'review', label: t('browse.stateReview') }
   ];
 
   return (
     <div className="browser">
-      <h2>Cards</h2>
+      <h2>{t('browse.title')}</h2>
 
       <div className="browser-filters">
         <Input
-          label="Search"
+          label={t('browse.search')}
           className="browser-search"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Word, definition, example..."
+          placeholder={t('browse.searchPlaceholder')}
         />
         <Select
-          label="Deck"
+          label={t('browse.deck')}
           value={deckId}
           onChange={(v) => setDeckId(v)}
           options={deckOptions}
         />
         <Select
-          label="Status"
+          label={t('browse.status')}
           value={status}
           onChange={(v) => setStatus(v)}
           options={statusOptions}
         />
         <Input
-          label="Tag"
+          label={t('browse.tag')}
           value={tag}
           onChange={(e) => setTag(e.target.value)}
           placeholder="imported"
         />
       </div>
 
-      <p>{result.total} cards found</p>
+      <p>{t('browse.cardsFound').replace('{n}', String(result.total))}</p>
 
       {selected.size > 0 && (
         <div className="browser-bulk">
-          <span>Selected: {selected.size}</span>
+          <span>{t('browse.selected').replace('{n}', String(selected.size))}</span>
           <Button size="small" variant="danger" onClick={() => setConfirmingBulk(true)}>
-            Delete
+            {t('modal.delete')}
           </Button>
           <Select
             value={moveTarget}
             onChange={(v) => setMoveTarget(v)}
-            options={[{ value: '', label: 'Move to...' }, ...decks.map((d) => ({ value: String(d.id), label: d.name }))]}
+            options={[{ value: '', label: t('browse.moveTo') }, ...decks.map((d) => ({ value: String(d.id), label: d.name }))]}
           />
           <Button size="small" onClick={bulkMove} disabled={!moveTarget}>
-            Move
+            {t('browse.move')}
           </Button>
         </div>
       )}
@@ -160,11 +162,11 @@ const Browser: React.FC = () => {
         <thead>
           <tr>
             <th></th>
-            <th>Word</th>
-            <th>Definition</th>
-            <th>Deck</th>
-            <th>Status</th>
-            <th>Due</th>
+            <th>{t('browse.colWord')}</th>
+            <th>{t('browse.colDefinition')}</th>
+            <th>{t('browse.colDeck')}</th>
+            <th>{t('browse.colStatus')}</th>
+            <th>{t('browse.colDue')}</th>
           </tr>
         </thead>
         <tbody>
@@ -193,10 +195,10 @@ const Browser: React.FC = () => {
 
       <div className="browser-pagination">
         <Button size="small" variant="secondary" disabled={page === 0} onClick={() => setPage(page - 1)}>
-          ← Prev
+          {t('browse.prev')}
         </Button>
         <span>
-          Page {page + 1} of {pages}
+          {t('browse.page').replace('{cur}', String(page + 1)).replace('{total}', String(pages))}
         </span>
         <Button
           size="small"
@@ -204,7 +206,7 @@ const Browser: React.FC = () => {
           disabled={page >= pages - 1}
           onClick={() => setPage(page + 1)}
         >
-          Next →
+          {t('browse.next')}
         </Button>
       </div>
 
@@ -221,14 +223,9 @@ const Browser: React.FC = () => {
 
       {confirmingBulk && (
         <ConfirmModal
-          title="Delete cards?"
-          message={
-            <>
-              Delete <strong>{selected.size}</strong> selected card
-              {selected.size === 1 ? '' : 's'}? This cannot be undone.
-            </>
-          }
-          confirmLabel="Delete"
+          title={t('browse.deleteCardsTitle')}
+          message={t('browse.deleteCardsMsg').replace('{n}', String(selected.size))}
+          confirmLabel={t('modal.delete')}
           onConfirm={bulkDelete}
           onClose={() => setConfirmingBulk(false)}
         />

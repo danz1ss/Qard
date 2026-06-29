@@ -5,9 +5,11 @@ import Button from '../common/Button';
 import Select from '../common/Select';
 import CreateDeckModal from '../common/CreateDeckModal';
 import CardPreview from './CardPreview';
+import { useT } from '../../prefs/PreferencesProvider';
 import './Preview.css';
 
 const Preview: React.FC = () => {
+  const t = useT();
   const {
     generatedCards,
     removeGeneratedCard,
@@ -70,13 +72,13 @@ const Preview: React.FC = () => {
   const getButtonText = () => {
     switch (status) {
       case 'saving':
-        return 'Saving...';
+        return t('preview.saving');
       case 'success':
-        return `Saved ${savedCount} cards!`;
+        return t('preview.saved').replace('{n}', String(savedCount));
       case 'error':
-        return 'Error — retry';
+        return t('preview.errorRetry');
       default:
-        return 'Save to deck';
+        return t('preview.saveToDeck');
     }
   };
 
@@ -92,29 +94,29 @@ const Preview: React.FC = () => {
   };
 
   const deckOptions = [
-    { value: '', label: 'Select a deck...' },
+    { value: '', label: t('preview.selectDeck') },
     ...decks.map((d) => ({ value: String(d.id), label: d.name }))
   ];
 
   return (
     <div className="preview">
-      <h2>Review &amp; Save</h2>
+      <h2>{t('preview.title')}</h2>
       <p className="description">
-        Review the generated cards and save them to a deck.
+        {t('preview.description')}
       </p>
 
       {generatedCards.length === 0 ? (
         <div className="empty-state">
-          <p>No cards yet. Generate them in the Generate tab.</p>
+          <p>{t('preview.empty')}</p>
         </div>
       ) : (
         <>
           <div className="preview-summary">
             <span className="card-count">
-              {generatedCards.length} cards
+              {t('preview.cardCount').replace('{n}', String(generatedCards.length))}
               {duplicateCount > 0 && (
                 <span className="duplicate-count">
-                  {' '}· {duplicateCount} already in deck
+                  {' '}{t('preview.duplicates').replace('{n}', String(duplicateCount))}
                 </span>
               )}
             </span>
@@ -128,7 +130,7 @@ const Preview: React.FC = () => {
               variant="secondary"
               size="small"
             >
-              + New deck
+              {t('preview.newDeck')}
             </Button>
             <Button
               onClick={status === 'error' ? resetStatus : handleSave}
@@ -147,11 +149,11 @@ const Preview: React.FC = () => {
                 checked={includeDuplicates}
                 onChange={(e) => setIncludeDuplicates(e.target.checked)}
               />
-              {' '}Save duplicates too ({duplicateCount})
+              {' '}{t('preview.saveDuplicates').replace('{n}', String(duplicateCount))}
             </label>
           )}
 
-          {error && <div className="adding-error">Error: {error}</div>}
+          {error && <div className="adding-error">{t('preview.error').replace('{msg}', error)}</div>}
 
           <div className="card-list">
             {generatedCards.map((card) => (
@@ -163,10 +165,10 @@ const Preview: React.FC = () => {
                       <span className="card-transcription">{card.transcription}</span>
                     )}
                     {card.isDuplicate && (
-                      <span className="card-badge duplicate">Already in deck</span>
+                      <span className="card-badge duplicate">{t('preview.alreadyInDeck')}</span>
                     )}
                     {card.error && (
-                      <span className="card-badge error">Error</span>
+                      <span className="card-badge error">{t('preview.errorBadge')}</span>
                     )}
                   </div>
                   <div className="card-actions">
@@ -178,7 +180,7 @@ const Preview: React.FC = () => {
                       variant="danger"
                       size="small"
                     >
-                      Remove
+                      {t('preview.remove')}
                     </Button>
                     <span className="expand-icon">
                       {expandedCard === card.id ? '▼' : '▶'}

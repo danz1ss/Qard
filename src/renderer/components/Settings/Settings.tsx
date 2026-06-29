@@ -4,9 +4,11 @@ import Input from '../common/Input';
 import Select from '../common/Select';
 import Button from '../common/Button';
 import { AI_PROVIDERS } from '../../../shared/types';
+import { useT } from '../../prefs/PreferencesProvider';
 import './Settings.css';
 
 const Settings: React.FC = () => {
+  const t = useT();
   const {
     geminiApiKey,
     aiProvider,
@@ -36,7 +38,7 @@ const Settings: React.FC = () => {
     setSaveMessage('');
     try {
       await saveSettings();
-      setSaveMessage('Settings saved successfully!');
+      setSaveMessage(t('setup.savedSuccess'));
       setTimeout(() => setSaveMessage(''), 3000);
     } catch (error: any) {
       setSaveMessage(`Error: ${error.message}`);
@@ -66,28 +68,25 @@ const Settings: React.FC = () => {
     }
   };
 
-  const exampleCountOptions = [
-    { value: '1', label: '1 example' },
-    { value: '2', label: '2 examples' },
-    { value: '3', label: '3 examples' },
-    { value: '4', label: '4 examples' },
-    { value: '5', label: '5 examples' }
-  ];
+  const exampleCountOptions = [1, 2, 3, 4, 5].map((n) => ({
+    value: String(n),
+    label: t(`setup.example${n}` as any)
+  }));
 
   const dailyGoalOptions = [10, 15, 20, 30, 50, 75, 100].map((n) => ({
     value: n.toString(),
-    label: `${n} reviews per day`
+    label: t('setup.reviewsPerDay').replace('{n}', String(n))
   }));
 
   return (
     <div className="settings">
-      <h2>Setup & Configuration</h2>
-      <p className="description">Configure AI provider and generation.</p>
+      <h2>{t('setup.title')}</h2>
+      <p className="description">{t('setup.description')}</p>
 
       <div className="settings-section">
-        <h3>AI Provider</h3>
+        <h3>{t('setup.aiProvider')}</h3>
         <Select
-          label="Provider"
+          label={t('setup.provider')}
           value={aiProvider}
           onChange={(v) => handleProviderChange(v)}
           options={providerOptions}
@@ -96,23 +95,23 @@ const Settings: React.FC = () => {
         {isCustomProvider ? (
           <>
             <Input
-              label="Base URL (OpenAI-compatible endpoint)"
+              label={t('setup.baseUrl')}
               type="text"
               value={aiBaseUrl}
               onChange={(e) => setAiBaseUrl(e.target.value)}
               placeholder="https://your-endpoint/v1"
             />
             <Input
-              label="Model"
+              label={t('setup.model')}
               type="text"
               value={aiModel}
               onChange={(e) => setAiModel(e.target.value)}
-              placeholder="model-name"
+              placeholder={t('setup.modelPlaceholder')}
             />
           </>
         ) : (
           <Select
-            label="Model"
+            label={t('setup.model')}
             value={aiModel}
             onChange={(v) => setAiModel(v)}
             options={aiModelOptions}
@@ -120,15 +119,15 @@ const Settings: React.FC = () => {
         )}
 
         <Input
-          label="AI API Key"
+          label={t('setup.apiKey')}
           type="password"
           value={geminiApiKey}
           onChange={(e) => setGeminiApiKey(e.target.value)}
-          placeholder="Enter the API key for the selected provider"
+          placeholder={t('setup.apiKeyPlaceholder')}
         />
         {aiProvider === 'proxyapi' && (
           <p className="help-text">
-            Get your ProxyAPI key from{' '}
+            {t('setup.proxyApiHint')}{' '}
             <a
               href="#"
               onClick={(e) => {
@@ -142,7 +141,7 @@ const Settings: React.FC = () => {
         )}
 
         <Select
-          label="Number of Example Sentences"
+          label={t('setup.exampleCount')}
           value={exampleCount.toString()}
           onChange={(v) => setExampleCount(parseInt(v))}
           options={exampleCountOptions}
@@ -150,28 +149,27 @@ const Settings: React.FC = () => {
       </div>
 
       <div className="settings-section">
-        <h3>Study Goal</h3>
+        <h3>{t('setup.studyGoal')}</h3>
         <Select
-          label="Daily goal"
+          label={t('setup.dailyGoal')}
           value={dailyGoal.toString()}
           onChange={(v) => setDailyGoal(parseInt(v))}
           options={dailyGoalOptions}
         />
         <p className="help-text">
-          How many reviews per day you need to close the progress ring on the
-          Decks screen.
+          {t('setup.reviewsHint')}
         </p>
       </div>
 
       {window.electronAPI.backup && (
         <div className="settings-section settings-backup">
-          <h3>Backup</h3>
+          <h3>{t('setup.backup')}</h3>
           <div className="backup-actions">
             <Button onClick={() => window.electronAPI.backup!.export()}>
-              Export database
+              {t('setup.exportDb')}
             </Button>
             <label className="btn btn-secondary btn-medium" style={{ cursor: 'pointer' }}>
-              Import database
+              {t('setup.importDb')}
               <input
                 type="file"
                 accept=".qard,application/octet-stream"
@@ -186,15 +184,14 @@ const Settings: React.FC = () => {
             </label>
           </div>
           <p className="help-text">
-            Export saves the database to a .qard file. Import replaces the current
-            database with the uploaded file and reloads the app.
+            {t('setup.backupHint')}
           </p>
         </div>
       )}
 
       <div className="save-section">
         <Button onClick={handleSave} disabled={isSaving} size="large">
-          {isSaving ? 'Saving...' : 'Save Settings'}
+          {isSaving ? t('setup.saving') : t('setup.saveSettings')}
         </Button>
         {saveMessage && (
           <span className={`save-message ${saveMessage.includes('Error') ? 'error' : 'success'}`}>

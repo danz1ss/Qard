@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ImportDeckChoice, ImportProgress } from '../../../shared/types';
 import Button from '../common/Button';
+import { useT } from '../../prefs/PreferencesProvider';
 
 interface ImportModalProps {
   onClose: () => void;
@@ -10,6 +11,7 @@ interface ImportModalProps {
 type Phase = 'loading' | 'choose' | 'running' | 'done' | 'error';
 
 const ImportModal: React.FC<ImportModalProps> = ({ onClose, onImported }) => {
+  const t = useT();
   const [phase, setPhase] = useState<Phase>('loading');
   const [error, setError] = useState('');
   const [ankiDecks, setAnkiDecks] = useState<ImportDeckChoice[]>([]);
@@ -66,22 +68,22 @@ const ImportModal: React.FC<ImportModalProps> = ({ onClose, onImported }) => {
   return (
     <div className="modal-overlay" onClick={phase === 'running' ? undefined : onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h3>Import from Anki</h3>
+        <h3>{t('decks.importAnki')}</h3>
 
-        {phase === 'loading' && <p>Connecting to Anki...</p>}
+        {phase === 'loading' && <p>{t('import.connecting')}</p>}
 
         {phase === 'error' && (
           <>
             <p className="help-text error">{error}</p>
             <div className="modal-actions">
-              <Button variant="secondary" onClick={onClose}>Close</Button>
+              <Button variant="secondary" onClick={onClose}>{t('modal.close')}</Button>
             </div>
           </>
         )}
 
         {phase === 'choose' && (
           <>
-            <p>Choose decks to import (study progress is not transferred):</p>
+            <p>{t('import.chooseDecks')}</p>
             {ankiDecks.map((d) => (
               <label key={d.name} style={{ display: 'block', margin: '6px 0' }}>
                 <input
@@ -93,9 +95,9 @@ const ImportModal: React.FC<ImportModalProps> = ({ onClose, onImported }) => {
               </label>
             ))}
             <div className="modal-actions">
-              <Button variant="secondary" onClick={onClose}>Cancel</Button>
+              <Button variant="secondary" onClick={onClose}>{t('modal.cancel')}</Button>
               <Button onClick={run} disabled={chosen.size === 0}>
-                Import
+                {t('modal.import')}
               </Button>
             </div>
           </>
@@ -104,24 +106,31 @@ const ImportModal: React.FC<ImportModalProps> = ({ onClose, onImported }) => {
         {phase === 'running' && progress && (
           <>
             <p>
-              Deck "{progress.deck}": {progress.done} / {progress.total}
+              {t('import.progress')
+                .replace('{name}', progress.deck)
+                .replace('{done}', String(progress.done))
+                .replace('{total}', String(progress.total))}
             </p>
             <p>
-              Imported: {progress.imported} · Skipped: {progress.skipped} ·
-              Errors: {progress.errors}
+              {t('import.stats')
+                .replace('{imported}', String(progress.imported))
+                .replace('{skipped}', String(progress.skipped))
+                .replace('{errors}', String(progress.errors))}
             </p>
           </>
         )}
-        {phase === 'running' && !progress && <p>Import started...</p>}
+        {phase === 'running' && !progress && <p>{t('import.started')}</p>}
 
         {phase === 'done' && progress && (
           <>
             <p>
-              Done! Imported: {progress.imported}, skipped: {progress.skipped},
-              errors: {progress.errors}.
+              {t('import.done')
+                .replace('{imported}', String(progress.imported))
+                .replace('{skipped}', String(progress.skipped))
+                .replace('{errors}', String(progress.errors))}
             </p>
             <div className="modal-actions">
-              <Button onClick={onClose}>Close</Button>
+              <Button onClick={onClose}>{t('modal.close')}</Button>
             </div>
           </>
         )}

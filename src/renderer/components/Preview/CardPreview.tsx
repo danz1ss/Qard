@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GeneratedCard } from '../../../shared/types';
 import Button from '../common/Button';
 import { parseBold } from '../Review/htmlText';
+import { useT } from '../../prefs/PreferencesProvider';
 
 interface CardPreviewProps {
   card: GeneratedCard;
@@ -21,6 +22,7 @@ const RichText: React.FC<{ html: string }> = ({ html }) => (
 );
 
 const CardPreview: React.FC<CardPreviewProps> = ({ card }) => {
+  const t = useT();
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
   const handlePlayAudio = async () => {
@@ -62,32 +64,32 @@ const CardPreview: React.FC<CardPreviewProps> = ({ card }) => {
   return (
     <div className="card-preview">
       <div className="card-section">
-        <h4>Word Type</h4>
+        <h4>{t('preview.wordType')}</h4>
         <p>{card.wordType}</p>
       </div>
 
       <div className="card-section">
-        <h4>Definition</h4>
+        <h4>{t('review.definition')}</h4>
         <p><RichText html={card.definition} /></p>
       </div>
 
       {card.definitionExample && (
         <div className="card-section">
-          <h4>Definition Example</h4>
+          <h4>{t('preview.defExample')}</h4>
           <p><RichText html={card.definitionExample} /></p>
         </div>
       )}
 
       {card.transcription && (
         <div className="card-section">
-          <h4>Transcription</h4>
+          <h4>{t('preview.transcription')}</h4>
           <p>{card.transcription}</p>
         </div>
       )}
 
       {card.examples && card.examples.length > 0 && (
         <div className="card-section">
-          <h4>Examples</h4>
+          <h4>{t('preview.examples')}</h4>
           {card.examples.map((example, index) => (
             <div key={index} className="example-item">
               <p className="example-sentence"><RichText html={example} /></p>
@@ -98,28 +100,28 @@ const CardPreview: React.FC<CardPreviewProps> = ({ card }) => {
 
       {card.exampleType && (
         <div className="card-section">
-          <h4>Example Type</h4>
+          <h4>{t('preview.exampleType')}</h4>
           <p>{card.exampleType}</p>
         </div>
       )}
 
       {card.audioData && (
         <div className="card-section">
-          <h4>Audio</h4>
+          <h4>{t('preview.audio')}</h4>
           <Button
             onClick={handlePlayAudio}
             disabled={isPlayingAudio}
             variant="secondary"
             size="small"
           >
-            {isPlayingAudio ? 'Playing...' : '▶ Play Audio'}
+            {isPlayingAudio ? t('preview.playing') : t('preview.playAudio')}
           </Button>
         </div>
       )}
 
       {card.error && (
         <div className="card-section error">
-          <h4>Error</h4>
+          <h4>{t('preview.errorLabel')}</h4>
           <p>{card.error}</p>
         </div>
       )}

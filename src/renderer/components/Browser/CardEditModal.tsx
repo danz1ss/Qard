@@ -3,6 +3,7 @@ import { StoredCard } from '../../../shared/types';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import ConfirmModal from '../common/ConfirmModal';
+import { useT } from '../../prefs/PreferencesProvider';
 
 interface CardEditModalProps {
   card: StoredCard;
@@ -11,6 +12,7 @@ interface CardEditModalProps {
 }
 
 const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved }) => {
+  const t = useT();
   const [word, setWord] = useState(card.word);
   const [wordType, setWordType] = useState(card.wordType);
   const [definition, setDefinition] = useState(card.definition);
@@ -48,21 +50,21 @@ const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved })
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h3>Edit card</h3>
-        <Input label="Word" value={word} onChange={(e) => setWord(e.target.value)} />
-        <Input label="Part of speech" value={wordType} onChange={(e) => setWordType(e.target.value)} />
-        <Input label="Definition" value={definition} onChange={(e) => setDefinition(e.target.value)} />
+        <h3>{t('browse.editCard')}</h3>
+        <Input label={t('browse.fieldWord')} value={word} onChange={(e) => setWord(e.target.value)} />
+        <Input label={t('browse.fieldPartOfSpeech')} value={wordType} onChange={(e) => setWordType(e.target.value)} />
+        <Input label={t('browse.fieldDefinition')} value={definition} onChange={(e) => setDefinition(e.target.value)} />
         <Input
-          label="Definition example"
+          label={t('browse.fieldDefExample')}
           value={definitionExample}
           onChange={(e) => setDefinitionExample(e.target.value)}
         />
         <Input
-          label="Transcription"
+          label={t('browse.fieldTranscription')}
           value={transcription}
           onChange={(e) => setTranscription(e.target.value)}
         />
-        <label className="input-label">Examples (one per line)</label>
+        <label className="input-label">{t('browse.fieldExamples')}</label>
         {/* resize только по вертикали + max-height со скроллом (п.6) */}
         <textarea
           rows={4}
@@ -70,25 +72,25 @@ const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved })
           value={examples}
           onChange={(e) => setExamples(e.target.value)}
         />
-        <Input label="Tags (space-separated)" value={tags} onChange={(e) => setTags(e.target.value)} />
+        <Input label={t('browse.fieldTags')} value={tags} onChange={(e) => setTags(e.target.value)} />
         <div className="modal-actions">
-          <Button variant="danger" onClick={() => setConfirmingDelete(true)}>Delete</Button>
-          <Button variant="secondary" onClick={onClose}>Cancel</Button>
+          <Button variant="danger" onClick={() => setConfirmingDelete(true)}>{t('modal.delete')}</Button>
+          <Button variant="secondary" onClick={onClose}>{t('modal.cancel')}</Button>
           <Button onClick={save} disabled={saving}>
-            {saving ? 'Saving...' : 'Save'}
+            {saving ? t('modal.saving') : t('modal.save')}
           </Button>
         </div>
       </div>
 
       {confirmingDelete && (
         <ConfirmModal
-          title="Delete card?"
+          title={t('browse.deleteCardTitle')}
           message={
             <>
-              Delete card <strong>“{card.word}”</strong>? This cannot be undone.
+              {t('browse.deleteCardMsgPre')}<strong>"{card.word}"</strong>{t('browse.deleteCardMsgPost')}
             </>
           }
-          confirmLabel="Delete"
+          confirmLabel={t('modal.delete')}
           onConfirm={remove}
           onClose={() => setConfirmingDelete(false)}
         />

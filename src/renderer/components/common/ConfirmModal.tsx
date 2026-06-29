@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from './Modal';
 import Button from './Button';
+import { useT } from '../../prefs/PreferencesProvider';
 
 interface ConfirmModalProps {
   title: string;
@@ -17,24 +18,27 @@ interface ConfirmModalProps {
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
   title,
   message,
-  confirmLabel = 'Delete',
-  cancelLabel = 'Cancel',
+  confirmLabel,
+  cancelLabel,
   danger = true,
   onConfirm,
   onClose
-}) => (
-  <Modal onClose={onClose} className="modal-confirm" width={420}>
-    <h3>{title}</h3>
-    <p className="modal-confirm-text">{message}</p>
-    <div className="modal-actions">
-      <Button variant="secondary" onClick={onClose}>
-        {cancelLabel}
-      </Button>
-      <Button variant={danger ? 'danger' : 'primary'} onClick={onConfirm}>
-        {confirmLabel}
-      </Button>
-    </div>
-  </Modal>
-);
+}) => {
+  const t = useT();
+  return (
+    <Modal onClose={onClose} className="modal-confirm" width={420}>
+      <h3>{title}</h3>
+      <p className="modal-confirm-text">{message}</p>
+      <div className="modal-actions">
+        <Button variant="secondary" onClick={onClose}>
+          {cancelLabel ?? t('modal.cancel')}
+        </Button>
+        <Button variant={danger ? 'danger' : 'primary'} onClick={onConfirm}>
+          {confirmLabel ?? t('modal.delete')}
+        </Button>
+      </div>
+    </Modal>
+  );
+};
 
 export default ConfirmModal;

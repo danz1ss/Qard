@@ -6,6 +6,7 @@ import ImportModal from './ImportModal';
 import StudyHeader from './StudyHeader';
 import ConfirmModal from '../common/ConfirmModal';
 import CreateDeckModal from '../common/CreateDeckModal';
+import { useT } from '../../prefs/PreferencesProvider';
 import '@fontsource/rubik/400.css';
 import '@fontsource/rubik/500.css';
 import '@fontsource/rubik/700.css';
@@ -61,6 +62,7 @@ const ImportIcon = () => (
 );
 
 const Decks: React.FC<DecksProps> = ({ onNavigate }) => {
+  const t = useT();
   const { decks, refreshDecks, stats, refreshStats, dailyGoal, loadSettings } = useStore();
   const [error, setError] = useState<string | null>(null);
   const [editingLimits, setEditingLimits] = useState<DeckWithCounts | null>(null);
@@ -181,18 +183,18 @@ const Decks: React.FC<DecksProps> = ({ onNavigate }) => {
   return (
     <div className="decks">
       <header className="decks-head">
-        <h2 className="decks-title">Decks</h2>
+        <h2 className="decks-title">{t('decks.title')}</h2>
         <div className="decks-legend">
           <span className="legend-badge legend-new">
-            <i className="legend-dot" /> New: {totals.newCount}
+            <i className="legend-dot" /> {t('decks.legendNew').replace('{n}', String(totals.newCount))}
           </span>
           <span className="legend-badge legend-learn">
-            <i className="legend-dot" /> Learning: {totals.learnCount}
+            <i className="legend-dot" /> {t('decks.legendLearning').replace('{n}', String(totals.learnCount))}
           </span>
           <span className="legend-badge legend-due">
-            <i className="legend-dot" /> Due: {totals.dueCount}
+            <i className="legend-dot" /> {t('decks.legendDue').replace('{n}', String(totals.dueCount))}
           </span>
-          <span className="legend-hint">press Study to start a session</span>
+          <span className="legend-hint">{t('decks.legendHint')}</span>
         </div>
       </header>
 
@@ -204,50 +206,50 @@ const Decks: React.FC<DecksProps> = ({ onNavigate }) => {
         /* ---------- Onboarding / Empty State (п.4) ---------- */
         <div className="decks-onboard">
           <div className="onboard-spark">✦</div>
-          <h3 className="onboard-title">Welcome to Qard!</h3>
+          <h3 className="onboard-title">{t('decks.onboardTitle')}</h3>
           <p className="onboard-sub">
-            Build your first deck of smart flashcards in three steps.
+            {t('decks.onboardSub')}
           </p>
           <ol className="onboard-steps">
             <li>
               <span className="onboard-num">1</span>
               <div className="onboard-step-text">
-                <strong>Set up your API key</strong>
-                <span>Open Setup and add the key for your AI provider.</span>
+                <strong>{t('decks.onboardStep1Title')}</strong>
+                <span>{t('decks.onboardStep1Sub')}</span>
               </div>
               <button className="btn-pill btn-muted" onClick={() => onNavigate('setup')}>
-                Setup
+                {t('nav.setup')}
               </button>
             </li>
             <li>
               <span className="onboard-num">2</span>
               <div className="onboard-step-text">
-                <strong>Add words</strong>
-                <span>Paste or import the words you want to learn.</span>
+                <strong>{t('decks.onboardStep2Title')}</strong>
+                <span>{t('decks.onboardStep2Sub')}</span>
               </div>
               <button className="btn-pill btn-muted" onClick={() => onNavigate('input')}>
-                Input
+                {t('nav.input')}
               </button>
             </li>
             <li>
               <span className="onboard-num">3</span>
               <div className="onboard-step-text">
-                <strong>Generate your first deck</strong>
-                <span>Let AI create translations, examples and audio.</span>
+                <strong>{t('decks.onboardStep3Title')}</strong>
+                <span>{t('decks.onboardStep3Sub')}</span>
               </div>
               <button className="btn-pill btn-muted" onClick={() => onNavigate('generate')}>
-                Generate
+                {t('nav.generate')}
               </button>
             </li>
           </ol>
           <div className="onboard-cta">
             <button className="btn-pill btn-accent" onClick={() => setCreating(true)}>
               <PlusIcon />
-              <span>New deck</span>
+              <span>{t('decks.newDeck')}</span>
             </button>
             <button className="btn-pill btn-import" onClick={() => setImporting(true)}>
               <ImportIcon />
-              <span>Import from Anki</span>
+              <span>{t('decks.importAnki')}</span>
             </button>
           </div>
         </div>
@@ -257,11 +259,11 @@ const Decks: React.FC<DecksProps> = ({ onNavigate }) => {
           <div className="decks-toolbar">
             <button className="btn-pill btn-accent" onClick={() => setCreating(true)}>
               <PlusIcon />
-              <span>New deck</span>
+              <span>{t('decks.newDeck')}</span>
             </button>
             <button className="btn-pill btn-import" onClick={() => setImporting(true)}>
               <ImportIcon />
-              <span>Import from Anki</span>
+              <span>{t('decks.importAnki')}</span>
             </button>
           </div>
 
@@ -295,7 +297,7 @@ const Decks: React.FC<DecksProps> = ({ onNavigate }) => {
                     /* Инлайн-редактирование по клику (п.3) */
                     <button
                       className="deck-name"
-                      title="Click to rename"
+                      title={t('decks.clickRename')}
                       onClick={() => startRename(deck)}
                     >
                       {deck.name}
@@ -305,19 +307,19 @@ const Decks: React.FC<DecksProps> = ({ onNavigate }) => {
                   <div className="deck-stats">
                     <div className="stat">
                       <span className="stat-num stat-new">{deck.newCount}</span>
-                      <span className="stat-label">New</span>
+                      <span className="stat-label">{t('decks.statNew')}</span>
                     </div>
                     <div className="stat">
                       <span className="stat-num stat-learn">{deck.learnCount}</span>
-                      <span className="stat-label">Learning</span>
+                      <span className="stat-label">{t('decks.statLearning')}</span>
                     </div>
                     <div className="stat">
                       <span className="stat-num stat-due">{deck.dueCount}</span>
-                      <span className="stat-label">Due</span>
+                      <span className="stat-label">{t('decks.statDue')}</span>
                     </div>
                     <div className="stat stat-total">
                       <span className="stat-num">{deck.totalCards}</span>
-                      <span className="stat-label">Total</span>
+                      <span className="stat-label">{t('decks.statTotal')}</span>
                     </div>
                   </div>
                 </div>
@@ -325,18 +327,18 @@ const Decks: React.FC<DecksProps> = ({ onNavigate }) => {
                 <div className="deck-actions">
                   <button className="btn-learn" onClick={() => setStudyingDeck(deck)}>
                     <PlayIcon />
-                    <span>Study</span>
+                    <span>{t('decks.study')}</span>
                   </button>
                   <button
                     className={`icon-btn ${editingLimits?.id === deck.id ? 'is-active' : ''}`}
-                    title="Daily limits"
+                    title={t('decks.dailyLimits')}
                     onClick={() => toggleLimits(deck)}
                   >
                     <SlidersIcon />
                   </button>
                   <button
                     className="icon-btn icon-danger"
-                    title="Delete"
+                    title={t('modal.delete')}
                     onClick={() => setDeletingDeck(deck)}
                   >
                     <TrashIcon />
@@ -346,10 +348,10 @@ const Decks: React.FC<DecksProps> = ({ onNavigate }) => {
                 {/* ---------- Поповер лимитов под шестерёнкой (п.1) ---------- */}
                 {editingLimits?.id === deck.id && (
                   <div className="deck-popover">
-                    <h4 className="popover-title">Daily limits</h4>
+                    <h4 className="popover-title">{t('decks.dailyLimits')}</h4>
                     <div className="popover-fields">
                       <label className="popover-field">
-                        <span>New per day</span>
+                        <span>{t('decks.newPerDay')}</span>
                         <input
                           value={limitNew}
                           onChange={(e) => setLimitNew(e.target.value)}
@@ -358,7 +360,7 @@ const Decks: React.FC<DecksProps> = ({ onNavigate }) => {
                         />
                       </label>
                       <label className="popover-field">
-                        <span>Reviews per day</span>
+                        <span>{t('decks.reviewsPerDay')}</span>
                         <input
                           value={limitRev}
                           onChange={(e) => setLimitRev(e.target.value)}
@@ -368,10 +370,10 @@ const Decks: React.FC<DecksProps> = ({ onNavigate }) => {
                     </div>
                     <div className="popover-actions">
                       <button className="btn-pill btn-muted" onClick={() => setEditingLimits(null)}>
-                        Cancel
+                        {t('modal.cancel')}
                       </button>
                       <button className="btn-pill btn-accent" onClick={saveLimits}>
-                        Save
+                        {t('modal.save')}
                       </button>
                     </div>
                   </div>
@@ -395,14 +397,13 @@ const Decks: React.FC<DecksProps> = ({ onNavigate }) => {
 
       {deletingDeck && (
         <ConfirmModal
-          title="Delete deck?"
+          title={t('decks.deleteDeckTitle')}
           message={
             <>
-              Delete deck <strong>“{deletingDeck.name}”</strong> and all its cards
-              ({deletingDeck.totalCards})? This cannot be undone.
+              {t('decks.deleteDeckMsgPre')}<strong>”{deletingDeck.name}”</strong>{t('decks.deleteDeckMsgPost').replace('{n}', String(deletingDeck.totalCards))}
             </>
           }
-          confirmLabel="Delete"
+          confirmLabel={t('modal.delete')}
           onConfirm={confirmDelete}
           onClose={() => setDeletingDeck(null)}
         />
