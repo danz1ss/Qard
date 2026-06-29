@@ -89,7 +89,7 @@ const Settings: React.FC = () => {
         <Select
           label="Provider"
           value={aiProvider}
-          onChange={(e) => handleProviderChange(e.target.value)}
+          onChange={(v) => handleProviderChange(v)}
           options={providerOptions}
         />
 
@@ -114,7 +114,7 @@ const Settings: React.FC = () => {
           <Select
             label="Model"
             value={aiModel}
-            onChange={(e) => setAiModel(e.target.value)}
+            onChange={(v) => setAiModel(v)}
             options={aiModelOptions}
           />
         )}
@@ -144,7 +144,7 @@ const Settings: React.FC = () => {
         <Select
           label="Number of Example Sentences"
           value={exampleCount.toString()}
-          onChange={(e) => setExampleCount(parseInt(e.target.value))}
+          onChange={(v) => setExampleCount(parseInt(v))}
           options={exampleCountOptions}
         />
       </div>
@@ -154,7 +154,7 @@ const Settings: React.FC = () => {
         <Select
           label="Daily goal"
           value={dailyGoal.toString()}
-          onChange={(e) => setDailyGoal(parseInt(e.target.value))}
+          onChange={(v) => setDailyGoal(parseInt(v))}
           options={dailyGoalOptions}
         />
         <p className="help-text">

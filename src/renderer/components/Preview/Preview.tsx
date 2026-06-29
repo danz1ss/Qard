@@ -120,7 +120,7 @@ const Preview: React.FC = () => {
             </span>
             <Select
               value={targetDeckId !== null ? String(targetDeckId) : ''}
-              onChange={(e) => handleDeckChange(e.target.value)}
+              onChange={(v) => handleDeckChange(v)}
               options={deckOptions}
             />
             <Button

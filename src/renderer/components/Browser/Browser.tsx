@@ -120,13 +120,13 @@ const Browser: React.FC = () => {
         <Select
           label="Deck"
           value={deckId}
-          onChange={(e) => setDeckId(e.target.value)}
+          onChange={(v) => setDeckId(v)}
           options={deckOptions}
         />
         <Select
           label="Status"
           value={status}
-          onChange={(e) => setStatus(e.target.value)}
+          onChange={(v) => setStatus(v)}
           options={statusOptions}
         />
         <Input
@@ -147,7 +147,7 @@ const Browser: React.FC = () => {
           </Button>
           <Select
             value={moveTarget}
-            onChange={(e) => setMoveTarget(e.target.value)}
+            onChange={(v) => setMoveTarget(v)}
             options={[{ value: '', label: 'Move to...' }, ...decks.map((d) => ({ value: String(d.id), label: d.name }))]}
           />
           <Button size="small" onClick={bulkMove} disabled={!moveTarget}>
