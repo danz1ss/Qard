@@ -23,6 +23,20 @@
     var(--bg-0);
 }
 
+/* Светлая тема для зоны Review (приглушённый акцент вместо неона) */
+:root[data-theme='light'] .review {
+  --bg-0: #eef1f6;
+  --bg-1: #f7f9fc;
+  --neon: #3f6fd6;
+  --neon-soft: rgba(63, 111, 214, 0.28);
+  --ok: #1aa57f;
+  --ok-soft: rgba(26, 165, 127, 0.30);
+  --bad: #d24a60;
+  --bad-soft: rgba(210, 74, 96, 0.30);
+  --text: #1f2530;
+  --text-dim: #51607a;
+}
+
 .review-header {
   display: flex;
   justify-content: space-between;

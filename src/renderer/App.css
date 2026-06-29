@@ -45,6 +45,28 @@
   --font: 'Rubik', system-ui, -apple-system, sans-serif;
 }
 
+/* ---------- Светлая тема: переопределение глобальных токенов ---------- */
+:root[data-theme='light'] {
+  --bg: #eef1f6;
+  --bg-deep: #e6eaf1;
+  --bg-elev: #f4f6fa;
+  --surface: #ffffff;
+  --surface-hi: #f0f3f8;
+  --border: #c9d0dd;
+  --border-soft: #d7dde7;
+
+  --ivory: #1f2530;
+  --ivory-dim: #51607a;
+  --muted: #6b7689;
+
+  --accent: #3f6fd6;
+  --accent-hi: #5e88e6;
+  --accent-press: #335cb4;
+  --accent-soft: rgba(63, 111, 214, 0.12);
+
+  --key-shadow: #c2cad8;
+}
+
 /* ---------- Каркас ---------- */
 .app {
   display: flex;
