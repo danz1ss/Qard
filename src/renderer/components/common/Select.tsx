@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import './Select.css';
 
 interface Option { value: string; label: string; }
@@ -18,6 +18,8 @@ const Select: React.FC<SelectProps> = ({
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const id = useId();
 
   const selected = options.find((o) => o.value === value);
 
@@ -36,6 +38,12 @@ const Select: React.FC<SelectProps> = ({
       setActive(idx >= 0 ? idx : 0);
     }
   }, [open, value, options]);
+
+  useEffect(() => {
+    if (!open) return;
+    const el = listRef.current?.children[active] as HTMLElement | undefined;
+    el?.scrollIntoView({ block: 'nearest' });
+  }, [active, open]);
 
   const choose = (idx: number) => {
     const opt = options[idx];
@@ -60,21 +68,22 @@ const Select: React.FC<SelectProps> = ({
 
   return (
     <div className={`select-wrapper ${className}`} ref={rootRef}>
-      {label && <label className="select-label">{label}</label>}
+      {label && <label className="select-label" htmlFor={`${id}-trigger`}>{label}</label>}
       <div className={`cselect ${error ? 'cselect-error' : ''} ${disabled ? 'is-disabled' : ''}`}>
         <button
           type="button"
+          id={`${id}-trigger`}
           className="cselect-trigger"
           aria-haspopup="listbox"
           aria-expanded={open}
           disabled={disabled}
-          onClick={() => !disabled && setOpen((o) => !o)}
+          onClick={() => setOpen((o) => !o)}
           onKeyDown={onKeyDown}
         >
           <span className="cselect-value">{selected ? selected.label : ''}</span>
           <span className={`cselect-caret ${open ? 'is-open' : ''}`}>▾</span>
         </button>
-        <ul className={`cselect-list ${open ? 'is-open' : ''}`} role="listbox" tabIndex={-1}>
+        <ul ref={listRef} className={`cselect-list ${open ? 'is-open' : ''}`} role="listbox" tabIndex={-1} aria-hidden={!open}>
           {options.map((o, i) => (
             <li
               key={o.value}
