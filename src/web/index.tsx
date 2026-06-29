@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from '../renderer/App';
 import { initWebBackend } from './backend/api';
+import { PreferencesProvider } from '../renderer/prefs/PreferencesProvider';
 
 async function bootstrap() {
   const { api } = await initWebBackend();
@@ -10,7 +11,9 @@ async function bootstrap() {
   const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
   root.render(
     <React.StrictMode>
-      <App />
+      <PreferencesProvider>
+        <App />
+      </PreferencesProvider>
     </React.StrictMode>,
   );
 
