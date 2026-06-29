@@ -11,6 +11,7 @@ import '@fontsource/rubik/600.css';
 import '@fontsource/rubik/700.css';
 import './App.css';
 import ydnLogo from './assets/ydn-logo.png';
+import HeaderControls from './components/common/HeaderControls';
 
 const LogoMark = () => (
   <img src={ydnLogo} alt="YDN" className="brand-logo" width={30} height={35} />
@@ -76,6 +77,7 @@ const App: React.FC = () => {
           Preview
         </button>
         </nav>
+        <HeaderControls />
       </header>
 
       <main className="app-content">
