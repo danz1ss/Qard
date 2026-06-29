@@ -1,6 +1,7 @@
 import React from 'react';
 import { useStore } from '../../store';
 import { useCardGeneration } from '../../hooks/useCardGeneration';
+import { useT } from '../../prefs/PreferencesProvider';
 import Button from '../common/Button';
 import { CheckIcon, XIcon } from '../common/icons';
 import { GenerationStage } from '../../../shared/types';
@@ -16,6 +17,7 @@ const Generation: React.FC = () => {
   } = useStore();
 
   const { startGeneration } = useCardGeneration();
+  const t = useT();
 
   const canGenerate =
     words.length > 0 &&
@@ -28,17 +30,17 @@ const Generation: React.FC = () => {
   const getStageText = (stage: GenerationStage): string => {
     switch (stage) {
       case GenerationStage.Definition:
-        return 'Generating definition and word type...';
+        return t('gen.stageDefinition');
       case GenerationStage.Examples:
-        return 'Generating example sentences...';
+        return t('gen.stageExamples');
       case GenerationStage.Audio:
-        return 'Generating audio pronunciation...';
+        return t('gen.stageAudio');
       case GenerationStage.Complete:
-        return 'Completed!';
+        return t('gen.stageComplete');
       case GenerationStage.Error:
-        return 'Error occurred';
+        return t('gen.stageError');
       default:
-        return 'Ready to start';
+        return t('gen.stageReady');
     }
   };
 
@@ -49,30 +51,30 @@ const Generation: React.FC = () => {
 
   return (
     <div className="generation">
-      <h2>Generate Flashcards</h2>
+      <h2>{t('gen.title')}</h2>
       <p className="description">
-        Start the card generation process. This will create translations, examples, and audio for each word.
+        {t('gen.description')}
       </p>
 
       {/* Settings Summary */}
       <div className="settings-summary">
-        <h3>Current Settings</h3>
+        <h3>{t('gen.currentSettings')}</h3>
         <div className="summary-grid">
           <div className="summary-item">
-            <span className="summary-label">Words:</span>
+            <span className="summary-label">{t('gen.words')}</span>
             <span className="summary-value">{words.length}</span>
           </div>
           <div className="summary-item">
-            <span className="summary-label">Examples per word:</span>
+            <span className="summary-label">{t('gen.examplesPerWord')}</span>
             <span className="summary-value">{exampleCount}</span>
           </div>
           <div className="summary-item">
-            <span className="summary-label">AI API Key:</span>
+            <span className="summary-label">{t('gen.apiKey')}</span>
             <span className={`summary-value ${geminiApiKey ? 'is-ok' : 'is-missing'}`}>
               {geminiApiKey ? (
-                <><CheckIcon size={15} /> Configured</>
+                <><CheckIcon size={15} /> {t('gen.configured')}</>
               ) : (
-                <><XIcon size={15} /> Not configured</>
+                <><XIcon size={15} /> {t('gen.notConfigured')}</>
               )}
             </span>
           </div>
@@ -82,10 +84,10 @@ const Generation: React.FC = () => {
       {/* Validation Messages */}
       {!canGenerate && (
         <div className="validation-errors">
-          <h4>Please complete the following before generating:</h4>
+          <h4>{t('gen.validationHeading')}</h4>
           <ul>
-            {words.length === 0 && <li>Add words in the Input tab</li>}
-            {!geminiApiKey && <li>Enter AI API key in the Setup tab</li>}
+            {words.length === 0 && <li>{t('gen.addWords')}</li>}
+            {!geminiApiKey && <li>{t('gen.enterKey')}</li>}
           </ul>
         </div>
       )}
@@ -97,14 +99,14 @@ const Generation: React.FC = () => {
           disabled={!canGenerate || isGenerating}
           size="large"
         >
-          {isGenerating ? 'Generating...' : 'Start Generation'}
+          {isGenerating ? t('gen.generating') : t('gen.startGeneration')}
         </Button>
       </div>
 
       {/* Progress Display */}
       {isGenerating && (
         <div className="generation-progress">
-          <h3>Generation Progress</h3>
+          <h3>{t('gen.progress')}</h3>
 
           <div className="progress-bar-container">
             <div
@@ -115,19 +117,19 @@ const Generation: React.FC = () => {
 
           <div className="progress-info">
             <div className="progress-text">
-              <strong>Current word:</strong> {generationProgress.currentWord}
+              <strong>{t('gen.currentWord')}</strong> {generationProgress.currentWord}
             </div>
             <div className="progress-text">
-              <strong>Stage:</strong> {getStageText(generationProgress.currentStage)}
+              <strong>{t('gen.stage')}</strong> {getStageText(generationProgress.currentStage)}
             </div>
             <div className="progress-text">
-              <strong>Completed:</strong> {generationProgress.completedCards} / {generationProgress.totalCards}
+              <strong>{t('gen.completed')}</strong> {generationProgress.completedCards} / {generationProgress.totalCards}
             </div>
           </div>
 
           {generationProgress.error && (
             <div className="progress-error">
-              <strong>Error:</strong> {generationProgress.error}
+              <strong>{t('gen.error')}</strong> {generationProgress.error}
             </div>
           )}
         </div>
@@ -136,10 +138,9 @@ const Generation: React.FC = () => {
       {/* Completion Message */}
       {!isGenerating && generationProgress.completedCards > 0 && (
         <div className="generation-complete">
-          <h3>Generation Complete!</h3>
+          <h3>{t('gen.complete')}</h3>
           <p>
-            Successfully generated {generationProgress.completedCards} flashcards.
-            Go to the Preview tab to review and save them to your collection.
+            {t('gen.completeText').replace('{n}', String(generationProgress.completedCards))}
           </p>
         </div>
       )}

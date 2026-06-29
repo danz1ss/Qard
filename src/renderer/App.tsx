@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useT } from './prefs/PreferencesProvider';
 import Settings from './components/Settings/Settings';
 import WordInput from './components/WordInput/WordInput';
 import Generation from './components/Generation/Generation';
@@ -21,6 +22,7 @@ type Tab = 'decks' | 'browse' | 'setup' | 'input' | 'generate' | 'preview';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('decks');
+  const t = useT();
 
   return (
     <div className="app">
@@ -30,12 +32,12 @@ const App: React.FC = () => {
           type="button"
           className="brand"
           onClick={() => setActiveTab('decks')}
-          title="Go to Decks"
+          title={t('brand.gotoDecks')}
         >
           <span className="brand-mark"><LogoMark /></span>
           <div className="brand-text">
             <h1>Qard</h1>
-            <p>YDN education</p>
+            <p>{t('brand.subtitle')}</p>
           </div>
         </button>
 
@@ -44,37 +46,37 @@ const App: React.FC = () => {
           className={`tab ${activeTab === 'decks' ? 'active' : ''}`}
           onClick={() => setActiveTab('decks')}
         >
-          Decks
+          {t('nav.decks')}
         </button>
         <button
           className={`tab ${activeTab === 'browse' ? 'active' : ''}`}
           onClick={() => setActiveTab('browse')}
         >
-          Browse
+          {t('nav.browse')}
         </button>
         <button
           className={`tab ${activeTab === 'setup' ? 'active' : ''}`}
           onClick={() => setActiveTab('setup')}
         >
-          Setup
+          {t('nav.setup')}
         </button>
         <button
           className={`tab ${activeTab === 'input' ? 'active' : ''}`}
           onClick={() => setActiveTab('input')}
         >
-          Input
+          {t('nav.input')}
         </button>
         <button
           className={`tab ${activeTab === 'generate' ? 'active' : ''}`}
           onClick={() => setActiveTab('generate')}
         >
-          Generate
+          {t('nav.generate')}
         </button>
         <button
           className={`tab ${activeTab === 'preview' ? 'active' : ''}`}
           onClick={() => setActiveTab('preview')}
         >
-          Preview
+          {t('nav.preview')}
         </button>
         </nav>
         <HeaderControls />

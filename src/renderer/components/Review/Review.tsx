@@ -203,7 +203,7 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
   }, [answered, next]);
 
   if (!queue) {
-    return <div className="review">Loading...</div>;
+    return <div className="review">{t('review.loading')}</div>;
   }
 
   const exampleFront =
@@ -225,19 +225,19 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
 
       {!card ? (
         <div className="review-done">
-          <p>🎉 Congrats! You're done with this deck for today.</p>
-          <Button onClick={onExit}>To decks</Button>
+          <p>{t('review.done')}</p>
+          <Button onClick={onExit}>{t('review.toDecks')}</Button>
         </div>
       ) : (
         <>
           <div className={`review-capsule ${capsuleState}`} key={card.id}>
-            <div className="capsule-label">Definition</div>
+            <div className="capsule-label">{t('review.definition')}</div>
             <p className="capsule-text">
               <Blanks text={stripTags(card.definition)} />
             </p>
             {exampleFront && (
               <>
-                <div className="capsule-label">Example</div>
+                <div className="capsule-label">{t('review.example')}</div>
                 <p className="capsule-text">
                   <Blanks text={exampleFront} />
                 </p>
@@ -279,7 +279,7 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
                 <span className="answer-typed">{input || '—'}</span>
                 <span className="answer-badge">
                   {correct ? <CheckIcon size={15} /> : <XIcon size={15} />}
-                  {correct ? 'Correct' : 'Wrong'}
+                  {correct ? t('review.correct') : t('review.wrong')}
                 </span>
               </div>
 
@@ -295,7 +295,7 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
                 )}
                 {card.audioFilename && (
                   <Button size="small" variant="secondary" onClick={playAudio}>
-                    ▶ Audio
+                    {t('review.audio')}
                   </Button>
                 )}
                 {(card.definitionExample || card.examples.length > 0) && (
@@ -327,7 +327,7 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
                     onClick={genMnemonic}
                     disabled={mnemonicLoading}
                   >
-                    {mnemonicLoading ? '💭 Thinking…' : '💡 Mnemonic'}
+                    {mnemonicLoading ? t('review.thinking') : t('review.mnemonic')}
                   </button>
                 )}
                 {mnemonicError && (
@@ -336,7 +336,7 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
               </div>
 
               <Button size="large" onClick={next}>
-                Next (Enter)
+                {t('review.next')}
               </Button>
             </div>
           )}
