@@ -4,6 +4,8 @@ import Button from '../common/Button';
 import { CheckIcon, XIcon } from '../common/icons';
 import { blankOut, hasBold, isCorrect, parseBold, stripTags } from './htmlText';
 import './Review.css';
+import { playSfx } from '../../audio/sfx';
+import { usePrefs } from '../../prefs/PreferencesProvider';
 
 function audioMimeFromFilename(filename: string): string {
   const ext = filename.slice(filename.lastIndexOf('.') + 1).toLowerCase();
@@ -55,6 +57,7 @@ interface ReviewProps {
 }
 
 const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
+  const { soundEnabled } = usePrefs();
   const [queue, setQueue] = useState<ReviewQueueState | null>(null);
   const [input, setInput] = useState('');
   const [answered, setAnswered] = useState(false);
@@ -152,12 +155,14 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
       setCorrect(false);
       registerMiss(card.id);
       setAnswered(true);
+      if (soundEnabled) playSfx('wrong');
       return;
     }
     const ok = isCorrect(input, card.word);
     setCorrect(ok);
     if (!ok) registerMiss(card.id);
     setAnswered(true);
+    if (soundEnabled) playSfx(ok ? 'correct' : 'wrong');
   };
 
   const next = useCallback(async () => {
