@@ -6,6 +6,7 @@ import { blankOut, hasBold, isCorrect, parseBold, stripTags } from './htmlText';
 import './Review.css';
 import { playSfx } from '../../audio/sfx';
 import { usePrefs } from '../../prefs/PreferencesProvider';
+import { sanitizeLatin } from '../../lib/latin';
 
 function audioMimeFromFilename(filename: string): string {
   const ext = filename.slice(filename.lastIndexOf('.') + 1).toLowerCase();
@@ -57,9 +58,10 @@ interface ReviewProps {
 }
 
 const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
-  const { soundEnabled } = usePrefs();
+  const { soundEnabled, t } = usePrefs();
   const [queue, setQueue] = useState<ReviewQueueState | null>(null);
   const [input, setInput] = useState('');
+  const [inputFlash, setInputFlash] = useState(false);
   const [answered, setAnswered] = useState(false);
   const [correct, setCorrect] = useState(false);
   const [mnemonic, setMnemonic] = useState<string | null>(null);
@@ -247,14 +249,25 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
             <form className="review-input-form" onSubmit={submit}>
               <input
                 ref={inputRef}
-                className="review-input"
+                className={`review-input ${inputFlash ? 'flash-bad' : ''}`}
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="type the word…"
+                maxLength={40}
+                onChange={(e) => {
+                  const res = sanitizeLatin(e.target.value);
+                  setInput(res.value);
+                  if (res.changed) {
+                    setInputFlash(true);
+                    window.setTimeout(() => setInputFlash(false), 350);
+                  }
+                }}
+                placeholder={t('review.typePlaceholder')}
                 autoComplete="off"
                 spellCheck={false}
+                lang="en"
               />
-              <div className="review-hint">Press Enter to check</div>
+              <div className="review-hint">
+                {inputFlash ? t('review.englishOnly') : t('review.checkHint')}
+              </div>
             </form>
           ) : (
             <div className="review-result">

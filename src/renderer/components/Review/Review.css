@@ -334,3 +334,11 @@
     animation: none !important;
   }
 }
+
+.review-input.flash-bad {
+  animation: input-flash-bad 0.35s ease;
+}
+@keyframes input-flash-bad {
+  0%, 100% { border-color: var(--neon-soft); }
+  40% { border-color: var(--bad); box-shadow: 0 0 12px var(--bad-soft); }
+}
