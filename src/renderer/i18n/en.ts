@@ -14,6 +14,7 @@ export const en: Dict = {
   // Controls
   'ctrl.theme': 'Theme',
   'ctrl.sound': 'Sound',
+  'ctrl.language': 'Language',
   // Generation
   'gen.title': 'Generate Flashcards',
   'gen.description': 'Start the card generation process. This will create translations, examples, and audio for each word.',

@@ -14,6 +14,7 @@ export const ru: Dict = {
   // Controls
   'ctrl.theme': 'Тема',
   'ctrl.sound': 'Звук',
+  'ctrl.language': 'Язык',
   // Generation
   'gen.title': 'Генерация карточек',
   'gen.description': 'Запустите процесс генерации карточек. Для каждого слова будут созданы перевод, примеры и аудиопроизношение.',

@@ -17,7 +17,7 @@ const HeaderControls: React.FC = () => {
         {theme === 'dark' ? '☾' : '☀'}
       </button>
 
-      <div className="hc-lang" role="group" aria-label="Language">
+      <div className="hc-lang" role="group" aria-label={t('ctrl.language')}>
         <button
           type="button"
           className={`hc-lang-opt ${lang === 'ru' ? 'is-active' : ''}`}
