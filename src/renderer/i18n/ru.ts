@@ -61,8 +61,6 @@ export const ru: Dict = {
   'review.correct': 'Верно',
   'review.wrong': 'Неверно',
   'review.audio': '▶ Аудио',
-  'review.mnemonic': '💡 Мнемоника',
-  'review.thinking': '💭 Думаю…',
   'review.next': 'Дальше (Enter)',
   'review.typePlaceholder': 'введите слово…',
   'review.checkHint': 'Нажмите Enter для проверки',

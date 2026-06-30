@@ -61,8 +61,6 @@ export const en: Dict = {
   'review.correct': 'Correct',
   'review.wrong': 'Wrong',
   'review.audio': '▶ Audio',
-  'review.mnemonic': '💡 Mnemonic',
-  'review.thinking': '💭 Thinking…',
   'review.next': 'Next (Enter)',
   'review.typePlaceholder': 'type the word…',
   'review.checkHint': 'Press Enter to check',

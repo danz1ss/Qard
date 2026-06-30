@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildBatchPrompt, parseBatchResponse, buildMnemonicPrompt } from '../ai-prompts';
+import { buildBatchPrompt, parseBatchResponse } from '../ai-prompts';
 import { ParsedWord } from '../types';
 
 describe('ai-prompts', () => {
@@ -20,11 +20,5 @@ describe('ai-prompts', () => {
 
   it('parseBatchResponse бросает на отсутствие массива', () => {
     expect(() => parseBatchResponse('нет json')).toThrow();
-  });
-
-  it('buildMnemonicPrompt подставляет слово вместо прочерков', () => {
-    const p = buildMnemonicPrompt('run', 'If you ______, you move fast', 'verb');
-    expect(p).toContain('run');
-    expect(p).not.toContain('______');
   });
 });

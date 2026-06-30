@@ -62,9 +62,6 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
   const [input, setInput] = useState('');
   const [answered, setAnswered] = useState(false);
   const [correct, setCorrect] = useState(false);
-  const [mnemonic, setMnemonic] = useState<string | null>(null);
-  const [mnemonicLoading, setMnemonicLoading] = useState(false);
-  const [mnemonicError, setMnemonicError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const advancingRef = useRef(false);
@@ -94,31 +91,6 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
       inputRef.current?.focus();
     }
   }, [card?.id, answered]);
-
-  // Сброс мнемоники при смене карточки
-  useEffect(() => {
-    setMnemonic(null);
-    setMnemonicError(null);
-    setMnemonicLoading(false);
-  }, [card?.id]);
-
-  const genMnemonic = useCallback(async () => {
-    if (!card || mnemonicLoading) return;
-    setMnemonicLoading(true);
-    setMnemonicError(null);
-    try {
-      const text = await window.electronAPI.ai.mnemonic(
-        card.word,
-        card.definition,
-        card.wordType || ''
-      );
-      setMnemonic(text);
-    } catch (err: any) {
-      setMnemonicError(err?.message || 'Failed to generate a mnemonic');
-    } finally {
-      setMnemonicLoading(false);
-    }
-  }, [card, mnemonicLoading]);
 
   // Аудио: грузим и автопроигрываем при РАСКРЫТИИ ответа
   useEffect(() => {
@@ -301,27 +273,6 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
                       </li>
                     ))}
                   </ul>
-                )}
-              </div>
-
-              <div className="review-mnemonic">
-                {mnemonic ? (
-                  <div className="mnemonic-card">
-                    <span className="mnemonic-icon">💡</span>
-                    <p className="mnemonic-text">{mnemonic}</p>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    className="mnemonic-btn"
-                    onClick={genMnemonic}
-                    disabled={mnemonicLoading}
-                  >
-                    {mnemonicLoading ? t('review.thinking') : t('review.mnemonic')}
-                  </button>
-                )}
-                {mnemonicError && (
-                  <p className="mnemonic-error">{mnemonicError}</p>
                 )}
               </div>
 

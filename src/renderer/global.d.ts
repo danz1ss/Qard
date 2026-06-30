@@ -25,7 +25,6 @@ export interface ElectronAPI {
   };
   ai: {
     generateBatch: (parsedWords: ParsedWord[], examplesCount: number) => Promise<BatchWordResult[]>;
-    mnemonic: (word: string, definition: string, wordType: string) => Promise<string>;
   };
   tts: {
     generateAudio: (text: string) => Promise<ArrayBuffer>;

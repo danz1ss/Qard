@@ -114,27 +114,3 @@ export function parseBatchResponse(text: string): BatchWordResult[] {
 		})),
 	}))
 }
-
-/**
- * Builds the mnemonic generation prompt for a single word.
- */
-export function buildMnemonicPrompt(
-	word: string,
-	definition: string,
-	wordType: string,
-): string {
-	return `You are a memory coach who creates vivid mnemonics for language learners.
-
-WORD: "${word}"${wordType ? ` (${wordType})` : ''}
-MEANING: ${definition.replace(/_{3,}/g, word)}
-
-TASK: Create ONE short, vivid mnemonic that helps memorize this word and its meaning.
-
-RULES:
-1. **Output language**: Write the mnemonic in the SAME language as the word above.
-   - English word → English mnemonic. Russian word → Russian mnemonic. Default to English.
-2. **Technique**: Use a sound-alike association, a vivid mental image, or a memorable mini-story that links the word's form to its meaning.
-3. **Length**: 1-2 sentences max. Be concrete and visual, not abstract.
-4. **Tone**: Playful and memorable. Slightly absurd images stick better.
-5. Output ONLY the mnemonic text. No labels, no quotes, no preface.`
-}

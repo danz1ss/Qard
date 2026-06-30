@@ -1,6 +1,6 @@
 import OpenAI from 'openai'
 import { ParsedWord, BatchWordResult } from '../../shared/types'
-import { buildBatchPrompt, parseBatchResponse, buildMnemonicPrompt } from '../../shared/ai-prompts'
+import { buildBatchPrompt, parseBatchResponse } from '../../shared/ai-prompts'
 
 interface AIConfig {
 	apiKey: string
@@ -52,37 +52,6 @@ class AIService {
 		} catch (error: any) {
 			console.error('AI batch word meanings error:', error)
 			throw new Error(`Failed to generate word meanings: ${error.message}`)
-		}
-	}
-
-	/**
-	 * Generates a short, vivid mnemonic to help memorize a single word.
-	 * Returns plain text (1-2 sentences) in the language of the word.
-	 */
-	async generateMnemonic(
-		word: string,
-		definition: string,
-		wordType: string,
-	): Promise<string> {
-		this.ensureInitialized()
-
-		const prompt = buildMnemonicPrompt(word, definition, wordType)
-
-		try {
-			const completion = await this.client!.chat.completions.create({
-				model: this.model,
-				messages: [{ role: 'user', content: prompt }],
-				temperature: 0.9,
-			})
-
-			const text = completion.choices[0]?.message?.content?.trim() || ''
-			if (!text) {
-				throw new Error('Empty response from AI')
-			}
-			return text
-		} catch (error: any) {
-			console.error('AI mnemonic error:', error)
-			throw new Error(`Failed to generate mnemonic: ${error.message}`)
 		}
 	}
 }

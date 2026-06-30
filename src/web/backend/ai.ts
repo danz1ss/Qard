@@ -1,5 +1,5 @@
 import { BatchWordResult, ParsedWord } from '../../shared/types';
-import { buildBatchPrompt, parseBatchResponse, buildMnemonicPrompt } from '../../shared/ai-prompts';
+import { buildBatchPrompt, parseBatchResponse } from '../../shared/ai-prompts';
 import { webSettings } from './settings';
 
 // URL Worker'а задаётся при сборке (DefinePlugin) либо дефолт для dev.
@@ -29,11 +29,5 @@ export const webAI = {
   async generateBatch(parsedWords: ParsedWord[], examplesCount: number): Promise<BatchWordResult[]> {
     const text = await chat(buildBatchPrompt(parsedWords, examplesCount), 0.7);
     return parseBatchResponse(text);
-  },
-  async mnemonic(word: string, definition: string, wordType: string): Promise<string> {
-    const text = await chat(buildMnemonicPrompt(word, definition, wordType), 0.9);
-    const trimmed = text.trim();
-    if (!trimmed) throw new Error('Empty response from AI');
-    return trimmed;
   },
 };

@@ -17,17 +17,4 @@ export function setupGeminiHandlers(ipcMain: IpcMain): void {
       throw new Error(error.message || 'Failed to generate word meanings');
     }
   });
-
-  ipcMain.handle(
-    IPC_CHANNELS.AI_MNEMONIC,
-    async (_, word: string, definition: string, wordType: string) => {
-      try {
-        await applyAIConfig();
-        return await geminiService.generateMnemonic(word, definition, wordType);
-      } catch (error: any) {
-        console.error('AI mnemonic error:', error);
-        throw new Error(error.message || 'Failed to generate mnemonic');
-      }
-    }
-  );
 }
