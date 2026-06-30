@@ -66,7 +66,6 @@ export const en: Dict = {
   'review.next': 'Next (Enter)',
   'review.typePlaceholder': 'type the word…',
   'review.checkHint': 'Press Enter to check',
-  'review.englishOnly': 'English only',
   // Modal (shared)
   'modal.cancel': 'Cancel',
   'modal.delete': 'Delete',

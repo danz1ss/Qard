@@ -66,7 +66,6 @@ export const ru: Dict = {
   'review.next': 'Дальше (Enter)',
   'review.typePlaceholder': 'введите слово…',
   'review.checkHint': 'Нажмите Enter для проверки',
-  'review.englishOnly': 'Только английский',
   // Modal (shared)
   'modal.cancel': 'Отмена',
   'modal.delete': 'Удалить',

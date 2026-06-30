@@ -85,6 +85,13 @@
   margin-bottom: 5px;
 }
 
+/* Светлая тема: бледно-коралловый текст не читается на светлом фоне */
+:root[data-theme='light'] .validation-errors {
+  background-color: rgba(211, 95, 67, 0.1);
+}
+:root[data-theme='light'] .validation-errors h4 { color: var(--coral-shade); }
+:root[data-theme='light'] .validation-errors ul { color: #9a4631; }
+
 .generation-controls {
   margin-bottom: 30px;
 }

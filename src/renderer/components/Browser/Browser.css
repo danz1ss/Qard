@@ -10,6 +10,13 @@
   min-width: 160px;
 }
 
+/* Все поля фильтра выравниваются по нижнему краю одинаково:
+   убираем собственные нижние отступы, чтобы Deck/Status не уезжали вниз. */
+.browser-filters .input-wrapper,
+.browser-filters .select-wrapper {
+  margin-bottom: 0;
+}
+
 /* Поиск растягивается на свободное место — набираемый текст всегда виден,
    ничего не обрезается на :focus/:hover */
 .browser-filters > .input-wrapper:first-child {

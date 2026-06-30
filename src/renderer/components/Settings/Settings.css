@@ -29,6 +29,20 @@
   margin-bottom: 15px;
 }
 
+/* Вертикальный ритм между полями секции: Select (как и Input) получает
+   нижний отступ, чтобы Provider / Model / API Key не слипались.
+   Scoped на секцию — flex-ряды Browser/Preview не затрагиваются. */
+.settings-section .select-wrapper {
+  margin-bottom: 20px;
+}
+
+/* Хинт под полем относится к своему полю, но следующее поле не должно
+   к нему прилипать — держим единый ритм 20px по всей секции. */
+.settings-section .help-text + .select-wrapper,
+.settings-section .help-text + .input-wrapper {
+  margin-top: 20px;
+}
+
 .anki-status {
   display: flex;
   align-items: center;
