@@ -156,3 +156,21 @@
 .save-message.error {
   color: var(--coral);
 }
+
+.settings-free-info {
+  margin-top: 0;
+  margin-bottom: var(--space-4);
+  color: var(--ivory-dim);
+}
+.settings-advanced {
+  margin-bottom: var(--space-4);
+}
+.advanced-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: 600 13px var(--font);
+  color: var(--accent);
+}
+.advanced-toggle:hover { text-decoration: underline; }

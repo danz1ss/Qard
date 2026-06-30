@@ -28,6 +28,7 @@ const Settings: React.FC = () => {
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   useEffect(() => {
     loadSettings();
@@ -85,14 +86,22 @@ const Settings: React.FC = () => {
 
       <div className="settings-section">
         <h3>{t('setup.aiProvider')}</h3>
-        <Select
-          label={t('setup.provider')}
-          value={aiProvider}
-          onChange={(v) => handleProviderChange(v)}
-          options={providerOptions}
-        />
 
-        {isCustomProvider ? (
+        {__IS_WEB__ && (
+          <p className="help-text settings-free-info">{t('setup.freeInfo')}</p>
+        )}
+
+        {!__IS_WEB__ && (
+          <Select
+            label={t('setup.provider')}
+            value={aiProvider}
+            onChange={(v) => handleProviderChange(v)}
+            options={providerOptions}
+          />
+        )}
+
+        {/* Модель доступна на обеих платформах */}
+        {isCustomProvider && !__IS_WEB__ ? (
           <>
             <Input
               label={t('setup.baseUrl')}
@@ -118,26 +127,52 @@ const Settings: React.FC = () => {
           />
         )}
 
-        <Input
-          label={t('setup.apiKey')}
-          type="password"
-          value={geminiApiKey}
-          onChange={(e) => setGeminiApiKey(e.target.value)}
-          placeholder={t('setup.apiKeyPlaceholder')}
-        />
-        {aiProvider === 'proxyapi' && (
-          <p className="help-text">
-            {t('setup.proxyApiHint')}{' '}
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                window.electronAPI.shell.openExternal('https://proxyapi.ru/cabinet/api');
-              }}
+        {!__IS_WEB__ ? (
+          <>
+            <Input
+              label={t('setup.apiKey')}
+              type="password"
+              value={geminiApiKey}
+              onChange={(e) => setGeminiApiKey(e.target.value)}
+              placeholder={t('setup.apiKeyPlaceholder')}
+            />
+            {aiProvider === 'proxyapi' && (
+              <p className="help-text">
+                {t('setup.proxyApiHint')}{' '}
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.electronAPI.shell.openExternal('https://proxyapi.ru/cabinet/api');
+                  }}
+                >
+                  ProxyAPI Cabinet
+                </a>
+              </p>
+            )}
+          </>
+        ) : (
+          <div className="settings-advanced">
+            <button
+              type="button"
+              className="advanced-toggle"
+              onClick={() => setShowAdvanced((v) => !v)}
             >
-              ProxyAPI Cabinet
-            </a>
-          </p>
+              {showAdvanced ? '▾' : '▸'} {t('setup.advanced')}
+            </button>
+            {showAdvanced && (
+              <>
+                <Input
+                  label={t('setup.apiKey')}
+                  type="password"
+                  value={geminiApiKey}
+                  onChange={(e) => setGeminiApiKey(e.target.value)}
+                  placeholder={t('setup.apiKeyPlaceholder')}
+                />
+                <p className="help-text">{t('setup.ownKeyHint')}</p>
+              </>
+            )}
+          </div>
         )}
 
         <Select
