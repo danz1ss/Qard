@@ -19,9 +19,12 @@ const Generation: React.FC = () => {
   const { startGeneration } = useCardGeneration();
   const t = useT();
 
+  const WORD_LIMIT = 30;
+  const overLimit = __IS_WEB__ && words.length > WORD_LIMIT;
   const canGenerate =
     words.length > 0 &&
-    geminiApiKey;
+    !overLimit &&
+    (__IS_WEB__ || !!geminiApiKey);
 
   const handleStartGeneration = () => {
     startGeneration();
@@ -68,16 +71,26 @@ const Generation: React.FC = () => {
             <span className="summary-label">{t('gen.examplesPerWord')}</span>
             <span className="summary-value">{exampleCount}</span>
           </div>
-          <div className="summary-item">
-            <span className="summary-label">{t('gen.apiKey')}</span>
-            <span className={`summary-value ${geminiApiKey ? 'is-ok' : 'is-missing'}`}>
-              {geminiApiKey ? (
-                <><CheckIcon size={15} /> {t('gen.configured')}</>
-              ) : (
-                <><XIcon size={15} /> {t('gen.notConfigured')}</>
-              )}
-            </span>
-          </div>
+          {!__IS_WEB__ && (
+            <div className="summary-item">
+              <span className="summary-label">{t('gen.apiKey')}</span>
+              <span className={`summary-value ${geminiApiKey ? 'is-ok' : 'is-missing'}`}>
+                {geminiApiKey ? (
+                  <><CheckIcon size={15} /> {t('gen.configured')}</>
+                ) : (
+                  <><XIcon size={15} /> {t('gen.notConfigured')}</>
+                )}
+              </span>
+            </div>
+          )}
+          {__IS_WEB__ && (
+            <div className="summary-item">
+              <span className="summary-label">{t('gen.wordCount')}</span>
+              <span className={`summary-value ${overLimit ? 'is-missing' : 'is-ok'}`}>
+                {words.length} / {WORD_LIMIT}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -87,7 +100,8 @@ const Generation: React.FC = () => {
           <h4>{t('gen.validationHeading')}</h4>
           <ul>
             {words.length === 0 && <li>{t('gen.addWords')}</li>}
-            {!geminiApiKey && <li>{t('gen.enterKey')}</li>}
+            {!__IS_WEB__ && !geminiApiKey && <li>{t('gen.enterKey')}</li>}
+            {overLimit && <li>{t('gen.tooManyWords').replace('{n}', String(WORD_LIMIT))}</li>}
           </ul>
         </div>
       )}
@@ -129,7 +143,10 @@ const Generation: React.FC = () => {
 
           {generationProgress.error && (
             <div className="progress-error">
-              <strong>{t('gen.error')}</strong> {generationProgress.error}
+              <strong>{t('gen.error')}</strong>{' '}
+              {generationProgress.error === 'DAILY_LIMIT'
+                ? t('gen.dailyLimitReached')
+                : generationProgress.error}
             </div>
           )}
         </div>
