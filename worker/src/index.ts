@@ -63,9 +63,14 @@ export default {
     } catch {
       return json({ error: 'bad_json' }, 400, origin);
     }
-    const maxTokens = Number(env.MAX_TOKENS ?? '8000');
-    if (typeof payload.max_tokens !== 'number' || payload.max_tokens > maxTokens) {
-      payload.max_tokens = maxTokens;
+    if (typeof payload !== 'object' || payload === null || Array.isArray(payload)) {
+      return json({ error: 'bad_json' }, 400, origin);
+    }
+    if (!userAuth) {
+      const maxTokens = Number(env.MAX_TOKENS ?? '8000');
+      if (typeof payload.max_tokens !== 'number' || payload.max_tokens > maxTokens) {
+        payload.max_tokens = maxTokens;
+      }
     }
 
     const auth = userAuth || `Bearer ${env.PROXYAPI_KEY}`;
