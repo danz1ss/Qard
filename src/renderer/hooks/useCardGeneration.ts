@@ -89,12 +89,15 @@ export const useCardGeneration = () => {
     };
 
     // Split parsed words into batches for AI requests
-    const batches = chunkArray(parsedWords, AI_BATCH_SIZE);
+    // На web вся генерация — один запрос (дневной лимит = 1 запрос/день).
+    const batchSize = __IS_WEB__ ? Math.max(parsedWords.length, 1) : AI_BATCH_SIZE;
+    const batches = chunkArray(parsedWords, batchSize);
 
     // Store for AI results: clean word (lowercase) -> meanings
     const aiResults = new Map<string, WordMeaningResponse[]>();
 
     // Process AI batches in parallel (with semaphore limit)
+    let dailyLimitHit = false;
     const aiBatchPromises = batches.map(async (batch) => {
       await aiSemaphore.acquire();
       try {
@@ -113,6 +116,7 @@ export const useCardGeneration = () => {
         batch.forEach(pw => {
           aiResults.set(pw.word.toLowerCase(), []);
         });
+        if (error?.message === 'DAILY_LIMIT') dailyLimitHit = true;
         throw error;
       } finally {
         aiSemaphore.release();
@@ -139,6 +143,18 @@ export const useCardGeneration = () => {
 
     // Wait for all AI and TTS requests to complete
     await Promise.allSettled([...aiBatchPromises, ...ttsPromises]);
+
+    if (dailyLimitHit) {
+      setIsGenerating(false);
+      setGenerationProgress({
+        currentWord: '',
+        currentStage: GenerationStage.Error,
+        completedCards: 0,
+        totalCards: totalWords,
+        error: 'DAILY_LIMIT',
+      });
+      return;
+    }
 
     // Now create cards from results
     for (const pw of parsedWords) {
