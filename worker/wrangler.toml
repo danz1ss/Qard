@@ -2,10 +2,9 @@ name = "qard-ai-proxy"
 main = "src/index.ts"
 compatibility_date = "2024-11-01"
 
-# id будет вписан после `wrangler kv namespace create RL` (Task 10)
 [[kv_namespaces]]
 binding = "RL"
-id = "REPLACE_WITH_KV_ID"
+id = "853520a862d2490fb95c0d6121b62053"
 
 [vars]
 MAX_BODY_BYTES = "16384"
