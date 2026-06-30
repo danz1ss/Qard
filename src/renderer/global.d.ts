@@ -19,6 +19,8 @@ import {
   StudyStats
 } from '../shared/types';
 
+declare const __IS_WEB__: boolean;
+
 export interface ElectronAPI {
   shell: {
     openExternal: (url: string) => Promise<void>;

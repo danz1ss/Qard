@@ -37,6 +37,7 @@ module.exports = {
       ],
     }),
     new webpack.DefinePlugin({
+      __IS_WEB__: JSON.stringify(true),
       __AI_PROXY_URL__: JSON.stringify(
         process.env.AI_PROXY_URL ||
           (process.env.NODE_ENV === 'production'

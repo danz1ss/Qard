@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const mainConfig = {
@@ -101,6 +102,9 @@ const rendererConfig = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/renderer/index.html'
+    }),
+    new webpack.DefinePlugin({
+      __IS_WEB__: JSON.stringify(false)
     })
   ]
 };
