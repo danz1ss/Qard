@@ -8,7 +8,7 @@ describe('webSettings', () => {
   it('возвращает дефолты при пустом хранилище', async () => {
     expect(await webSettings.get('aiProvider')).toBe('proxyapi');
     expect(await webSettings.get('exampleCount')).toBe(3);
-    expect(await webSettings.get('dailyGoal')).toBe(30);
+    expect(await webSettings.get('dailyGoal')).toBe(20);
   });
 
   it('сохраняет и читает значение', async () => {
@@ -25,7 +25,7 @@ describe('webSettings', () => {
 
   it('возвращает дефолты при битом JSON в хранилище', async () => {
     localStorage.setItem('qard-settings', 'invalid json {');
-    expect(await webSettings.get('dailyGoal')).toBe(30);
+    expect(await webSettings.get('dailyGoal')).toBe(20);
     expect(await webSettings.get('aiProvider')).toBe('proxyapi');
   });
 });

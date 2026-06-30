@@ -16,7 +16,7 @@ const defaultSettings: SettingsSchema = {
   aiProvider: 'proxyapi',
   aiModel: 'gpt-4o-mini',
   exampleCount: 3,
-  dailyGoal: 30,
+  dailyGoal: 20,
   fieldMapping: {}
 };
 
@@ -46,7 +46,7 @@ class SettingsService {
       aiBaseUrl: this.store.get('aiBaseUrl'),
       defaultDeckId: this.store.get('defaultDeckId'),
       exampleCount: this.store.get('exampleCount', 3),
-      dailyGoal: this.store.get('dailyGoal', 30),
+      dailyGoal: this.store.get('dailyGoal', 20),
       fieldMapping: this.store.get('fieldMapping', {})
     };
   }

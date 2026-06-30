@@ -17,7 +17,7 @@ const defaults: SettingsSchema = {
   aiProvider: 'proxyapi',
   aiModel: 'gpt-4o-mini',
   exampleCount: 3,
-  dailyGoal: 30,
+  dailyGoal: 20,
   fieldMapping: {},
 };
 

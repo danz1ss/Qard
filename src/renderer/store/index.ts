@@ -64,7 +64,7 @@ export const useStore = create<AppState>((set, get) => ({
 	aiModel: 'gpt-4o-mini',
 	aiBaseUrl: '',
 	exampleCount: 3,
-	dailyGoal: 30,
+	dailyGoal: 20,
 
 	setGeminiApiKey: key => set({ geminiApiKey: key }),
 	setAiProvider: provider => set({ aiProvider: provider }),
@@ -81,8 +81,8 @@ export const useStore = create<AppState>((set, get) => ({
 				aiProvider: settings.aiProvider || 'proxyapi',
 				aiModel: settings.aiModel || 'gpt-4o-mini',
 				aiBaseUrl: settings.aiBaseUrl || '',
-				exampleCount: settings.exampleCount || 3,
-				dailyGoal: settings.dailyGoal || 30,
+				exampleCount: Math.min(settings.exampleCount || 3, 3),
+				dailyGoal: Math.min(settings.dailyGoal || 20, 20),
 				defaultDeckId: settings.defaultDeckId ?? null,
 			})
 		} catch (error) {

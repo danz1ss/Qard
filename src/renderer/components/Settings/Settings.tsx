@@ -68,12 +68,12 @@ const Settings: React.FC = () => {
     }
   };
 
-  const exampleCountOptions = [1, 2, 3, 4, 5].map((n) => ({
+  const exampleCountOptions = [1, 2, 3].map((n) => ({
     value: String(n),
     label: t(`setup.example${n}` as any)
   }));
 
-  const dailyGoalOptions = [10, 15, 20, 30, 50, 75, 100].map((n) => ({
+  const dailyGoalOptions = [10, 15, 20].map((n) => ({
     value: n.toString(),
     label: t('setup.reviewsPerDay').replace('{n}', String(n))
   }));
