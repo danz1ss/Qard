@@ -8,16 +8,18 @@ const PROXY_URL =
   typeof __AI_PROXY_URL__ !== 'undefined' ? __AI_PROXY_URL__ : 'http://localhost:8787';
 
 async function chat(prompt: string, temperature: number): Promise<string> {
-  const apiKey = await webSettings.get('geminiApiKey');
-  if (!apiKey) {
-    throw new Error('API key not set. Please configure API key in settings.');
-  }
+  const apiKey = await webSettings.get('geminiApiKey'); // опционально (продвинутое)
   const model = (await webSettings.get('aiModel')) || 'gpt-4o-mini';
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
   const resp = await fetch(PROXY_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+    headers,
     body: JSON.stringify({ model, messages: [{ role: 'user', content: prompt }], temperature }),
   });
+  if (resp.status === 429) {
+    throw new Error('DAILY_LIMIT');
+  }
   if (!resp.ok) {
     throw new Error(`AI request failed: ${resp.status}`);
   }
