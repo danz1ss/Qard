@@ -13,34 +13,50 @@
 }
 
 .settings-section {
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-5);
   padding-bottom: var(--space-5);
   border-bottom: 1px solid var(--border-soft);
 }
 
 .settings-section:last-of-type {
   border-bottom: none;
+  padding-bottom: 0;
 }
 
 .settings-section h3 {
   font-size: 18px;
   font-weight: 600;
   color: var(--ivory);
-  margin-bottom: 15px;
+  margin: 0 0 var(--space-4);
 }
 
-/* Вертикальный ритм между полями секции: Select (как и Input) получает
-   нижний отступ, чтобы Provider / Model / API Key не слипались.
+/* Единый вертикальный ритм полей секции: Select и Input одинаково.
    Scoped на секцию — flex-ряды Browser/Preview не затрагиваются. */
+.settings-section .input-wrapper,
 .settings-section .select-wrapper {
-  margin-bottom: 20px;
+  margin-bottom: var(--space-4);
 }
 
-/* Хинт под полем относится к своему полю, но следующее поле не должно
-   к нему прилипать — держим единый ритм 20px по всей секции. */
-.settings-section .help-text + .select-wrapper,
-.settings-section .help-text + .input-wrapper {
-  margin-top: 20px;
+/* Хинт прижат к своему полю сверху, держит ритм снизу */
+.settings-section .help-text {
+  margin-top: -8px;
+  margin-bottom: var(--space-4);
+}
+
+/* Последнее поле/хинт секции не добавляет отступ перед границей */
+.settings-section > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Единый вид подписей: Select и Input выглядят одинаково */
+.settings-section .input-label,
+.settings-section .select-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ivory-dim);
+}
+.settings-section .input-label {
+  margin-bottom: 6px;
 }
 
 .anki-status {
@@ -122,7 +138,7 @@
 }
 
 .save-section {
-  margin-top: var(--space-6);
+  margin-top: var(--space-5);
   display: flex;
   align-items: center;
   gap: var(--space-4);
