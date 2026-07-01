@@ -57,7 +57,7 @@
 }
 .sh-ring-track {
   fill: none;
-  stroke: var(--bg-elev);
+  stroke: var(--border);
   stroke-width: 7;
 }
 .sh-ring-fill {
