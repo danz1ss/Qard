@@ -23,18 +23,18 @@
     var(--bg-0);
 }
 
-/* Светлая тема для зоны Review (приглушённый акцент вместо неона) */
+/* Светлая тема для зоны Review — тёплая кремовая, акцент индиго (как в остальном приложении) */
 :root[data-theme='light'] .review {
-  --bg-0: #eef1f6;
-  --bg-1: #f7f9fc;
-  --neon: #3f6fd6;
-  --neon-soft: rgba(63, 111, 214, 0.28);
-  --ok: #1aa57f;
-  --ok-soft: rgba(26, 165, 127, 0.30);
-  --bad: #d24a60;
-  --bad-soft: rgba(210, 74, 96, 0.30);
-  --text: #1f2530;
-  --text-dim: #51607a;
+  --bg-0: #f4efe6;
+  --bg-1: #fffdf9;
+  --neon: #3a4a6b;
+  --neon-soft: rgba(58, 74, 107, 0.28);
+  --ok: #4d6e50;
+  --ok-soft: rgba(77, 110, 80, 0.30);
+  --bad: #d35f43;
+  --bad-soft: rgba(211, 95, 67, 0.30);
+  --text: #2b2620;
+  --text-dim: #6b6154;
 }
 
 .review-header {
@@ -67,8 +67,8 @@
     var(--bg-1);
   border: 1px solid var(--neon-soft);
   box-shadow:
-    0 0 0 1px rgba(56, 189, 248, 0.10),
-    0 0 16px rgba(56, 189, 248, 0.18),
+    0 0 0 1px color-mix(in srgb, var(--neon) 10%, transparent),
+    0 0 16px color-mix(in srgb, var(--neon) 18%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     inset 0 0 50px rgba(0, 0, 0, 0.5);
   text-align: center;
@@ -76,11 +76,24 @@
   transition: box-shadow 0.4s ease, border-color 0.4s ease;
 }
 
+/* Светлая тема: тёмная виньетка/inset-тень заменяются на мягкие, тёплый фон
+   остаётся чистым кремовым вместо серого пятна. */
+:root[data-theme='light'] .review-capsule {
+  background:
+    radial-gradient(120% 150% at 50% 42%, rgba(255, 255, 255, 0.6) 0%, rgba(43, 38, 32, 0.02) 100%),
+    var(--bg-1);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--neon) 10%, transparent),
+    0 0 16px color-mix(in srgb, var(--neon) 18%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 14px 34px -22px rgba(43, 38, 32, 0.3);
+}
+
 .review-capsule.is-correct {
   border-color: var(--ok-soft);
   box-shadow:
-    0 0 0 1px rgba(34, 211, 166, 0.16),
-    0 0 22px rgba(34, 211, 166, 0.28),
+    0 0 0 1px color-mix(in srgb, var(--ok) 16%, transparent),
+    0 0 22px color-mix(in srgb, var(--ok) 28%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     inset 0 0 50px rgba(0, 0, 0, 0.5);
   animation: capsule-in 0.3s ease both;
@@ -88,11 +101,27 @@
 .review-capsule.is-wrong {
   border-color: var(--bad-soft);
   box-shadow:
-    0 0 0 1px rgba(251, 90, 115, 0.16),
-    0 0 22px rgba(251, 90, 115, 0.28),
+    0 0 0 1px color-mix(in srgb, var(--bad) 16%, transparent),
+    0 0 22px color-mix(in srgb, var(--bad) 28%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     inset 0 0 50px rgba(0, 0, 0, 0.5);
   animation: capsule-in 0.3s ease both;
+}
+
+:root[data-theme='light'] .review-capsule.is-correct,
+:root[data-theme='light'] .review-capsule.is-wrong {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ok) 16%, transparent),
+    0 0 22px color-mix(in srgb, var(--ok) 28%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 14px 34px -22px rgba(43, 38, 32, 0.3);
+}
+:root[data-theme='light'] .review-capsule.is-wrong {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--bad) 16%, transparent),
+    0 0 22px color-mix(in srgb, var(--bad) 28%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 14px 34px -22px rgba(43, 38, 32, 0.3);
 }
 
 .capsule-label {
@@ -110,14 +139,14 @@
   line-height: 1.45;
   font-weight: 500;
   margin: 0;
-  color: #f2f7ff;
-  text-shadow: 0 0 22px rgba(56, 189, 248, 0.18);
+  color: var(--text);
+  text-shadow: 0 0 22px color-mix(in srgb, var(--neon) 18%, transparent);
 }
 .capsule-text .blank {
   color: var(--neon);
   font-weight: 700;
-  letter-spacing: 0.28em;
-  text-shadow: 0 0 16px rgba(56, 189, 248, 0.75);
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 16px color-mix(in srgb, var(--neon) 75%, transparent);
 }
 
 /* ===== Ввод ===== */
