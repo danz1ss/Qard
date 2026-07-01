@@ -1,13 +1,40 @@
 .review {
+  --bg-0: #0b1220;
+  --bg-1: #111a2e;
+  --neon: #38bdf8;
+  --neon-soft: rgba(56, 189, 248, 0.55);
+  --ok: #22d3a6;
+  --ok-soft: rgba(34, 211, 166, 0.6);
+  --bad: #fb5a73;
+  --bad-soft: rgba(251, 90, 115, 0.6);
+  --text: #e8eefc;
+  --text-dim: #8aa0c4;
+
   font-family: var(--font);
-  color: var(--ivory);
+  color: var(--text);
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 80vh;
   padding: 28px 20px 48px;
-  border-radius: var(--radius);
-  background: transparent;
+  border-radius: 16px;
+  background:
+    radial-gradient(120% 80% at 50% 0%, var(--bg-1) 0%, var(--bg-0) 70%),
+    var(--bg-0);
+}
+
+/* Светлая тема для зоны Review (приглушённый акцент вместо неона) */
+:root[data-theme='light'] .review {
+  --bg-0: #eef1f6;
+  --bg-1: #f7f9fc;
+  --neon: #3f6fd6;
+  --neon-soft: rgba(63, 111, 214, 0.28);
+  --ok: #1aa57f;
+  --ok-soft: rgba(26, 165, 127, 0.30);
+  --bad: #d24a60;
+  --bad-soft: rgba(210, 74, 96, 0.30);
+  --text: #1f2530;
+  --text-dim: #51607a;
 }
 
 .review-header {
@@ -24,9 +51,9 @@
   gap: 14px;
   font-weight: 600;
 }
-.review-counts .count-new { color: var(--new); }
-.review-counts .count-learn { color: var(--learn); }
-.review-counts .count-due { color: var(--due); }
+.review-counts .count-new { color: #60a5fa; }
+.review-counts .count-learn { color: #fbbf24; }
+.review-counts .count-due { color: var(--ok); }
 
 /* ===== Капсула ===== */
 .review-capsule {
@@ -34,23 +61,37 @@
   width: 100%;
   max-width: 760px;
   padding: 44px 52px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, var(--surface-hi) 0%, var(--surface) 100%);
-  border: 1.5px solid var(--border);
-  box-shadow: 0 20px 44px -26px rgba(0, 0, 0, 0.35);
+  border-radius: 24px;
+  background:
+    radial-gradient(120% 150% at 50% 42%, rgba(255, 255, 255, 0.045) 0%, rgba(0, 0, 0, 0.44) 100%),
+    var(--bg-1);
+  border: 1px solid var(--neon-soft);
+  box-shadow:
+    0 0 0 1px rgba(56, 189, 248, 0.10),
+    0 0 16px rgba(56, 189, 248, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 50px rgba(0, 0, 0, 0.5);
   text-align: center;
   animation: capsule-in 0.45s ease both;
   transition: box-shadow 0.4s ease, border-color 0.4s ease;
 }
 
 .review-capsule.is-correct {
-  border-color: var(--due);
-  box-shadow: 0 20px 44px -26px rgba(0, 0, 0, 0.35), 0 0 0 1px var(--due) inset;
+  border-color: var(--ok-soft);
+  box-shadow:
+    0 0 0 1px rgba(34, 211, 166, 0.16),
+    0 0 22px rgba(34, 211, 166, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 50px rgba(0, 0, 0, 0.5);
   animation: capsule-in 0.3s ease both;
 }
 .review-capsule.is-wrong {
-  border-color: var(--coral);
-  box-shadow: 0 20px 44px -26px rgba(0, 0, 0, 0.35), 0 0 0 1px var(--coral) inset;
+  border-color: var(--bad-soft);
+  box-shadow:
+    0 0 0 1px rgba(251, 90, 115, 0.16),
+    0 0 22px rgba(251, 90, 115, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 50px rgba(0, 0, 0, 0.5);
   animation: capsule-in 0.3s ease both;
 }
 
@@ -58,25 +99,25 @@
   font-size: 0.92rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--accent);
-  opacity: 0.85;
+  color: var(--neon);
+  opacity: 0.78;
   margin: 24px 0 8px;
 }
 .capsule-label:first-child { margin-top: 0; }
 
 .capsule-text {
-  font-size: var(--text-2xl);
+  font-size: 2.85rem;
   line-height: 1.45;
   font-weight: 500;
   margin: 0;
-  color: var(--ivory);
+  color: #f2f7ff;
+  text-shadow: 0 0 22px rgba(56, 189, 248, 0.18);
 }
 .capsule-text .blank {
-  color: transparent;
+  color: var(--neon);
   font-weight: 700;
-  letter-spacing: 0.04em;
-  padding-bottom: 3px;
-  border-bottom: 2px solid var(--accent);
+  letter-spacing: 0.28em;
+  text-shadow: 0 0 16px rgba(56, 189, 248, 0.75);
 }
 
 /* ===== Ввод ===== */
@@ -95,24 +136,26 @@
   font-family: inherit;
   font-size: 1.85rem;
   font-weight: 600;
-  color: var(--ivory);
-  background: transparent;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.03);
   border: none;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 2px solid var(--neon-soft);
   border-radius: 10px 10px 0 0;
   padding: 12px 14px;
   outline: none;
-  transition: border-color 0.25s ease;
+  box-shadow: 0 6px 24px -12px var(--neon-soft);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
-.review-input::placeholder { color: var(--muted); font-weight: 400; }
+.review-input::placeholder { color: var(--text-dim); font-weight: 400; }
 .review-input:focus {
-  border-bottom-color: var(--accent);
+  border-bottom-color: var(--neon);
+  box-shadow: 0 8px 30px -10px var(--neon);
 }
 
 .review-hint {
   margin-top: 10px;
   font-size: 0.9rem;
-  color: var(--ivory-dim);
+  color: var(--text-dim);
 }
 
 /* ===== Результат ===== */
@@ -135,17 +178,20 @@
   min-width: 260px;
   border-bottom-width: 2px;
   border-radius: 12px;
-  background: var(--recess);
+  background: rgba(255, 255, 255, 0.03);
 }
 .review-answer.is-correct {
-  border-bottom-color: var(--due);
-  color: var(--due);
+  border-bottom-color: var(--ok);
+  box-shadow: 0 8px 30px -10px var(--ok-soft);
+  color: var(--ok);
 }
 .review-answer.is-wrong {
-  border-bottom-color: var(--coral);
-  color: var(--coral);
+  border-bottom-color: var(--bad);
+  box-shadow: 0 8px 30px -10px var(--bad-soft);
+  color: var(--bad);
   animation: shake 0.4s ease both;
 }
+/* иконка + подпись статуса строго по одной линии (п.12) */
 .answer-badge {
   display: inline-flex;
   align-items: center;
@@ -162,13 +208,12 @@
   animation: reveal-in 0.45s ease both;
 }
 .reveal-word {
-  font-size: var(--text-2xl);
+  font-size: 2.6rem;
   font-weight: 700;
   letter-spacing: 0.01em;
-  color: var(--ivory);
 }
-.reveal-type { color: var(--ivory-dim); font-style: italic; margin-top: 2px; font-size: 1.05rem; }
-.reveal-transcription { color: var(--accent); margin: 8px 0 16px; font-size: 1.15rem; }
+.reveal-type { color: var(--text-dim); font-style: italic; margin-top: 2px; font-size: 1.05rem; }
+.reveal-transcription { color: var(--neon); margin: 8px 0 16px; font-size: 1.15rem; }
 
 .reveal-examples {
   list-style: none;
@@ -179,18 +224,18 @@
 }
 .reveal-examples li {
   padding: 10px 0;
-  border-bottom: 1px solid var(--border-soft);
-  color: var(--ivory);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--text);
   font-size: 1.08rem;
   line-height: 1.5;
 }
-.reveal-examples strong { color: var(--accent); font-weight: 700; }
+.reveal-examples strong { color: var(--neon); font-weight: 700; }
 
 .review-done {
   text-align: center;
   margin-top: 72px;
   font-size: 1.2rem;
-  color: var(--ivory);
+  color: var(--text);
 }
 
 /* ===== Анимации ===== */
@@ -201,6 +246,20 @@
 @keyframes reveal-in {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+@keyframes neon-pulse {
+  0%, 100% { box-shadow:
+    0 0 0 1px rgba(56, 189, 248, 0.18),
+    0 0 30px var(--neon-soft),
+    0 0 90px rgba(56, 189, 248, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 0 64px rgba(0, 0, 0, 0.62); }
+  50% { box-shadow:
+    0 0 0 1px rgba(56, 189, 248, 0.28),
+    0 0 44px var(--neon-soft),
+    0 0 120px rgba(56, 189, 248, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 0 64px rgba(0, 0, 0, 0.62); }
 }
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
@@ -214,10 +273,10 @@
   .review { padding: 18px 12px 36px; min-height: 70vh; }
   .review-header { margin-bottom: 26px; }
   .review-capsule { padding: 30px 22px; border-radius: 20px; }
-  .capsule-text { font-size: var(--text-xl); }
+  .capsule-text { font-size: 2rem; }
   .capsule-label { font-size: 0.78rem; margin: 18px 0 6px; }
   .review-input { font-size: 1.4rem; }
-  .reveal-word { font-size: var(--text-xl); }
+  .reveal-word { font-size: 2rem; }
   .review-input-form { margin-top: 26px; }
 }
 
@@ -230,3 +289,10 @@
   }
 }
 
+.review-input.flash-bad {
+  animation: input-flash-bad 0.35s ease;
+}
+@keyframes input-flash-bad {
+  0%, 100% { border-color: var(--neon-soft); }
+  40% { border-color: var(--bad); box-shadow: 0 0 12px var(--bad-soft); }
+}
