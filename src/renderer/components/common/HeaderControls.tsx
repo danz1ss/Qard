@@ -18,6 +18,7 @@ const HeaderControls: React.FC = () => {
       </button>
 
       <div className="hc-lang" role="group" aria-label={t('ctrl.language')}>
+        <span className={`hc-lang-indicator ${lang === 'en' ? 'is-second' : ''}`} aria-hidden="true" />
         <button
           type="button"
           className={`hc-lang-opt ${lang === 'ru' ? 'is-active' : ''}`}

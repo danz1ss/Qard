@@ -23,19 +23,46 @@
 .hc-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .hc-lang {
+  position: relative;
   display: inline-flex;
+  gap: 2px;
+  padding: 3px;
   border: 1px solid var(--border-soft);
-  border-radius: var(--space-2);
-  overflow: hidden;
+  border-radius: 999px;
+  background: var(--bg-elev);
+}
+.hc-lang-indicator {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 34px;
+  height: calc(100% - 6px);
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--accent-hi) 0%, var(--accent) 100%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+  pointer-events: none;
+}
+.hc-lang-indicator.is-second {
+  transform: translateX(36px);
 }
 .hc-lang-opt {
-  padding: 6px 10px;
+  position: relative;
+  z-index: 1;
+  width: 34px;
+  padding: 6px 0;
   border: none;
-  background: var(--surface);
+  border-radius: 999px;
+  background: transparent;
   color: var(--ivory-dim);
   font: 600 12px var(--font);
+  text-align: center;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: color 0.2s ease;
 }
-.hc-lang-opt.is-active { background: var(--accent); color: #fff; }
-.hc-lang-opt:not(.is-active):hover { background: var(--surface-hi); color: var(--ivory); }
+.hc-lang-opt.is-active { color: var(--on-accent); }
+.hc-lang-opt:not(.is-active):hover { color: var(--ivory); }
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-lang-indicator { transition: none; }
+}
