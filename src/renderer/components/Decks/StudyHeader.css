@@ -68,7 +68,7 @@
   transition: stroke-dasharray 0.5s ease, stroke 0.3s ease;
 }
 .sh-ring-fill.is-done {
-  stroke: #4fc78a;
+  stroke: var(--due);
 }
 .sh-goal-text {
   position: absolute;
@@ -87,7 +87,7 @@
 .sh-goal-done {
   font-size: 22px;
   font-weight: 700;
-  color: #4fc78a;
+  color: var(--due);
 }
 .sh-goal-sub {
   font-size: 10.5px;
