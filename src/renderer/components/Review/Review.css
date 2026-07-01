@@ -34,7 +34,7 @@
   width: 100%;
   max-width: 760px;
   padding: 44px 52px;
-  border-radius: var(--radius-lg, 24px);
+  border-radius: var(--radius-lg);
   background: linear-gradient(180deg, var(--surface-hi) 0%, var(--surface) 100%);
   border: 1.5px solid var(--border);
   box-shadow: 0 20px 44px -26px rgba(0, 0, 0, 0.35);
@@ -229,10 +229,3 @@
   }
 }
 
-.review-input.flash-bad {
-  animation: input-flash-bad 0.35s ease;
-}
-@keyframes input-flash-bad {
-  0%, 100% { border-color: var(--border); }
-  40% { border-color: var(--coral); }
-}

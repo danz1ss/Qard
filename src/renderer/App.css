@@ -35,6 +35,8 @@
 
   --key-shadow: #14110d;
   --radius: 16px;
+  --radius-sm: 10px;
+  --radius-lg: 24px;
 
   --header-overlay: linear-gradient(180deg, rgba(42, 37, 30, 0.55) 0%, rgba(32, 28, 23, 0) 100%);
   --card-end: #221e18;
