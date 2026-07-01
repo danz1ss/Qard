@@ -1,44 +1,44 @@
 /* ======================================================================
-   Глобальная графитовая тема (mid-tone, игра-головоломка)
-   Единый источник дизайн-токенов.
+   Глобальная тёплая тема — editorial-минимализм (тёмный вариант). Единый источник дизайн-токенов.
    ====================================================================== */
 :root {
-  --bg: #2d323e;
-  --bg-deep: #282c37;
-  --bg-elev: #333845;
-  --surface: #3a404e;
-  --surface-hi: #424959;
-  --border: #4b5365;
-  --border-soft: #444b5b;
+  --bg: #201c17;
+  --bg-deep: #1a1713;
+  --bg-elev: #2a251e;
+  --surface: #2a251e;
+  --surface-hi: #332c23;
+  --border: #423a2e;
+  --border-soft: #3a332a;
 
-  --ivory: #ece9e1;
-  --ivory-dim: #aab0bd;
-  --muted: #8b91a0;
+  --ivory: #f4efe6;
+  --ivory-dim: #b9ac97;
+  --muted: #8a7d6a;
 
-  --new: #8fb6ff;
-  --learn: #f3c168;
-  --due: #84e2ad;
-  --green: #84e2ad;
-  --amber: #f3c168;
+  --new: #5fa3a6;
+  --learn: #dba458;
+  --due: #7bbf85;
+  --green: #7bbf85;
+  --amber: #dba458;
 
-  --accent: #6f9ce8;
-  --accent-hi: #9cbcf6;
-  --accent-press: #5b84cc;
-  --accent-shade: #3f5e96;
-  --accent-soft: rgba(111, 156, 232, 0.14);
+  --accent: #7b8fc4;
+  --accent-hi: #93a4d1;
+  --accent-press: #64769e;
+  --accent-shade: #4a5a82;
+  --accent-soft: rgba(123, 143, 196, 0.16);
+  --on-accent: #1c2136;
 
   --coral: #e8856e;
   --coral-shade: #b85c48;
+  --coral-soft: rgba(232, 133, 110, 0.14);
 
-  --key-shadow: #2a2f3a;
+  --recess: rgba(0, 0, 0, 0.16);
+
+  --key-shadow: #14110d;
   --radius: 16px;
 
-  /* Оверлей-градиент шапки (тема-зависимый) */
-  --header-overlay: linear-gradient(180deg, rgba(58, 64, 78, 0.55) 0%, rgba(45, 50, 62, 0) 100%);
-  /* Нижний край карточки-вкладки (тема-зависимый) */
-  --card-end: #2f343f;
+  --header-overlay: linear-gradient(180deg, rgba(42, 37, 30, 0.55) 0%, rgba(32, 28, 23, 0) 100%);
+  --card-end: #221e18;
 
-  /* Единая шкала отступов (кратные 4px) */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -46,45 +46,56 @@
   --space-5: 24px;
   --space-6: 32px;
   --space-7: 48px;
+  --space-8: 64px;
+
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-md: 18px;
+  --text-lg: 22px;
+  --text-xl: 28px;
+  --text-2xl: 36px;
 
   --font: 'Rubik', system-ui, -apple-system, sans-serif;
 }
 
 /* ---------- Светлая тема: переопределение глобальных токенов ---------- */
 :root[data-theme='light'] {
-  --bg: #eef1f6;
-  --bg-deep: #e6eaf1;
-  --bg-elev: #f4f6fa;
-  --surface: #ffffff;
-  --surface-hi: #f0f3f8;
-  --border: #c9d0dd;
-  --border-soft: #d7dde7;
+  --bg: #f4efe6;
+  --bg-deep: #ece5d8;
+  --bg-elev: #fffdf9;
+  --surface: #fffdf9;
+  --surface-hi: #fbf6ee;
+  --border: #e4dcc9;
+  --border-soft: #ece5d5;
 
-  --ivory: #1f2530;
-  --ivory-dim: #51607a;
-  --muted: #6b7689;
+  --ivory: #2b2620;
+  --ivory-dim: #6b6154;
+  --muted: #8a8071;
 
-  --accent: #3f6fd6;
-  --accent-hi: #5e88e6;
-  --accent-press: #335cb4;
-  --accent-soft: rgba(63, 111, 214, 0.12);
+  --accent: #3a4a6b;
+  --accent-hi: #4d5f85;
+  --accent-press: #2c3852;
+  --accent-shade: #22304a;
+  --accent-soft: rgba(58, 74, 107, 0.12);
+  --on-accent: #fffdf9;
 
-  /* Насыщенные статус-цвета: бледные тёмной темы не читаются на белом */
-  --new: #2f63d1;
-  --learn: #c2851a;
-  --due: #1f9d5e;
-  --green: #1f9d5e;
-  --amber: #c2851a;
+  --new: #3d6b6e;
+  --learn: #b5793a;
+  --due: #4d6e50;
+  --green: #4d6e50;
+  --amber: #b5793a;
 
   --coral: #d35f43;
   --coral-shade: #a9442d;
+  --coral-soft: rgba(211, 95, 67, 0.12);
 
-  --key-shadow: #c2cad8;
+  --recess: rgba(43, 38, 32, 0.05);
 
-  /* Светлая шапка: лёгкий белый блик вместо тёмного оверлея */
-  --header-overlay: linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 100%);
-  /* Низ карточки остаётся светлым — текст снизу читается */
-  --card-end: #e6eaf2;
+  --key-shadow: #d8cdb8;
+
+  --header-overlay: linear-gradient(180deg, rgba(255, 253, 249, 0.75) 0%, rgba(255, 253, 249, 0) 100%);
+  --card-end: #ece2d0;
 }
 
 /* Светлая тема: усиление читаемости бренда и навбара */
@@ -110,8 +121,8 @@
   font-family: var(--font);
   color: var(--ivory);
   background:
-    radial-gradient(120% 80% at 8% -10%, #383e4d 0%, rgba(56, 62, 77, 0) 52%),
-    radial-gradient(120% 90% at 100% 0%, #353b49 0%, rgba(53, 59, 73, 0) 55%),
+    radial-gradient(120% 80% at 8% -10%, var(--bg-elev) 0%, transparent 52%),
+    radial-gradient(120% 90% at 100% 0%, var(--bg-elev) 0%, transparent 55%),
     var(--bg);
 }
 
@@ -152,7 +163,7 @@
   width: 32px;
   height: 37px;
   object-fit: contain;
-  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.4));
+  filter: drop-shadow(0 0 10px var(--accent-soft));
 }
 .brand-text h1 {
   font-size: 25px;
@@ -219,7 +230,8 @@
 }
 
 .tab-content h2 {
-  font-size: 31px;
+  font-size: var(--text-xl);
+  line-height: 1.25;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--ivory);
@@ -237,7 +249,7 @@
 :where(button:not(.tab)) {
   padding: 11px 22px;
   background: linear-gradient(180deg, var(--accent-hi) 0%, var(--accent) 100%);
-  color: #16233b;
+  color: var(--on-accent);
   border: none;
   border-radius: 999px;
   font-family: var(--font);
