@@ -576,7 +576,7 @@
 }
 
 .modal {
-  font-family: var(--font);
+  font-family: 'Rubik', system-ui, sans-serif;
   color: var(--ivory);
   background: linear-gradient(180deg, var(--surface-hi) 0%, var(--surface) 100%);
   border: 1px solid var(--border);
