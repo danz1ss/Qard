@@ -15,10 +15,11 @@
 .settings-section {
   margin-bottom: var(--space-5);
   padding-bottom: var(--space-5);
-  border-bottom: 1px solid var(--border-soft);
+  border-bottom: 1px solid var(--border);
 }
 
 .settings-section:last-of-type {
+  margin-bottom: 0;
   border-bottom: none;
   padding-bottom: 0;
 }
@@ -138,7 +139,7 @@
 }
 
 .save-section {
-  margin-top: var(--space-5);
+  margin-top: var(--space-4);
   display: flex;
   align-items: center;
   gap: var(--space-4);
