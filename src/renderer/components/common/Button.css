@@ -56,12 +56,18 @@
 }
 
 .btn-success {
+  /* Фолбэк для браузеров без color-mix() (Safari <16.4/Chrome <111) — сплошной
+     var(--green), без градиента/оттенения; следующая строка перекрывает там,
+     где color-mix() поддерживается. */
+  background: var(--green);
   background: linear-gradient(180deg, color-mix(in srgb, var(--green) 55%, white) 0%, var(--green) 100%);
   color: #0e2c1d;
+  box-shadow: 0 5px 0 var(--green), inset 0 1px 0 rgba(255, 255, 255, 0.4);
   box-shadow: 0 5px 0 color-mix(in srgb, var(--green) 65%, black), inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 .btn-success:hover:not(:disabled) { filter: brightness(1.05); }
 .btn-success:active:not(:disabled) {
+  box-shadow: 0 0 0 var(--green), inset 0 1px 0 rgba(255, 255, 255, 0.3);
   box-shadow: 0 0 0 color-mix(in srgb, var(--green) 65%, black), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
