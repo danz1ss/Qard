@@ -15,7 +15,7 @@
 .settings-summary {
   background-color: var(--surface);
   border: 1px solid var(--border-soft);
-  padding: var(--space-4);
+  padding: 20px;
   border-radius: 16px;
   margin-bottom: var(--space-4);
 }
