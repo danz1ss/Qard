@@ -35,7 +35,7 @@
 
 .input-error:focus {
   border-color: var(--coral);
-  box-shadow: 0 0 0 4px rgba(232, 133, 110, 0.16);
+  box-shadow: 0 0 0 4px var(--coral-soft);
 }
 
 .input-error-text {

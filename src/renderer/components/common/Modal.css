@@ -21,6 +21,6 @@
 }
 .modal-create .modal-error {
   margin: 10px 0 0;
-  color: #f0a892;
+  color: var(--coral);
   font-size: 13.5px;
 }
