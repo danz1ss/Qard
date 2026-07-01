@@ -1,45 +1,46 @@
 /* ======================================================================
-   Глобальная тёплая тема — editorial-минимализм (тёмный вариант). Единый источник дизайн-токенов.
+   Глобальная графитовая тема (тёмный вариант, оригинал) + тёплая светлая
+   (editorial-минимализм). Единый источник дизайн-токенов.
    ====================================================================== */
 :root {
-  --bg: #201c17;
-  --bg-deep: #1a1713;
-  --bg-elev: #2a251e;
-  --surface: #2a251e;
-  --surface-hi: #332c23;
-  --border: #423a2e;
-  --border-soft: #3a332a;
+  --bg: #2d323e;
+  --bg-deep: #282c37;
+  --bg-elev: #333845;
+  --surface: #3a404e;
+  --surface-hi: #424959;
+  --border: #4b5365;
+  --border-soft: #444b5b;
 
-  --ivory: #f4efe6;
-  --ivory-dim: #b9ac97;
-  --muted: #8a7d6a;
+  --ivory: #ece9e1;
+  --ivory-dim: #aab0bd;
+  --muted: #8b91a0;
 
-  --new: #5fa3a6;
-  --learn: #dba458;
-  --due: #7bbf85;
-  --green: #7bbf85;
-  --amber: #dba458;
+  --new: #8fb6ff;
+  --learn: #f3c168;
+  --due: #84e2ad;
+  --green: #84e2ad;
+  --amber: #f3c168;
 
-  --accent: #7b8fc4;
-  --accent-hi: #93a4d1;
-  --accent-press: #64769e;
-  --accent-shade: #4a5a82;
-  --accent-soft: rgba(123, 143, 196, 0.16);
-  --on-accent: #1c2136;
+  --accent: #6f9ce8;
+  --accent-hi: #9cbcf6;
+  --accent-press: #5b84cc;
+  --accent-shade: #3f5e96;
+  --accent-soft: rgba(111, 156, 232, 0.14);
+  --on-accent: #16233b;
 
   --coral: #e8856e;
   --coral-shade: #b85c48;
-  --coral-soft: rgba(232, 133, 110, 0.14);
+  --coral-soft: rgba(232, 133, 110, 0.12);
 
   --recess: rgba(0, 0, 0, 0.16);
 
-  --key-shadow: #14110d;
+  --key-shadow: #2a2f3a;
   --radius: 16px;
   --radius-sm: 10px;
   --radius-lg: 24px;
 
-  --header-overlay: linear-gradient(180deg, rgba(42, 37, 30, 0.55) 0%, rgba(32, 28, 23, 0) 100%);
-  --card-end: #221e18;
+  --header-overlay: linear-gradient(180deg, rgba(58, 64, 78, 0.55) 0%, rgba(45, 50, 62, 0) 100%);
+  --card-end: #2f343f;
 
   --space-1: 4px;
   --space-2: 8px;

@@ -72,9 +72,10 @@
   color: var(--ivory);
 }
 .capsule-text .blank {
-  color: var(--accent);
+  color: transparent;
   font-weight: 700;
   letter-spacing: 0.04em;
+  padding-bottom: 3px;
   border-bottom: 2px solid var(--accent);
 }
 
