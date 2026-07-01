@@ -533,7 +533,7 @@
   border-radius: 12px;
   background: var(--coral-soft);
   border: 1px solid var(--coral);
-  color: var(--coral);
+  color: var(--ivory);
   font-size: 14px;
 }
 
@@ -576,7 +576,7 @@
 }
 
 .modal {
-  font-family: 'Rubik', system-ui, sans-serif;
+  font-family: var(--font);
   color: var(--ivory);
   background: linear-gradient(180deg, var(--surface-hi) 0%, var(--surface) 100%);
   border: 1px solid var(--border);
