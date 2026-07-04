@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useStore } from './store';
 import { useT } from './prefs/PreferencesProvider';
 import Settings from './components/Settings/Settings';
 import WordInput from './components/WordInput/WordInput';
@@ -22,7 +23,15 @@ type Tab = 'decks' | 'browse' | 'setup' | 'input' | 'generate' | 'preview';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('decks');
+  const wordCount = useStore((s) => s.words.length);
   const t = useT();
+
+  // Мобильная лента вкладок: активная вкладка всегда в зоне видимости
+  useEffect(() => {
+    document
+      .querySelector('.tab.active')
+      ?.scrollIntoView({ inline: 'nearest', block: 'nearest', behavior: 'smooth' });
+  }, [activeTab]);
 
   return (
     <div className="app">
@@ -71,6 +80,7 @@ const App: React.FC = () => {
           onClick={() => setActiveTab('generate')}
         >
           {t('nav.generate')}
+          {wordCount > 0 && <span className="tab-badge">{wordCount}</span>}
         </button>
         <button
           className={`tab ${activeTab === 'preview' ? 'active' : ''}`}
@@ -103,13 +113,13 @@ const App: React.FC = () => {
 
         {activeTab === 'input' && (
           <div className="tab-content">
-            <WordInput />
+            <WordInput onNavigate={setActiveTab} />
           </div>
         )}
 
         {activeTab === 'generate' && (
           <div className="tab-content">
-            <Generation />
+            <Generation onNavigate={setActiveTab} />
           </div>
         )}
 

@@ -7,7 +7,13 @@ import { CheckIcon, XIcon } from '../common/icons';
 import { GenerationStage } from '../../../shared/types';
 import './Generation.css';
 
-const Generation: React.FC = () => {
+type NavTab = 'decks' | 'browse' | 'setup' | 'input' | 'generate' | 'preview';
+
+interface GenerationProps {
+  onNavigate?: (tab: NavTab) => void;
+}
+
+const Generation: React.FC<GenerationProps> = ({ onNavigate }) => {
   const {
     words,
     exampleCount,
@@ -26,8 +32,13 @@ const Generation: React.FC = () => {
     !overLimit &&
     (__IS_WEB__ || !!geminiApiKey);
 
-  const handleStartGeneration = () => {
-    startGeneration();
+  const handleStartGeneration = async () => {
+    await startGeneration();
+    // Успешное завершение → авто-переход на Preview (даём секунду увидеть итог)
+    const { generatedCards, generationProgress: progress } = useStore.getState();
+    if (generatedCards.length > 0 && !progress.error) {
+      setTimeout(() => onNavigate?.('preview'), 1200);
+    }
   };
 
   const getStageText = (stage: GenerationStage): string => {
@@ -63,10 +74,20 @@ const Generation: React.FC = () => {
       <div className="settings-summary">
         <h3>{t('gen.currentSettings')}</h3>
         <div className="summary-grid">
-          <div className="summary-item">
-            <span className="summary-label">{t('gen.words')}</span>
-            <span className="summary-value">{words.length}</span>
-          </div>
+          {!__IS_WEB__ && (
+            <div className="summary-item">
+              <span className="summary-label">{t('gen.words')}</span>
+              <span className="summary-value">{words.length}</span>
+            </div>
+          )}
+          {__IS_WEB__ && (
+            <div className="summary-item">
+              <span className="summary-label">{t('gen.wordCount')}</span>
+              <span className={`summary-value ${overLimit ? 'is-missing' : 'is-ok'}`}>
+                {words.length} / {WORD_LIMIT}
+              </span>
+            </div>
+          )}
           <div className="summary-item">
             <span className="summary-label">{t('gen.examplesPerWord')}</span>
             <span className="summary-value">{exampleCount}</span>
@@ -80,14 +101,6 @@ const Generation: React.FC = () => {
                 ) : (
                   <><XIcon size={15} /> {t('gen.notConfigured')}</>
                 )}
-              </span>
-            </div>
-          )}
-          {__IS_WEB__ && (
-            <div className="summary-item">
-              <span className="summary-label">{t('gen.wordCount')}</span>
-              <span className={`summary-value ${overLimit ? 'is-missing' : 'is-ok'}`}>
-                {words.length} / {WORD_LIMIT}
               </span>
             </div>
           )}
@@ -159,6 +172,11 @@ const Generation: React.FC = () => {
           <p>
             {t('gen.completeText').replace('{n}', String(generationProgress.completedCards))}
           </p>
+          {onNavigate && (
+            <Button onClick={() => onNavigate('preview')}>
+              {t('gen.viewPreview')}
+            </Button>
+          )}
         </div>
       )}
     </div>

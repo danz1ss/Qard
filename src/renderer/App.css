@@ -121,6 +121,8 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  /* Мобильные браузеры: не считаем адресную строку частью вьюпорта */
+  height: 100dvh;
   font-family: var(--font);
   color: var(--ivory);
   background:
@@ -212,6 +214,29 @@
   box-shadow:
     0 3px 0 var(--key-shadow),
     inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+/* Счётчик распарсенных слов на вкладке Generate */
+.tab-badge {
+  display: inline-block;
+  margin-left: 7px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-hi);
+  font-size: 12px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+.tab.active .tab-badge {
+  background: linear-gradient(180deg, var(--accent-hi) 0%, var(--accent) 100%);
+  color: var(--on-accent);
+}
+:root[data-theme='light'] .tab-badge {
+  color: var(--accent);
+}
+:root[data-theme='light'] .tab.active .tab-badge {
+  color: var(--on-accent);
 }
 
 /* ---------- Контент ---------- */
@@ -309,13 +334,24 @@
 ::-webkit-scrollbar-thumb:hover { background: var(--border); }
 
 /* ---------- Адаптивность ---------- */
+/* Узкий десктоп/планшет-альбом: подписи бренда не хватает места рядом с вкладками */
+@media (min-width: 861px) and (max-width: 1120px) {
+  .brand-text p { display: none; }
+}
+
+/* Планшеты и большие телефоны: бренд и контролы в одной строке,
+   вкладки — горизонтальной лентой со скроллом ниже */
 @media (max-width: 860px) {
   .app-header {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr auto;
     row-gap: var(--space-3);
     padding: var(--space-4);
   }
+  .brand { grid-row: 1; grid-column: 1; }
+  .header-controls { grid-row: 1; grid-column: 2; }
   .app-tabs {
+    grid-row: 2;
+    grid-column: 1 / -1;
     justify-self: stretch;
     overflow-x: auto;
     flex-wrap: nowrap;
@@ -323,17 +359,27 @@
     scrollbar-width: none;
   }
   .app-tabs::-webkit-scrollbar { display: none; }
-  .tab { flex: 0 0 auto; }
+  .tab { flex: 0 0 auto; white-space: nowrap; }
   .app-content { padding: var(--space-4) var(--space-4) var(--space-6); }
   .tab-content { padding: var(--space-5) var(--space-4); border-radius: 18px; }
   .tab-content h2 { font-size: 25px; }
 }
 
+/* Большие телефоны (~600px) */
+@media (max-width: 640px) {
+  .brand-text p { display: none; }
+  .form-group { margin-bottom: 16px; }
+}
+
+/* Маленькие телефоны (~360–520px) */
 @media (max-width: 520px) {
-  .app-header { padding: 14px 14px; }
+  .app-header { padding: 12px 14px; }
   .brand-text h1 { font-size: 22px; }
+  .brand-mark { width: 36px; height: 38px; }
   .app-content { padding: 14px 10px 28px; }
-  .tab-content { padding: 18px 14px; }
+  .tab-content { padding: 18px 12px; border-radius: 16px; }
   .tab-content h2 { font-size: 22px; }
-  .tab { padding: 9px 16px; font-size: 15px; }
+  .tab { padding: 9px 14px; font-size: 15px; }
+  :where(button:not(.tab)) { font-size: 15px; padding: 10px 18px; }
+  :where(input, textarea, select) { font-size: 16px; }
 }

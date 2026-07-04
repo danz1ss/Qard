@@ -12,7 +12,13 @@ const parseText = (text: string): string[] =>
     .map((w) => w.trim())
     .filter((w) => w.length > 0);
 
-const WordInput: React.FC = () => {
+type NavTab = 'decks' | 'browse' | 'setup' | 'input' | 'generate' | 'preview';
+
+interface WordInputProps {
+  onNavigate?: (tab: NavTab) => void;
+}
+
+const WordInput: React.FC<WordInputProps> = ({ onNavigate }) => {
   const [inputText, setInputText] = useState('');
   const { words, setWords } = useStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -107,6 +113,13 @@ const WordInput: React.FC = () => {
               </span>
             ))}
           </div>
+          {onNavigate && (
+            <div className="next-step">
+              <Button size="large" onClick={() => onNavigate('generate')}>
+                {t('input.continueGenerate').replace('{n}', String(words.length))}
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>

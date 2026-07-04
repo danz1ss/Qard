@@ -118,6 +118,13 @@
   align-items: center;
 }
 
+@media (max-width: 520px) {
+  .field-mapping-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
 .field-name {
   font-weight: 500;
   color: var(--ivory);

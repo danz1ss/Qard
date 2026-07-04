@@ -27,10 +27,21 @@
   text-overflow: clip;
 }
 
+/* На узких экранах таблица уходит в горизонтальный скролл, а не ломает layout */
+.browser-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .browser-table {
   width: 100%;
   border-collapse: collapse;
   color: var(--ivory);
+}
+
+@media (max-width: 640px) {
+  .browser-table { min-width: 560px; }
+  .browser-def { max-width: 220px; }
 }
 
 .browser-table th {

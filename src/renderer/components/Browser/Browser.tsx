@@ -158,6 +158,7 @@ const Browser: React.FC = () => {
         </div>
       )}
 
+      <div className="browser-table-wrap">
       <table className="browser-table">
         <thead>
           <tr>
@@ -192,6 +193,7 @@ const Browser: React.FC = () => {
           ))}
         </tbody>
       </table>
+      </div>
 
       <div className="browser-pagination">
         <Button size="small" variant="secondary" disabled={page === 0} onClick={() => setPage(page - 1)}>
