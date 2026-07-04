@@ -5,6 +5,7 @@ import { useT } from '../../prefs/PreferencesProvider';
 import Button from '../common/Button';
 import { CheckIcon, XIcon } from '../common/icons';
 import { GenerationStage } from '../../../shared/types';
+import { parseWords } from '../../../shared/utils/wordParser';
 import './Generation.css';
 
 type NavTab = 'decks' | 'browse' | 'setup' | 'input' | 'generate' | 'preview';
@@ -34,9 +35,21 @@ const Generation: React.FC<GenerationProps> = ({ onNavigate }) => {
 
   const handleStartGeneration = async () => {
     await startGeneration();
-    // Успешное завершение → авто-переход на Preview (даём секунду увидеть итог)
-    const { generatedCards, generationProgress: progress } = useStore.getState();
+    const { generatedCards, generationProgress: progress, setWords } = useStore.getState();
     if (generatedCards.length > 0 && !progress.error) {
+      // Успех: очищаем список слов, чтобы те же слова не сгенерировать дважды.
+      // Слова, по которым генерация упала, оставляем для повторной попытки.
+      const failedWords = new Set(
+        generatedCards.filter((c) => c.error).map((c) => c.word.toLowerCase())
+      );
+      const keepRaw = new Set(
+        parseWords(words)
+          .filter((pw) => failedWords.has(pw.word.toLowerCase()))
+          .map((pw) => pw.original)
+      );
+      setWords(words.filter((w) => keepRaw.has(w.trim())));
+
+      // Авто-переход на Preview (даём секунду увидеть итог)
       setTimeout(() => onNavigate?.('preview'), 1200);
     }
   };
