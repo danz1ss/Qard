@@ -58,6 +58,12 @@ const Generation: React.FC<GenerationProps> = ({ onNavigate }) => {
     }
   };
 
+  const formatError = (error: string): string => {
+    if (error === 'DAILY_LIMIT') return t('gen.dailyLimitReached');
+    if (error.includes('Failed to fetch')) return t('gen.networkError');
+    return error;
+  };
+
   const progressPercentage =
     generationProgress.totalCards > 0
       ? (generationProgress.completedCards / generationProgress.totalCards) * 100
@@ -156,12 +162,16 @@ const Generation: React.FC<GenerationProps> = ({ onNavigate }) => {
 
           {generationProgress.error && (
             <div className="progress-error">
-              <strong>{t('gen.error')}</strong>{' '}
-              {generationProgress.error === 'DAILY_LIMIT'
-                ? t('gen.dailyLimitReached')
-                : generationProgress.error}
+              <strong>{t('gen.error')}</strong> {formatError(generationProgress.error)}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Ошибка после завершения (лимит, сеть) — прогресс-блок уже скрыт */}
+      {!isGenerating && generationProgress.error && (
+        <div className="progress-error">
+          <strong>{t('gen.error')}</strong> {formatError(generationProgress.error)}
         </div>
       )}
 

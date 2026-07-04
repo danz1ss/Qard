@@ -98,6 +98,7 @@ export const useCardGeneration = () => {
 
     // Process AI batches in parallel (with semaphore limit)
     let dailyLimitHit = false;
+    let firstAiError: string | null = null;
     const aiBatchPromises = batches.map(async (batch) => {
       await aiSemaphore.acquire();
       try {
@@ -117,6 +118,7 @@ export const useCardGeneration = () => {
           aiResults.set(pw.word.toLowerCase(), []);
         });
         if (error?.message === 'DAILY_LIMIT') dailyLimitHit = true;
+        if (!firstAiError) firstAiError = error?.message || 'AI request failed';
         throw error;
       } finally {
         aiSemaphore.release();
@@ -152,6 +154,21 @@ export const useCardGeneration = () => {
         completedCards: 0,
         totalCards: totalWords,
         error: 'DAILY_LIMIT',
+      });
+      return;
+    }
+
+    // Все AI-запросы упали (сеть/сервер) — показываем ошибку,
+    // а не молчаливые карточки «Failed to generate meanings»
+    const anySuccess = [...aiResults.values()].some((m) => m.length > 0);
+    if (!anySuccess && firstAiError) {
+      setIsGenerating(false);
+      setGenerationProgress({
+        currentWord: '',
+        currentStage: GenerationStage.Error,
+        completedCards: 0,
+        totalCards: totalWords,
+        error: firstAiError,
       });
       return;
     }

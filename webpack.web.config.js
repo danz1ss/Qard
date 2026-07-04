@@ -38,11 +38,10 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       __IS_WEB__: JSON.stringify(true),
+      // Дефолт — прод-воркер (CORS для localhost:8080 разрешён); локальный
+      // wrangler dev подключается через AI_PROXY_URL=http://localhost:8787
       __AI_PROXY_URL__: JSON.stringify(
-        process.env.AI_PROXY_URL ||
-          (process.env.NODE_ENV === 'production'
-            ? 'https://qard-ai-proxy.yudin091006.workers.dev'
-            : 'http://localhost:8787')
+        process.env.AI_PROXY_URL || 'https://qard-ai-proxy.yudin091006.workers.dev'
       ),
     }),
     ...(process.env.NODE_ENV === 'production'

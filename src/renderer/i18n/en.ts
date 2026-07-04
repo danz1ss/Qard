@@ -27,6 +27,7 @@ export const en: Dict = {
   'gen.wordCount': 'Words',
   'gen.wordLimit': 'Up to {n} words per day on the free plan',
   'gen.dailyLimitReached': 'Daily limit reached. Come back tomorrow, or add your own key in Setup → Advanced.',
+  'gen.networkError': 'Could not reach the generation server. Check your internet connection and try again.',
   'gen.tooManyWords': 'Too many words — maximum {n} per generation.',
   'gen.validationHeading': 'Please complete the following before generating:',
   'gen.addWords': 'Add words in the Input tab',
