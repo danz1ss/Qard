@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useStore } from '../../store';
 import { useT } from '../../prefs/PreferencesProvider';
 import Button from '../common/Button';
@@ -22,10 +22,21 @@ const WordInput: React.FC<WordInputProps> = ({ onNavigate }) => {
   const [inputText, setInputText] = useState('');
   const { words, setWords } = useStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const nextStepRef = useRef<HTMLDivElement>(null);
+  // Счётчик парсингов: после каждого успешного парса ведём взгляд к CTA
+  const [parseTick, setParseTick] = useState(0);
   const t = useT();
 
+  useEffect(() => {
+    if (parseTick > 0) {
+      nextStepRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [parseTick]);
+
   const handleParse = () => {
-    setWords(parseText(inputText));
+    const parsed = parseText(inputText);
+    setWords(parsed);
+    if (parsed.length > 0) setParseTick((n) => n + 1);
   };
 
   const handleImportClick = () => {
@@ -41,7 +52,9 @@ const WordInput: React.FC<WordInputProps> = ({ onNavigate }) => {
       const text = String(reader.result || '');
       const combined = inputText ? `${inputText}\n${text}` : text;
       setInputText(combined);
-      setWords(parseText(combined));
+      const parsed = parseText(combined);
+      setWords(parsed);
+      if (parsed.length > 0) setParseTick((n) => n + 1);
     };
     reader.onerror = () => {
       console.error('Failed to read file:', reader.error);
@@ -114,10 +127,13 @@ const WordInput: React.FC<WordInputProps> = ({ onNavigate }) => {
             ))}
           </div>
           {onNavigate && (
-            <div className="next-step">
-              <Button size="large" onClick={() => onNavigate('generate')}>
-                {t('input.continueGenerate').replace('{n}', String(words.length))}
-              </Button>
+            // key=parseTick перезапускает пульс-анимацию на каждый парс
+            <div className="next-step" key={parseTick} ref={nextStepRef}>
+              <span className="next-step-pulse">
+                <Button size="large" onClick={() => onNavigate('generate')}>
+                  {t('input.continueGenerate').replace('{n}', String(words.length))}
+                </Button>
+              </span>
             </div>
           )}
         </div>

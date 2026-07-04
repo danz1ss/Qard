@@ -39,9 +39,25 @@
   margin-top: 15px;
 }
 
-/* CTA следующего шага: после парсинга ведём пользователя в Generate */
+/* CTA следующего шага: после парсинга ведём пользователя в Generate.
+   Пульс привлекает взгляд после автоскролла (перезапуск через key=parseTick) */
 .next-step {
   margin-top: 25px;
+}
+
+.next-step-pulse {
+  display: inline-block;
+  border-radius: 999px;
+  animation: next-step-pulse 0.8s ease 0.45s 2;
+}
+
+@keyframes next-step-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 var(--accent-soft); }
+  40% { transform: scale(1.04); box-shadow: 0 0 0 9px var(--accent-soft); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .next-step-pulse { animation: none; }
 }
 
 .word-list {
