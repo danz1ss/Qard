@@ -622,3 +622,120 @@
   justify-content: flex-end;
   margin-top: 20px;
 }
+
+.import-modal { width: 600px; }
+
+.anki-file-picker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  margin-top: 18px;
+  color: var(--ivory);
+  background: var(--recess);
+  border: 1.5px dashed var(--border);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+
+.anki-file-picker:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  transform: translateY(-1px);
+}
+
+.anki-file-picker:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.anki-file-picker-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 12px;
+  color: var(--on-accent);
+  background: var(--accent);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.anki-file-picker > span:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.anki-file-picker strong { font-size: 15px; }
+.anki-file-picker small { color: var(--muted); font-size: 12px; }
+.anki-file-picker input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.import-connect-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.import-connect-option > span { color: var(--muted); font-size: 13px; }
+
+.import-filename {
+  overflow: hidden;
+  padding: 9px 12px;
+  color: var(--ivory) !important;
+  background: var(--accent-soft);
+  border-radius: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.import-deck-list {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 4px;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  background: var(--recess);
+}
+
+.import-deck-list label {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.import-deck-list label:hover { background: var(--accent-soft); }
+.import-deck-list label span { overflow-wrap: anywhere; }
+.import-deck-list label small { color: var(--muted); font-size: 12px; }
+
+.import-progress-track {
+  height: 8px;
+  overflow: hidden;
+  margin: 12px 0;
+  border-radius: 999px;
+  background: var(--recess);
+}
+
+.import-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 0.2s ease;
+}

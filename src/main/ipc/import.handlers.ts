@@ -1,5 +1,5 @@
 import { IpcMain } from 'electron';
-import { FieldMapping, IPC_CHANNELS } from '../../shared/types';
+import { FieldMapping, ImportFilePayload, IPC_CHANNELS } from '../../shared/types';
 import { ankiConnectService } from '../services/anki-connect.service';
 import { ImportService } from '../services/import.service';
 import { settingsService } from '../services/settings.service';
@@ -27,4 +27,22 @@ export function setupImportHandlers(
       }
     });
   });
+
+  ipcMain.handle(
+    IPC_CHANNELS.IMPORT_FILE_INSPECT,
+    (_event, file: ImportFilePayload) => importService.inspectFile(file)
+  );
+
+  ipcMain.handle(
+    IPC_CHANNELS.IMPORT_FILE_RUN,
+    async (event, file: ImportFilePayload, deckNames: string[]) => {
+      const fieldMapping =
+        ((await settingsService.get('fieldMapping')) as FieldMapping) || {};
+      return importService.runFile(file, deckNames, fieldMapping, (p) => {
+        if (!event.sender.isDestroyed()) {
+          event.sender.send(IPC_CHANNELS.IMPORT_PROGRESS, p);
+        }
+      });
+    }
+  );
 }

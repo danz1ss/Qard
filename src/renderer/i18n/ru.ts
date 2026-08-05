@@ -79,6 +79,7 @@ export const ru: Dict = {
   'modal.creating': 'Создание...',
   'modal.saving': 'Сохранение...',
   'modal.close': 'Закрыть',
+  'modal.back': 'Назад',
   'modal.import': 'Импорт',
   // Decks
   'decks.title': 'Колоды',
@@ -205,6 +206,15 @@ export const ru: Dict = {
   'preview.playAudio': '▶ Воспроизвести',
   'preview.errorLabel': 'Ошибка',
   // Import
+  'import.title': 'Импорт колод Anki',
+  'import.fileHint': 'Выберите пакет, экспортированный из Anki. Колоды и карточки добавятся в Qard, не заменяя текущую коллекцию.',
+  'import.chooseFile': 'Выбрать файл Anki',
+  'import.readingFile': 'Читаем файл Anki...',
+  'import.or': 'или',
+  'import.fromRunningAnki': 'Импортировать из запущенного Anki',
+  'import.tryAgain': 'Выбрать другой источник',
+  'import.noDecks': 'В файле не найдено колод с карточками.',
+  'import.unsupportedFile': 'Выберите файл Anki с расширением .apkg или .colpkg.',
   'import.connecting': 'Подключение к Anki...',
   'import.chooseDecks': 'Выберите колоды для импорта (прогресс обучения не переносится):',
   'import.progress': 'Колода «{name}»: {done} / {total}',

@@ -2,12 +2,15 @@ import { CollectionService } from '../../main/services/collection.service';
 import { SchedulerService } from '../../main/services/scheduler.service';
 import type { ElectronAPI } from '../../renderer/global';
 import { loadSqlJs } from './sqljs-loader';
-import { loadDump, backupDump, createSaver } from './storage';
+import { loadDump, backupDump, createSaver, loadMediaBase64, saveMedia } from './storage';
 import { webSettings } from './settings';
 import { webAI } from './ai';
 import { webTTS } from './tts';
 import { exportBackup, importBackup } from './backup';
 import { seedIfEmpty } from './seed';
+import { parseAnkiPackage } from '../../shared/anki-package';
+import { importParsedAnkiPackage } from '../../main/services/import.package';
+import { ImportProgress } from '../../shared/types';
 
 export interface WebBackend {
   api: ElectronAPI & { backup: { export: () => void; import: (f: File) => Promise<void> } };
@@ -36,6 +39,10 @@ export async function initWebBackend(): Promise<WebBackend> {
   service.setOnChange(save);
 
   const scheduler = new SchedulerService(service);
+  const importListeners = new Set<(progress: ImportProgress) => void>();
+  const emitImportProgress = (progress: ImportProgress) => {
+    for (const listener of importListeners) listener(progress);
+  };
 
   const api: WebBackend['api'] = {
     shell: {
@@ -65,7 +72,7 @@ export async function initWebBackend(): Promise<WebBackend> {
       previewIntervals: async (cardId: number) => scheduler.previewIntervals(cardId),
     },
     media: {
-      getAudio: async (_filename: string) => null,
+      getAudio: (filename: string) => loadMediaBase64(filename),
     },
     stats: {
       get: async () => service.getStudyStats(Date.now()),
@@ -73,7 +80,23 @@ export async function initWebBackend(): Promise<WebBackend> {
     importer: {
       getAnkiDecks: async () => [],
       run: async (_deckNames: string[]) => ({ imported: 0, skipped: 0, errors: 0 }),
-      onProgress: (_cb: (p: any) => void) => () => {},
+      inspectFile: async (file) => (await parseAnkiPackage(file.data, { sqlJs: SQL })).decks,
+      runFile: async (file, deckNames) => {
+        const parsed = await parseAnkiPackage(file.data, { includeMedia: true, sqlJs: SQL });
+        const fieldMapping = (await webSettings.get('fieldMapping')) || {};
+        return importParsedAnkiPackage(
+          service,
+          parsed,
+          deckNames,
+          fieldMapping,
+          saveMedia,
+          emitImportProgress
+        );
+      },
+      onProgress: (cb: (p: ImportProgress) => void) => {
+        importListeners.add(cb);
+        return () => importListeners.delete(cb);
+      },
     },
     backup: {
       export: () => exportBackup(service),

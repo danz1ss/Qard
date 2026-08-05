@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import 'fake-indexeddb/auto';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { loadDump, saveDump, BACKUP_PREFIX } from '../storage';
+import { loadDump, saveDump, saveMedia, loadMediaBase64 } from '../storage';
 import { clear } from 'idb-keyval';
 
 describe('web storage', () => {
@@ -17,5 +17,11 @@ describe('web storage', () => {
     const got = await loadDump();
     expect(got).toBeInstanceOf(Uint8Array);
     expect(Array.from(got!)).toEqual([1, 2, 3, 4]);
+  });
+
+  it('сохраняет и возвращает импортированное медиа в base64', async () => {
+    await saveMedia('hello.mp3', new Uint8Array([0, 1, 2, 253, 254, 255]));
+    expect(await loadMediaBase64('hello.mp3')).toBe('AAEC/f7/');
+    expect(await loadMediaBase64('missing.mp3')).toBeNull();
   });
 });

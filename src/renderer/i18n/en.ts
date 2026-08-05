@@ -79,6 +79,7 @@ export const en: Dict = {
   'modal.creating': 'Creating...',
   'modal.saving': 'Saving...',
   'modal.close': 'Close',
+  'modal.back': 'Back',
   'modal.import': 'Import',
   // Decks
   'decks.title': 'Decks',
@@ -205,6 +206,15 @@ export const en: Dict = {
   'preview.playAudio': '▶ Play Audio',
   'preview.errorLabel': 'Error',
   // Import
+  'import.title': 'Import Anki decks',
+  'import.fileHint': 'Choose a package exported from Anki. Its decks and cards will be added to Qard without replacing your current collection.',
+  'import.chooseFile': 'Choose Anki file',
+  'import.readingFile': 'Reading Anki file...',
+  'import.or': 'or',
+  'import.fromRunningAnki': 'Import from running Anki',
+  'import.tryAgain': 'Choose another source',
+  'import.noDecks': 'No decks containing cards were found in this file.',
+  'import.unsupportedFile': 'Choose an Anki file with the .apkg or .colpkg extension.',
   'import.connecting': 'Connecting to Anki...',
   'import.chooseDecks': 'Choose decks to import (study progress is not transferred):',
   'import.progress': 'Deck "{name}": {done} / {total}',

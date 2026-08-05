@@ -8,6 +8,7 @@ import {
   Deck,
   DeckWithCounts,
   ImportDeckChoice,
+  ImportFilePayload,
   ImportProgress,
   ImportResult,
   IntervalPreviews,
@@ -66,6 +67,8 @@ export interface ElectronAPI {
   importer: {
     getAnkiDecks: () => Promise<ImportDeckChoice[]>;
     run: (deckNames: string[]) => Promise<ImportResult>;
+    inspectFile: (file: ImportFilePayload) => Promise<ImportDeckChoice[]>;
+    runFile: (file: ImportFilePayload, deckNames: string[]) => Promise<ImportResult>;
     onProgress: (cb: (p: ImportProgress) => void) => () => void;
   };
   backup?: {

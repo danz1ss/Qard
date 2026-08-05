@@ -30,7 +30,9 @@ export function mapNoteFields(
     }
   }
 
-  const audioRaw = bySource.get(DataSource.WordAudio) ?? '';
+  const audioRaw =
+    bySource.get(DataSource.WordAudio) ?? Object.values(fields).find((value) => SOUND.test(value)) ?? '';
+  SOUND.lastIndex = 0;
   const soundMatch = audioRaw.match(SOUND);
   const audioRef = soundMatch ? soundMatch[1] : null;
 

@@ -82,6 +82,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getAnkiDecks: () => ipcRenderer.invoke(IPC_CHANNELS.IMPORT_GET_ANKI_DECKS),
     run: (deckNames: string[]) =>
       ipcRenderer.invoke(IPC_CHANNELS.IMPORT_RUN, deckNames),
+    inspectFile: (file: any) =>
+      ipcRenderer.invoke(IPC_CHANNELS.IMPORT_FILE_INSPECT, file),
+    runFile: (file: any, deckNames: string[]) =>
+      ipcRenderer.invoke(IPC_CHANNELS.IMPORT_FILE_RUN, file, deckNames),
     onProgress: (cb: (p: any) => void) => {
       const listener = (_e: any, p: any) => cb(p);
       ipcRenderer.on(IPC_CHANNELS.IMPORT_PROGRESS, listener);

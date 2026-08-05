@@ -2,9 +2,12 @@ import { ankiConnectService } from './anki-connect.service';
 import { CollectionService } from './collection.service';
 import { MediaService } from './media.service';
 import { mapNoteFields } from './import.mapper';
+import { parseAnkiPackage } from '../../shared/anki-package';
+import { importParsedAnkiPackage } from './import.package';
 import {
   FieldMapping,
   ImportDeckChoice,
+  ImportFilePayload,
   ImportProgress,
   ImportResult,
   NewCardInput
@@ -32,6 +35,30 @@ export class ImportService {
       result.push({ name, noteCount: ids.length });
     }
     return result;
+  }
+
+  async inspectFile(file: ImportFilePayload): Promise<ImportDeckChoice[]> {
+    const parsed = await parseAnkiPackage(file.data);
+    return parsed.decks;
+  }
+
+  async runFile(
+    file: ImportFilePayload,
+    deckNames: string[],
+    fieldMapping: FieldMapping,
+    onProgress: (p: ImportProgress) => void
+  ): Promise<ImportResult> {
+    const parsed = await parseAnkiPackage(file.data, { includeMedia: true });
+    return importParsedAnkiPackage(
+      this.col,
+      parsed,
+      deckNames,
+      fieldMapping,
+      async (filename, bytes) => {
+        await this.media.save(filename, Buffer.from(bytes).toString('base64'));
+      },
+      onProgress
+    );
   }
 
   async run(

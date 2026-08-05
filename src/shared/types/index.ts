@@ -280,6 +280,11 @@ export interface ImportDeckChoice {
   noteCount: number;
 }
 
+export interface ImportFilePayload {
+  name: string;
+  data: Uint8Array;
+}
+
 export interface ImportProgress {
   deck: string;
   done: number;
@@ -330,5 +335,7 @@ export const IPC_CHANNELS = {
   MEDIA_GET_AUDIO: 'media:getAudio',
   IMPORT_GET_ANKI_DECKS: 'import:getAnkiDecks',
   IMPORT_RUN: 'import:run',
+  IMPORT_FILE_INSPECT: 'import:fileInspect',
+  IMPORT_FILE_RUN: 'import:fileRun',
   IMPORT_PROGRESS: 'import:progress'
 } as const;
