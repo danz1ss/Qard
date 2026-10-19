@@ -1,5 +1,5 @@
 import OpenAI from 'openai'
-import { ParsedWord, BatchWordResult } from '../../shared/types'
+import { ParsedWord, BatchWordResult, LearnerLevel } from '../../shared/types'
 import { buildBatchPrompt, parseBatchResponse } from '../../shared/ai-prompts'
 
 interface AIConfig {
@@ -35,10 +35,11 @@ class AIService {
 	async generateWordMeaningsBatch(
 		parsedWords: ParsedWord[],
 		examplesPerMeaning: number,
+		learnerLevel: LearnerLevel,
 	): Promise<BatchWordResult[]> {
 		this.ensureInitialized()
 
-		const prompt = buildBatchPrompt(parsedWords, examplesPerMeaning)
+		const prompt = buildBatchPrompt(parsedWords, examplesPerMeaning, learnerLevel)
 
 		try {
 			const completion = await this.client!.chat.completions.create({

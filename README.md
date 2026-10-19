@@ -12,6 +12,8 @@ Works with **English and Russian** vocabulary out of the box.
 ## Features
 
 - **AI card generation** — definition, word type, transcription and example sentences for each word.
+- **Adaptive CEFR cards** — choose A0–C1; A0–A1 cards use Russian translations and translated simple examples, while A2–C1 use level-appropriate English definitions.
+- **Two daily learning attempts** — new words get at most two answered attempts per local day, including the first New appearance. Two correct answers keep the FSRS schedule; a mistake in either attempt brings the word back tomorrow. The count persists across study sessions and restarts.
 - **Multiple AI providers** — pick a preset (ProxyAPI, OpenAI, OpenRouter, DeepSeek, Gemini) or plug in any OpenAI-compatible endpoint via *Custom*.
 - **Free audio pronunciation** — generated with Google Translate TTS, no extra API key.
 - **Duplicate detection** — words that already exist in the target deck are flagged "Already in deck" and skipped on import (you can still force-add them).
@@ -99,6 +101,7 @@ The app has four tabs. Go through them left to right.
 
 ### 1. Setup
 
+- **English Level** — estimate your CEFR level from A0 to C1. You can change it later; it controls the language and complexity of card hints.
 - **Anki Connection** — make sure Anki is open, then click **Refresh**. The status should turn green ("Connected"). If not, re-check the AnkiConnect step above.
 - **AI Provider** — choose your provider, pick a model, and paste your API key. For *Custom*, also enter the Base URL of your OpenAI-compatible endpoint.
 - **Anki Settings** — pick the target **Deck**, the **Note Type (model)**, and how many example sentences per word (1–5).

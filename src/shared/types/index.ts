@@ -3,12 +3,16 @@ export { ParsedWord, PartOfSpeech } from '../utils/wordParser';
 
 // Core data types
 
+export type LearnerLevel = 'A0' | 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
+
 export interface GeneratedCard {
   id: string;
   word: string;
   wordType: string;
   definition: string;
   definitionExample: string;
+  translation?: string;
+  definitionExampleTranslation?: string;
   transcription?: string;
   examples: string[];
   exampleType?: string;
@@ -48,6 +52,7 @@ export interface AppSettings {
   defaultDeckId?: number;
   exampleCount: number;
   dailyGoal?: number;
+  learnerLevel?: LearnerLevel;
   fieldMapping: FieldMapping;
 }
 
@@ -119,6 +124,8 @@ export interface WordMeaningResponse {
   wordType: string;
   definition: string;
   definitionExample: string;
+  translation: string;
+  definitionExampleTranslation: string;
   exampleType: string;
   examples: string[];
   transcription: string;
@@ -179,6 +186,8 @@ export interface StoredCard {
   wordType: string;
   definition: string;
   definitionExample: string;
+  translation: string;
+  definitionExampleTranslation: string;
   transcription: string;
   examples: string[];
   audioFilename: string | null;
@@ -201,6 +210,8 @@ export interface NewCardInput {
   wordType: string;
   definition: string;
   definitionExample: string;
+  translation?: string;
+  definitionExampleTranslation?: string;
   transcription: string;
   examples: string[];
   audioFilename?: string | null;
@@ -213,6 +224,8 @@ export interface CardTextUpdate {
   wordType: string;
   definition: string;
   definitionExample: string;
+  translation?: string;
+  definitionExampleTranslation?: string;
   transcription: string;
   examples: string[];
   tags: string;

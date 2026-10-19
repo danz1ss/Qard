@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS cards (
   word_type TEXT NOT NULL DEFAULT '',
   definition TEXT NOT NULL DEFAULT '',
   definition_example TEXT NOT NULL DEFAULT '',
+  translation TEXT NOT NULL DEFAULT '',
+  definition_example_translation TEXT NOT NULL DEFAULT '',
   transcription TEXT NOT NULL DEFAULT '',
   examples_json TEXT NOT NULL DEFAULT '[]',
   audio_filename TEXT,
@@ -70,7 +72,7 @@ CREATE TABLE IF NOT EXISTS review_log (
 CREATE INDEX IF NOT EXISTS idx_log_card ON review_log(card_id);
 CREATE INDEX IF NOT EXISTS idx_log_time ON review_log(reviewed_at);
 
-INSERT OR IGNORE INTO meta (key, value) VALUES ('schema_version', '1');
+INSERT OR IGNORE INTO meta (key, value) VALUES ('schema_version', '2');
 `;
 
 /** Начало локального дня (полночь) для timestamp в мс. */
@@ -82,7 +84,9 @@ export function dayStart(now: number): number {
 
 /** Конец локального дня (следующая полночь, исключительно). */
 export function dayEnd(now: number): number {
-  return dayStart(now) + 24 * 60 * 60 * 1000;
+  const d = new Date(dayStart(now));
+  d.setDate(d.getDate() + 1);
+  return d.getTime();
 }
 
 function likeEscape(s: string): string {
@@ -124,6 +128,7 @@ export class CollectionService {
     this.db = data ? new SQL.Database(data) : new SQL.Database();
     this.db.run('PRAGMA foreign_keys = ON');
     this.db.run(SCHEMA);
+    this.migrateSchema();
   }
 
   setOnChange(cb: () => void): void {
@@ -156,6 +161,21 @@ export class CollectionService {
   private one(sql: string, params: any[] = []): any | null {
     const rows = this.all(sql, params);
     return rows.length > 0 ? rows[0] : null;
+  }
+
+  private migrateSchema(): void {
+    const columns = new Set(
+      this.all('PRAGMA table_info(cards)').map((row) => row.name as string)
+    );
+    if (!columns.has('translation')) {
+      this.db.run("ALTER TABLE cards ADD COLUMN translation TEXT NOT NULL DEFAULT ''");
+    }
+    if (!columns.has('definition_example_translation')) {
+      this.db.run(
+        "ALTER TABLE cards ADD COLUMN definition_example_translation TEXT NOT NULL DEFAULT ''"
+      );
+    }
+    this.db.run("UPDATE meta SET value = '2' WHERE key = 'schema_version'");
   }
 
   // ===== Decks =====
@@ -284,6 +304,17 @@ export class CollectionService {
     )!.n as number;
   }
 
+  /** Persisted attempts during initial learning, bounded to the local calendar day. */
+  learningAnswersToday(cardId: number, now: number): { count: number; hadMistake: boolean } {
+    const row = this.one(
+      `SELECT COUNT(*) AS n, MAX(CASE WHEN rating = 1 THEN 1 ELSE 0 END) AS missed
+       FROM review_log WHERE card_id = ? AND state IN (?, ?)
+       AND reviewed_at >= ? AND reviewed_at < ?`,
+      [cardId, CardState.New, CardState.Learning, dayStart(now), dayEnd(now)]
+    )!;
+    return { count: row.n, hadMistake: row.missed === 1 };
+  }
+
   // ===== Cards =====
 
   addCards(deckId: number, inputs: NewCardInput[], now: number): number[] {
@@ -292,14 +323,17 @@ export class CollectionService {
       this.db.run(
         `INSERT INTO cards (
           deck_id, word, word_type, definition, definition_example,
-          transcription, examples_json, audio_filename, tags, created_at, due
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          translation, definition_example_translation, transcription,
+          examples_json, audio_filename, tags, created_at, due
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           deckId,
           c.word,
           c.wordType,
           c.definition,
           c.definitionExample,
+          c.translation ?? '',
+          c.definitionExampleTranslation ?? '',
           c.transcription,
           JSON.stringify(c.examples),
           c.audioFilename ?? null,
@@ -324,13 +358,16 @@ export class CollectionService {
   updateCardText(u: CardTextUpdate): void {
     this.db.run(
       `UPDATE cards SET word = ?, word_type = ?, definition = ?,
-        definition_example = ?, transcription = ?, examples_json = ?, tags = ?
+        definition_example = ?, translation = ?, definition_example_translation = ?,
+        transcription = ?, examples_json = ?, tags = ?
        WHERE id = ?`,
       [
         u.word,
         u.wordType,
         u.definition,
         u.definitionExample,
+        u.translation ?? '',
+        u.definitionExampleTranslation ?? '',
         u.transcription,
         JSON.stringify(u.examples),
         u.tags,
@@ -385,9 +422,10 @@ export class CollectionService {
       const like = `%${likeEscape(q.text)}%`;
       where.push(
         `(word LIKE ? ESCAPE '\\' OR definition LIKE ? ESCAPE '\\'
-          OR definition_example LIKE ? ESCAPE '\\' OR examples_json LIKE ? ESCAPE '\\')`
+          OR translation LIKE ? ESCAPE '\\' OR definition_example LIKE ? ESCAPE '\\'
+          OR definition_example_translation LIKE ? ESCAPE '\\' OR examples_json LIKE ? ESCAPE '\\')`
       );
-      params.push(like, like, like, like);
+      params.push(like, like, like, like, like, like);
     }
     if (q.deckId !== undefined) {
       where.push('deck_id = ?');
@@ -550,6 +588,8 @@ export class CollectionService {
       wordType: row.word_type,
       definition: row.definition,
       definitionExample: row.definition_example,
+      translation: row.translation ?? '',
+      definitionExampleTranslation: row.definition_example_translation ?? '',
       transcription: row.transcription,
       examples: JSON.parse(row.examples_json),
       audioFilename: row.audio_filename ?? null,

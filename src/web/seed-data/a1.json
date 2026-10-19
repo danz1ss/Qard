@@ -6,6 +6,8 @@
       "wordType": "noun",
       "definition": "A ______ is a building where people live.",
       "definitionExample": "They live in a big <b>house</b>.",
+      "translation": "дом",
+      "definitionExampleTranslation": "Они живут в большом доме.",
       "transcription": "haʊs",
       "examples": [
         "My <b>house</b> is small but comfortable.",
@@ -17,6 +19,8 @@
       "wordType": "noun",
       "definition": "______ is the clear liquid that you drink and use for washing.",
       "definitionExample": "I drink <b>water</b> every day.",
+      "translation": "вода",
+      "definitionExampleTranslation": "Я пью воду каждый день.",
       "transcription": "ˈwɔːtər",
       "examples": [
         "The <b>water</b> in this lake is very cold.",
@@ -28,6 +32,8 @@
       "wordType": "adjective",
       "definition": "Something ______ is large in size.",
       "definitionExample": "They live in a <b>big</b> city.",
+      "translation": "большой",
+      "definitionExampleTranslation": "Они живут в большом городе.",
       "transcription": "bɪɡ",
       "examples": [
         "That is a very <b>big</b> dog.",
@@ -39,6 +45,8 @@
       "wordType": "verb",
       "definition": "To ______ means to put food in your mouth and swallow it.",
       "definitionExample": "I <b>eat</b> breakfast every morning.",
+      "translation": "есть; кушать",
+      "definitionExampleTranslation": "Я завтракаю каждое утро.",
       "transcription": "iːt",
       "examples": [
         "We <b>eat</b> dinner together at seven o'clock.",
@@ -50,6 +58,8 @@
       "wordType": "noun",
       "definition": "A ______ is a period of 24 hours.",
       "definitionExample": "It is a sunny <b>day</b> today.",
+      "translation": "день",
+      "definitionExampleTranslation": "Сегодня солнечный день.",
       "transcription": "deɪ",
       "examples": [
         "Monday is the first <b>day</b> of the working week.",
@@ -61,6 +71,8 @@
       "wordType": "adjective",
       "definition": "If you are ______, you feel pleased and satisfied.",
       "definitionExample": "She was very <b>happy</b> to see her friend.",
+      "translation": "счастливый; радостный",
+      "definitionExampleTranslation": "Она была очень рада увидеть свою подругу.",
       "transcription": "ˈhæpi",
       "examples": [
         "I am <b>happy</b> when the sun is shining.",
@@ -72,6 +84,8 @@
       "wordType": "verb",
       "definition": "To ______ means to move or travel somewhere.",
       "definitionExample": "I <b>go</b> to school every day.",
+      "translation": "идти; ходить",
+      "definitionExampleTranslation": "Я хожу в школу каждый день.",
       "transcription": "ɡəʊ",
       "examples": [
         "We <b>go</b> to the park on weekends.",

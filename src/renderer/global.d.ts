@@ -12,6 +12,7 @@ import {
   ImportProgress,
   ImportResult,
   IntervalPreviews,
+  LearnerLevel,
   NewCardInput,
   ParsedWord,
   ReviewQueueState,
@@ -25,7 +26,7 @@ export interface ElectronAPI {
     openExternal: (url: string) => Promise<void>;
   };
   ai: {
-    generateBatch: (parsedWords: ParsedWord[], examplesCount: number) => Promise<BatchWordResult[]>;
+    generateBatch: (parsedWords: ParsedWord[], examplesCount: number, learnerLevel: LearnerLevel) => Promise<BatchWordResult[]>;
   };
   tts: {
     generateAudio: (text: string) => Promise<ArrayBuffer>;

@@ -9,6 +9,7 @@ describe('webSettings', () => {
     expect(await webSettings.get('aiProvider')).toBe('proxyapi');
     expect(await webSettings.get('exampleCount')).toBe(3);
     expect(await webSettings.get('dailyGoal')).toBe(20);
+    expect(await webSettings.get('learnerLevel')).toBe('A1');
   });
 
   it('сохраняет и читает значение', async () => {

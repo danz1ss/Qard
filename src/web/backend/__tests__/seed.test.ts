@@ -16,6 +16,10 @@ describe('seed', () => {
     expect(names).toContain('Vocabulary A2');
     expect(names).toContain('Vocabulary B1');
     expect(decks.find((d) => d.name === 'Vocabulary A1')!.totalCards).toBeGreaterThan(0);
+    const a1 = decks.find((d) => d.name === 'Vocabulary A1')!;
+    const card = col.searchCards({ deckId: a1.id, limit: 1, offset: 0 }).cards[0];
+    expect(card.translation).not.toBe('');
+    expect(card.definitionExampleTranslation).not.toBe('');
   });
 
   it('не дублирует колоды при повторном вызове', async () => {

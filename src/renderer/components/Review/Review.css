@@ -148,6 +148,12 @@
   letter-spacing: 0.04em;
   text-shadow: 0 0 16px color-mix(in srgb, var(--neon) 75%, transparent);
 }
+.capsule-translation {
+  margin: 8px 0 0;
+  color: var(--text-dim);
+  font-size: 1rem;
+  line-height: 1.45;
+}
 
 /* ===== Ввод ===== */
 .review-input-form {
@@ -241,6 +247,7 @@
   font-weight: 700;
   letter-spacing: 0.01em;
 }
+.reveal-translation { color: var(--text); margin-top: 4px; font-size: 1.15rem; }
 .reveal-type { color: var(--text-dim); font-style: italic; margin-top: 2px; font-size: 1.05rem; }
 .reveal-transcription { color: var(--neon); margin: 8px 0 16px; font-size: 1.15rem; }
 

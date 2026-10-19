@@ -3,7 +3,7 @@ import { useStore } from '../../store';
 import Input from '../common/Input';
 import Select from '../common/Select';
 import Button from '../common/Button';
-import { AI_PROVIDERS } from '../../../shared/types';
+import { AI_PROVIDERS, LearnerLevel } from '../../../shared/types';
 import { useT } from '../../prefs/PreferencesProvider';
 import './Settings.css';
 
@@ -16,12 +16,14 @@ const Settings: React.FC = () => {
     aiBaseUrl,
     exampleCount,
     dailyGoal,
+    learnerLevel,
     setGeminiApiKey,
     setAiProvider,
     setAiModel,
     setAiBaseUrl,
     setExampleCount,
     setDailyGoal,
+    setLearnerLevel,
     loadSettings,
     saveSettings
   } = useStore();
@@ -79,10 +81,35 @@ const Settings: React.FC = () => {
     label: t('setup.reviewsPerDay').replace('{n}', String(n))
   }));
 
+  const learnerLevelOptions: Array<{ value: LearnerLevel; label: string }> =
+    (['A0', 'A1', 'A2', 'B1', 'B2', 'C1'] as LearnerLevel[]).map((level) => ({
+      value: level,
+      label: t(`setup.level${level}` as any)
+    }));
+
   return (
     <div className="settings">
       <h2>{t('setup.title')}</h2>
       <p className="description">{t('setup.description')}</p>
+
+      <div className="settings-section">
+        <h3>{t('setup.learningLevel')}</h3>
+        <Select
+          label={t('setup.yourLevel')}
+          value={learnerLevel}
+          onChange={(v) => setLearnerLevel(v as LearnerLevel)}
+          options={learnerLevelOptions}
+        />
+        <p className="help-text">{t('setup.levelHint')}</p>
+        <p className="help-text">{t(`setup.levelDescription${learnerLevel}`)}</p>
+        <p className="help-text settings-level-behavior">
+          {learnerLevel === 'A0' || learnerLevel === 'A1'
+            ? t('setup.levelBeginnerBehavior')
+            : t('setup.levelIndependentBehavior')}
+        </p>
+        <p className="help-text">{t('setup.levelChanges')}</p>
+        <p className="help-text">{t('setup.levelSchedule')}</p>
+      </div>
 
       <div className="settings-section">
         <h3>{t('setup.aiProvider')}</h3>

@@ -17,6 +17,8 @@ const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved })
   const [wordType, setWordType] = useState(card.wordType);
   const [definition, setDefinition] = useState(card.definition);
   const [definitionExample, setDefinitionExample] = useState(card.definitionExample);
+  const [translation, setTranslation] = useState(card.translation);
+  const [definitionExampleTranslation, setDefinitionExampleTranslation] = useState(card.definitionExampleTranslation);
   const [transcription, setTranscription] = useState(card.transcription);
   const [examples, setExamples] = useState(card.examples.join('\n'));
   const [tags, setTags] = useState(card.tags);
@@ -32,6 +34,8 @@ const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved })
         wordType,
         definition,
         definitionExample,
+        translation,
+        definitionExampleTranslation,
         transcription,
         examples: examples.split('\n').map((s) => s.trim()).filter(Boolean),
         tags: tags.trim()
@@ -54,10 +58,16 @@ const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved })
         <Input label={t('browse.fieldWord')} value={word} onChange={(e) => setWord(e.target.value)} />
         <Input label={t('browse.fieldPartOfSpeech')} value={wordType} onChange={(e) => setWordType(e.target.value)} />
         <Input label={t('browse.fieldDefinition')} value={definition} onChange={(e) => setDefinition(e.target.value)} />
+        <Input label={t('browse.fieldTranslation')} value={translation} onChange={(e) => setTranslation(e.target.value)} />
         <Input
           label={t('browse.fieldDefExample')}
           value={definitionExample}
           onChange={(e) => setDefinitionExample(e.target.value)}
+        />
+        <Input
+          label={t('browse.fieldDefExampleTranslation')}
+          value={definitionExampleTranslation}
+          onChange={(e) => setDefinitionExampleTranslation(e.target.value)}
         />
         <Input
           label={t('browse.fieldTranscription')}

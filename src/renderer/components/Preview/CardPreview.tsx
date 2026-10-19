@@ -3,6 +3,7 @@ import { GeneratedCard } from '../../../shared/types';
 import Button from '../common/Button';
 import { parseBold } from '../Review/htmlText';
 import { useT } from '../../prefs/PreferencesProvider';
+import { uniqueAdditionalExamples } from '../../../shared/utils/examples';
 
 interface CardPreviewProps {
   card: GeneratedCard;
@@ -23,6 +24,7 @@ const RichText: React.FC<{ html: string }> = ({ html }) => (
 
 const CardPreview: React.FC<CardPreviewProps> = ({ card }) => {
   const t = useT();
+  const additionalExamples = uniqueAdditionalExamples(card.definitionExample, card.examples || []);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
   const handlePlayAudio = async () => {
@@ -73,10 +75,20 @@ const CardPreview: React.FC<CardPreviewProps> = ({ card }) => {
         <p><RichText html={card.definition} /></p>
       </div>
 
+      {card.translation && (
+        <div className="card-section">
+          <h4>{t('preview.translation')}</h4>
+          <p>{card.translation}</p>
+        </div>
+      )}
+
       {card.definitionExample && (
         <div className="card-section">
           <h4>{t('preview.defExample')}</h4>
           <p><RichText html={card.definitionExample} /></p>
+          {card.definitionExampleTranslation && (
+            <p className="example-translation">{card.definitionExampleTranslation}</p>
+          )}
         </div>
       )}
 
@@ -87,10 +99,10 @@ const CardPreview: React.FC<CardPreviewProps> = ({ card }) => {
         </div>
       )}
 
-      {card.examples && card.examples.length > 0 && (
+      {additionalExamples.length > 0 && (
         <div className="card-section">
           <h4>{t('preview.examples')}</h4>
-          {card.examples.map((example, index) => (
+          {additionalExamples.map((example, index) => (
             <div key={index} className="example-item">
               <p className="example-sentence"><RichText html={example} /></p>
             </div>

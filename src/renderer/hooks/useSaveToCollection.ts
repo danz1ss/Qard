@@ -23,6 +23,8 @@ function toInput(card: GeneratedCard): NewCardInput {
     wordType: card.wordType,
     definition: card.definition,
     definitionExample: card.definitionExample,
+    translation: card.translation ?? '',
+    definitionExampleTranslation: card.definitionExampleTranslation ?? '',
     transcription: card.transcription ?? '',
     examples: card.examples,
     audioFilename: card.audioData ? card.audioFilename ?? null : null,

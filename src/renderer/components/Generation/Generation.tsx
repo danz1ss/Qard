@@ -18,6 +18,7 @@ const Generation: React.FC<GenerationProps> = ({ onNavigate }) => {
   const {
     words,
     exampleCount,
+    learnerLevel,
     geminiApiKey,
     generationProgress,
     isGenerating
@@ -107,6 +108,10 @@ const Generation: React.FC<GenerationProps> = ({ onNavigate }) => {
               </span>
             </div>
           )}
+          <div className="summary-item">
+            <span className="summary-label">{t('gen.learnerLevel')}</span>
+            <span className="summary-value">{learnerLevel}</span>
+          </div>
           <div className="summary-item">
             <span className="summary-label">{t('gen.examplesPerWord')}</span>
             <span className="summary-value">{exampleCount}</span>

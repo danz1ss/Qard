@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import initSqlJs from 'sql.js';
 import { CollectionService } from '../collection.service';
 import { CardState, NewCardInput } from '../../../shared/types';
 
@@ -33,6 +34,40 @@ describe('CollectionService: cards', () => {
     expect(card.state).toBe(CardState.New);
     expect(card.due).toBe(now);
     expect(card.examples).toEqual(['hello example']);
+  });
+
+  it('persists adaptive translation fields', () => {
+    const [id] = col.addCards(
+      deckId,
+      [input('house', {
+        translation: 'дом',
+        definitionExampleTranslation: 'Это мой дом.'
+      })],
+      Date.now()
+    );
+    const card = col.getCard(id)!;
+    expect(card.translation).toBe('дом');
+    expect(card.definitionExampleTranslation).toBe('Это мой дом.');
+  });
+
+  it('migrates an existing collection without losing cards', async () => {
+    const SQL = await initSqlJs();
+    const current = new CollectionService();
+    await current.init(undefined, SQL);
+    const currentDeck = current.createDeck('Legacy').id;
+    current.addCards(currentDeck, [input('legacy')], Date.now());
+
+    const legacyDb = new SQL.Database(current.export());
+    legacyDb.run('ALTER TABLE cards DROP COLUMN definition_example_translation');
+    legacyDb.run('ALTER TABLE cards DROP COLUMN translation');
+    legacyDb.run("UPDATE meta SET value = '1' WHERE key = 'schema_version'");
+
+    const migrated = new CollectionService();
+    await migrated.init(legacyDb.export(), SQL);
+    const card = migrated.searchCards({ text: 'legacy', limit: 10, offset: 0 }).cards[0];
+    expect(card.word).toBe('legacy');
+    expect(card.translation).toBe('');
+    expect(card.definitionExampleTranslation).toBe('');
   });
 
   it('updates text fields', () => {

@@ -170,6 +170,9 @@
   margin-bottom: var(--space-4);
   color: var(--ivory-dim);
 }
+.settings-level-behavior {
+  color: var(--accent);
+}
 .settings-advanced {
   margin-bottom: var(--space-4);
 }

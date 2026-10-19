@@ -1,4 +1,4 @@
-import { BatchWordResult, ParsedWord } from '../../shared/types';
+import { BatchWordResult, LearnerLevel, ParsedWord } from '../../shared/types';
 import { buildBatchPrompt, parseBatchResponse } from '../../shared/ai-prompts';
 import { webSettings } from './settings';
 
@@ -28,8 +28,8 @@ async function chat(prompt: string, temperature: number): Promise<string> {
 }
 
 export const webAI = {
-  async generateBatch(parsedWords: ParsedWord[], examplesCount: number): Promise<BatchWordResult[]> {
-    const text = await chat(buildBatchPrompt(parsedWords, examplesCount), 0.7);
+  async generateBatch(parsedWords: ParsedWord[], examplesCount: number, learnerLevel: LearnerLevel): Promise<BatchWordResult[]> {
+    const text = await chat(buildBatchPrompt(parsedWords, examplesCount, learnerLevel), 0.7);
     return parseBatchResponse(text);
   },
 };

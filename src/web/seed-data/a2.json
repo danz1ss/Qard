@@ -6,6 +6,8 @@
       "wordType": "noun",
       "definition": "The ______ is the condition of the atmosphere — whether it is hot, cold, sunny, or rainy.",
       "definitionExample": "The <b>weather</b> in summer is warm and sunny.",
+      "translation": "погода",
+      "definitionExampleTranslation": "Летом погода тёплая и солнечная.",
       "transcription": "ˈweðər",
       "examples": [
         "What is the <b>weather</b> like today?",
@@ -17,6 +19,8 @@
       "wordType": "verb",
       "definition": "To ______ means to go from one place to another, usually over a long distance.",
       "definitionExample": "I love to <b>travel</b> to new countries.",
+      "translation": "путешествовать",
+      "definitionExampleTranslation": "Я люблю путешествовать по новым странам.",
       "transcription": "ˈtrævəl",
       "examples": [
         "She wants to <b>travel</b> around Europe next summer.",
@@ -28,6 +32,8 @@
       "wordType": "verb",
       "definition": "To ______ means to choose between two or more possibilities.",
       "definitionExample": "I need to <b>decide</b> what to study at university.",
+      "translation": "решать; принимать решение",
+      "definitionExampleTranslation": "Мне нужно решить, что изучать в университете.",
       "transcription": "dɪˈsaɪd",
       "examples": [
         "Have you <b>decided</b> where to go on holiday?",
@@ -39,6 +45,8 @@
       "wordType": "adjective",
       "definition": "If you are ______, you have a lot of things to do and not much free time.",
       "definitionExample": "She is very <b>busy</b> at work this week.",
+      "translation": "занятый",
+      "definitionExampleTranslation": "На этой неделе она очень занята на работе.",
       "transcription": "ˈbɪzi",
       "examples": [
         "I can't meet you today — I'm too <b>busy</b>.",
@@ -50,6 +58,8 @@
       "wordType": "verb",
       "definition": "To ______ something means to keep it in your memory or bring it back to your mind.",
       "definitionExample": "Do you <b>remember</b> our first English lesson?",
+      "translation": "помнить; вспоминать",
+      "definitionExampleTranslation": "Ты помнишь наш первый урок английского?",
       "transcription": "rɪˈmembər",
       "examples": [
         "I can't <b>remember</b> where I put my keys.",
@@ -61,6 +71,8 @@
       "wordType": "verb",
       "definition": "To ______ means to make something clear so that someone understands it.",
       "definitionExample": "Can you <b>explain</b> this grammar rule to me?",
+      "translation": "объяснять",
+      "definitionExampleTranslation": "Можешь объяснить мне это правило грамматики?",
       "transcription": "ɪkˈspleɪn",
       "examples": [
         "The teacher <b>explained</b> the new topic clearly.",
@@ -72,6 +84,8 @@
       "wordType": "noun",
       "definition": "A ______ is a piece of information that you send to or leave for someone.",
       "definitionExample": "She sent me a <b>message</b> on my phone.",
+      "translation": "сообщение",
+      "definitionExampleTranslation": "Она отправила мне сообщение на телефон.",
       "transcription": "ˈmesɪdʒ",
       "examples": [
         "I received a <b>message</b> from my friend this morning.",

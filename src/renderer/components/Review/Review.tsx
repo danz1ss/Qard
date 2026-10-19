@@ -6,6 +6,8 @@ import { blankOut, hasBold, isCorrect, parseBold, stripTags } from './htmlText';
 import './Review.css';
 import { playSfx } from '../../audio/sfx';
 import { usePrefs } from '../../prefs/PreferencesProvider';
+import { useStore } from '../../store';
+import { uniqueAdditionalExamples } from '../../../shared/utils/examples';
 
 function audioMimeFromFilename(filename: string): string {
   const ext = filename.slice(filename.lastIndexOf('.') + 1).toLowerCase();
@@ -58,6 +60,7 @@ interface ReviewProps {
 
 const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
   const { soundEnabled, t } = usePrefs();
+  const learnerLevel = useStore((state) => state.learnerLevel);
   const [queue, setQueue] = useState<ReviewQueueState | null>(null);
   const [input, setInput] = useState('');
   const [answered, setAnswered] = useState(false);
@@ -65,8 +68,8 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const advancingRef = useRef(false);
-  // Промахи по карточке за текущую сессию: после MAX_MISSES слово выпускается
-  // в Review (Due) на завтра, а не крутится в learning-цикле. См. п.3 фидбека.
+  // Защита от зацикливания повторного изучения старых карточек.
+  // Лимит новых карточек считает scheduler по сохранённой истории за день.
   const missesRef = useRef<Map<number, number>>(new Map());
   const MAX_MISSES = 2;
 
@@ -178,6 +181,8 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
 
   const exampleFront =
     card && hasBold(card.definitionExample) ? blankOut(card.definitionExample) : '';
+  const additionalExamples = card ? uniqueAdditionalExamples(card.definitionExample, card.examples) : [];
+  const isBeginner = learnerLevel === 'A0' || learnerLevel === 'A1';
   const capsuleState = answered ? (correct ? 'is-correct' : 'is-wrong') : '';
 
   return (
@@ -201,9 +206,15 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
       ) : (
         <>
           <div className={`review-capsule ${capsuleState}`} key={card.id}>
-            <div className="capsule-label">{t('review.definition')}</div>
+            <div className="capsule-label">
+              {isBeginner ? t('review.translation') : t('review.definition')}
+            </div>
             <p className="capsule-text">
-              <Blanks text={stripTags(card.definition)} />
+              {isBeginner && card.translation ? (
+                stripTags(card.translation)
+              ) : (
+                <Blanks text={stripTags(card.definition)} />
+              )}
             </p>
             {exampleFront && (
               <>
@@ -211,6 +222,11 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
                 <p className="capsule-text">
                   <Blanks text={exampleFront} />
                 </p>
+                {isBeginner && card.definitionExampleTranslation && (
+                  <p className="capsule-translation">
+                    {stripTags(card.definitionExampleTranslation)}
+                  </p>
+                )}
               </>
             )}
           </div>
@@ -247,6 +263,9 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
 
               <div className="review-reveal">
                 <div className="reveal-word">{card.word}</div>
+                {card.translation && (
+                  <div className="reveal-translation">{card.translation}</div>
+                )}
                 {card.wordType && (
                   <div className="reveal-type">{card.wordType}</div>
                 )}
@@ -260,14 +279,9 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
                     {t('review.audio')}
                   </Button>
                 )}
-                {(card.definitionExample || card.examples.length > 0) && (
+                {additionalExamples.length > 0 && (
                   <ul className="reveal-examples">
-                    {card.definitionExample && (
-                      <li>
-                        <BoldText html={card.definitionExample} />
-                      </li>
-                    )}
-                    {card.examples.map((ex, i) => (
+                    {additionalExamples.map((ex, i) => (
                       <li key={i}>
                         <BoldText html={ex} />
                       </li>

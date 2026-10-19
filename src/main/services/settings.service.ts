@@ -1,5 +1,5 @@
 import Store from 'electron-store';
-import { AppSettings, DataSource } from '../../shared/types';
+import { AppSettings, DataSource, LearnerLevel } from '../../shared/types';
 
 interface SettingsSchema {
   geminiApiKey?: string;
@@ -9,6 +9,7 @@ interface SettingsSchema {
   defaultDeckId?: number;
   exampleCount: number;
   dailyGoal: number;
+  learnerLevel: LearnerLevel;
   fieldMapping: { [key: string]: DataSource };
 }
 
@@ -17,6 +18,7 @@ const defaultSettings: SettingsSchema = {
   aiModel: 'gpt-4o-mini',
   exampleCount: 3,
   dailyGoal: 20,
+  learnerLevel: 'A1',
   fieldMapping: {}
 };
 
@@ -47,6 +49,7 @@ class SettingsService {
       defaultDeckId: this.store.get('defaultDeckId'),
       exampleCount: this.store.get('exampleCount', 3),
       dailyGoal: this.store.get('dailyGoal', 20),
+      learnerLevel: this.store.get('learnerLevel', 'A1'),
       fieldMapping: this.store.get('fieldMapping', {})
     };
   }

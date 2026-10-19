@@ -5,6 +5,7 @@ import {
 	GenerationProgress,
 	GenerationStage,
 	StudyStats,
+	LearnerLevel,
 } from '../../shared/types'
 
 interface AppState {
@@ -19,6 +20,7 @@ interface AppState {
 	aiBaseUrl: string
 	exampleCount: number
 	dailyGoal: number
+	learnerLevel: LearnerLevel
 
 	setGeminiApiKey: (key: string) => void
 	setAiProvider: (provider: string) => void
@@ -26,6 +28,7 @@ interface AppState {
 	setAiBaseUrl: (url: string) => void
 	setExampleCount: (count: number) => void
 	setDailyGoal: (goal: number) => void
+	setLearnerLevel: (level: LearnerLevel) => void
 
 	loadSettings: () => Promise<void>
 	saveSettings: () => Promise<void>
@@ -65,6 +68,7 @@ export const useStore = create<AppState>((set, get) => ({
 	aiBaseUrl: '',
 	exampleCount: 3,
 	dailyGoal: 20,
+	learnerLevel: 'A1',
 
 	setGeminiApiKey: key => set({ geminiApiKey: key }),
 	setAiProvider: provider => set({ aiProvider: provider }),
@@ -72,6 +76,7 @@ export const useStore = create<AppState>((set, get) => ({
 	setAiBaseUrl: url => set({ aiBaseUrl: url }),
 	setExampleCount: count => set({ exampleCount: count }),
 	setDailyGoal: goal => set({ dailyGoal: goal }),
+	setLearnerLevel: learnerLevel => set({ learnerLevel }),
 
 	loadSettings: async () => {
 		try {
@@ -83,6 +88,7 @@ export const useStore = create<AppState>((set, get) => ({
 				aiBaseUrl: settings.aiBaseUrl || '',
 				exampleCount: Math.min(settings.exampleCount || 3, 3),
 				dailyGoal: Math.min(settings.dailyGoal || 20, 20),
+				learnerLevel: settings.learnerLevel || 'A1',
 				defaultDeckId: settings.defaultDeckId ?? null,
 			})
 		} catch (error) {
@@ -99,6 +105,7 @@ export const useStore = create<AppState>((set, get) => ({
 			await window.electronAPI.settings.set('geminiApiKey', state.geminiApiKey)
 			await window.electronAPI.settings.set('exampleCount', state.exampleCount)
 			await window.electronAPI.settings.set('dailyGoal', state.dailyGoal)
+			await window.electronAPI.settings.set('learnerLevel', state.learnerLevel)
 		} catch (error) {
 			console.error('Failed to save settings:', error)
 			throw error

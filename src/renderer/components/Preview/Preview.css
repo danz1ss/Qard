@@ -216,6 +216,10 @@
   margin: 0;
   line-height: 1.6;
 }
+.example-translation {
+  color: var(--ivory-dim) !important;
+  margin-top: 6px !important;
+}
 
 .card-section.error {
   background-color: rgba(232, 133, 110, 0.1);

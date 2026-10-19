@@ -6,6 +6,8 @@
       "wordType": "verb",
       "definition": "To ______ something means to succeed in doing it after trying hard.",
       "definitionExample": "She worked hard to <b>achieve</b> her goals.",
+      "translation": "достигать",
+      "definitionExampleTranslation": "Она много работала, чтобы достичь своих целей.",
       "transcription": "əˈtʃiːv",
       "examples": [
         "You can <b>achieve</b> anything if you are determined.",
@@ -17,6 +19,8 @@
       "wordType": "noun",
       "definition": "The ______ is the natural world, including the air, water, land, and all living things.",
       "definitionExample": "We must protect the <b>environment</b> for future generations.",
+      "translation": "окружающая среда",
+      "definitionExampleTranslation": "Мы должны защищать окружающую среду для будущих поколений.",
       "transcription": "ɪnˈvaɪrənmənt",
       "examples": [
         "Pollution is a serious threat to the <b>environment</b>.",
@@ -28,6 +32,8 @@
       "wordType": "verb",
       "definition": "To ______ means to put forward an idea or plan for someone to consider.",
       "definitionExample": "I would like to <b>suggest</b> a different approach.",
+      "translation": "предлагать",
+      "definitionExampleTranslation": "Я хотел бы предложить другой подход.",
       "transcription": "səˈdʒest",
       "examples": [
         "She <b>suggested</b> going to the museum instead of the park.",
@@ -39,6 +45,8 @@
       "wordType": "conjunction",
       "definition": "You use ______ to introduce a fact that makes the main statement surprising.",
       "definitionExample": "<b>Although</b> it was raining, we went for a walk.",
+      "translation": "хотя",
+      "definitionExampleTranslation": "Хотя шёл дождь, мы пошли гулять.",
       "transcription": "ɔːlˈðəʊ",
       "examples": [
         "<b>Although</b> she was tired, she continued working.",
@@ -50,6 +58,8 @@
       "wordType": "verb",
       "definition": "To ______ something means to think about it carefully before making a decision.",
       "definitionExample": "You should <b>consider</b> all the options before choosing.",
+      "translation": "обдумывать; рассматривать",
+      "definitionExampleTranslation": "Перед выбором стоит рассмотреть все варианты.",
       "transcription": "kənˈsɪdər",
       "examples": [
         "Have you <b>considered</b> moving to a bigger city?",
@@ -61,6 +71,8 @@
       "wordType": "noun",
       "definition": "An ______ is a situation in which it is possible for you to do something you want to do.",
       "definitionExample": "This job is a great <b>opportunity</b> for you.",
+      "translation": "возможность",
+      "definitionExampleTranslation": "Эта работа — отличная возможность для тебя.",
       "transcription": "ˌɒpəˈtjuːnɪti",
       "examples": [
         "Studying abroad is an excellent <b>opportunity</b> to learn a language.",
@@ -72,6 +84,8 @@
       "wordType": "preposition",
       "definition": "You use ______ to say that something happens even though something else might prevent it.",
       "definitionExample": "<b>Despite</b> the rain, the match continued.",
+      "translation": "несмотря на",
+      "definitionExampleTranslation": "Несмотря на дождь, матч продолжился.",
       "transcription": "dɪˈspaɪt",
       "examples": [
         "<b>Despite</b> being tired, she finished the project on time.",

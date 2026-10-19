@@ -1,4 +1,4 @@
-import { AppSettings, FieldMapping } from '../../shared/types';
+import { AppSettings, FieldMapping, LearnerLevel } from '../../shared/types';
 
 const KEY = 'qard-settings';
 
@@ -10,6 +10,7 @@ interface SettingsSchema {
   defaultDeckId?: number;
   exampleCount: number;
   dailyGoal: number;
+  learnerLevel: LearnerLevel;
   fieldMapping: FieldMapping;
 }
 
@@ -18,6 +19,7 @@ const defaults: SettingsSchema = {
   aiModel: 'gpt-4o-mini',
   exampleCount: 3,
   dailyGoal: 20,
+  learnerLevel: 'A1',
   fieldMapping: {},
 };
 
@@ -57,6 +59,7 @@ export const webSettings = {
       defaultDeckId: s.defaultDeckId,
       exampleCount: s.exampleCount,
       dailyGoal: s.dailyGoal,
+      learnerLevel: s.learnerLevel,
       fieldMapping: s.fieldMapping,
     };
   },

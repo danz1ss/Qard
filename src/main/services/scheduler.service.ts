@@ -62,6 +62,12 @@ export class SchedulerService {
     };
   }
 
+  private shouldReviewTomorrow(row: StoredCard, rating: ReviewRating, now: number): boolean {
+    if (row.state !== CardState.New && row.state !== CardState.Learning) return false;
+    const today = this.col.learningAnswersToday(row.id, now);
+    return today.count >= 1 && (today.hadMistake || rating === Rating.Again);
+  }
+
   getQueue(deckId: number, now: number = Date.now()): ReviewQueueState {
     const deck = this.col.getDeck(deckId);
     if (!deck) {
@@ -127,6 +133,10 @@ export class SchedulerService {
     if (!row) {
       throw new Error(`Card ${cardId} not found`);
     }
+    // Ignore a stale submission after the day's two learning answers were saved.
+    if (row.due >= dayEnd(now) && this.col.learningAnswersToday(cardId, now).count >= 2) {
+      return this.getQueue(row.deckId, now);
+    }
     const item = this.f.next(this.toFsrs(row), new Date(now), rating as Grade);
 
     let state = item.card.state as unknown as CardState;
@@ -134,13 +144,15 @@ export class SchedulerService {
     let scheduledDays = item.card.scheduled_days;
     let learningSteps = item.card.learning_steps;
 
-    // Принудительный выпуск из learning-цикла: если карточку проваливали слишком
-    // много раз за сессию, не крутим её по минутным шагам, а отправляем в Review
-    // на завтра (встретится как Due). См. п.3 фидбека.
-    if (forceReview && state !== CardState.Review) {
-      const DAY = 86400000;
+    // Two initial-learning answers per day: any mistake means tomorrow,
+    // even if FSRS would graduate the card with a longer interval.
+    // With two Good answers, keep the ordinary FSRS graduation schedule.
+    // Retain the existing session escape for mature cards that are being relearned.
+    const matureEscape = forceReview && row.state !== CardState.New &&
+      row.state !== CardState.Learning && state !== CardState.Review;
+    if (this.shouldReviewTomorrow(row, rating, now) || matureEscape) {
       state = CardState.Review;
-      due = dayStart(now) + DAY;
+      due = dayEnd(now);
       scheduledDays = 1;
       learningSteps = 0;
     }
@@ -182,7 +194,8 @@ export class SchedulerService {
     }
     const rec = this.f.repeat(this.toFsrs(row), new Date(now));
     const fmt = (r: Grade) =>
-      formatInterval(rec[r].card.due.getTime() - now);
+      formatInterval((this.shouldReviewTomorrow(row, r, now)
+        ? dayEnd(now) : rec[r].card.due.getTime()) - now);
     return {
       again: fmt(Rating.Again),
       hard: fmt(Rating.Hard),

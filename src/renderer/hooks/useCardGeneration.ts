@@ -49,6 +49,7 @@ export const useCardGeneration = () => {
   const {
     words,
     exampleCount,
+    learnerLevel,
     addGeneratedCard,
     setGenerationProgress,
     setIsGenerating,
@@ -103,7 +104,7 @@ export const useCardGeneration = () => {
       await aiSemaphore.acquire();
       try {
         updateProgress(batch[0].original, GenerationStage.Definition);
-        const results = await window.electronAPI.ai.generateBatch(batch, exampleCount);
+        const results = await window.electronAPI.ai.generateBatch(batch, exampleCount, learnerLevel);
 
         // Store results by clean word
         results.forEach((result: BatchWordResult) => {
@@ -206,6 +207,8 @@ export const useCardGeneration = () => {
           wordType: meaning.wordType,
           definition: meaning.definition,
           definitionExample: meaning.definitionExample,
+          translation: meaning.translation,
+          definitionExampleTranslation: meaning.definitionExampleTranslation,
           transcription: meaning.transcription,
           examples: meaning.examples,
           exampleType: meaning.exampleType,
