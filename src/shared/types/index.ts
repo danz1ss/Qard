@@ -3,7 +3,7 @@ export { ParsedWord, PartOfSpeech } from '../utils/wordParser';
 
 // Core data types
 
-export type LearnerLevel = 'A0' | 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
+export type LearnerLevel = 'A0' | 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 
 export interface GeneratedCard {
   id: string;
@@ -56,6 +56,8 @@ export interface AppSettings {
   fieldMapping: FieldMapping;
 }
 
+export const DEFAULT_PROXY_MODEL = 'mistralai/mistral-small-2603';
+
 // AI provider presets (all OpenAI-compatible, used via the openai SDK)
 
 export interface AIProviderPreset {
@@ -70,9 +72,9 @@ export const AI_PROVIDERS: AIProviderPreset[] = [
   {
     id: 'proxyapi',
     label: 'ProxyAPI',
-    baseURL: 'https://api.proxyapi.ru/openai/v1',
-    defaultModel: 'gpt-4o-mini',
-    models: ['gpt-4o-mini', 'gpt-4o', 'gpt-4.1-mini', 'gpt-4.1'],
+    baseURL: 'https://api.proxyapi.ru/v1',
+    defaultModel: DEFAULT_PROXY_MODEL,
+    models: [DEFAULT_PROXY_MODEL, 'openai/gpt-6-luna', 'openai/gpt-4o-mini'],
   },
   {
     id: 'openai',

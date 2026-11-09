@@ -6,6 +6,7 @@ import {
 	GenerationStage,
 	StudyStats,
 	LearnerLevel,
+	DEFAULT_PROXY_MODEL,
 } from '../../shared/types'
 
 interface AppState {
@@ -64,7 +65,7 @@ export const useStore = create<AppState>((set, get) => ({
 	// Settings state
 	geminiApiKey: '',
 	aiProvider: 'proxyapi',
-	aiModel: 'gpt-4o-mini',
+	aiModel: DEFAULT_PROXY_MODEL,
 	aiBaseUrl: '',
 	exampleCount: 3,
 	dailyGoal: 20,
@@ -84,7 +85,7 @@ export const useStore = create<AppState>((set, get) => ({
 			set({
 				geminiApiKey: settings.geminiApiKey || '',
 				aiProvider: settings.aiProvider || 'proxyapi',
-				aiModel: settings.aiModel || 'gpt-4o-mini',
+				aiModel: settings.aiModel || DEFAULT_PROXY_MODEL,
 				aiBaseUrl: settings.aiBaseUrl || '',
 				exampleCount: Math.min(settings.exampleCount || 3, 3),
 				dailyGoal: Math.min(settings.dailyGoal || 20, 20),

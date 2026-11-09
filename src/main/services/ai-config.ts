@@ -1,4 +1,4 @@
-import { AI_PROVIDERS, DEFAULT_AI_PROVIDER } from '../../shared/types';
+import { AI_PROVIDERS, DEFAULT_AI_PROVIDER, DEFAULT_PROXY_MODEL } from '../../shared/types';
 import { settingsService } from './settings.service';
 import { geminiService } from './gemini.service';
 
@@ -20,7 +20,10 @@ export async function applyAIConfig(): Promise<void> {
   const preset = AI_PROVIDERS.find((p) => p.id === providerId);
   const baseURL =
     providerId === 'custom' ? customBaseUrl : preset?.baseURL || '';
-  const finalModel = model || preset?.defaultModel || 'gpt-4o-mini';
+  const selectedModel = model || preset?.defaultModel || DEFAULT_PROXY_MODEL;
+  const finalModel = providerId === 'proxyapi' && /^gpt-/.test(selectedModel)
+    ? 'openai/' + selectedModel
+    : selectedModel;
 
   geminiService.configure({ apiKey, baseURL, model: finalModel });
 }

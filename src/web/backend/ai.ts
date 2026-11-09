@@ -1,4 +1,4 @@
-import { BatchWordResult, LearnerLevel, ParsedWord } from '../../shared/types';
+import { DEFAULT_PROXY_MODEL, BatchWordResult, LearnerLevel, ParsedWord } from '../../shared/types';
 import { buildBatchPrompt, parseBatchResponse } from '../../shared/ai-prompts';
 import { webSettings } from './settings';
 
@@ -9,7 +9,7 @@ const PROXY_URL =
 
 async function chat(prompt: string, temperature: number): Promise<string> {
   const apiKey = await webSettings.get('geminiApiKey'); // опционально (продвинутое)
-  const model = (await webSettings.get('aiModel')) || 'gpt-4o-mini';
+  const model = (await webSettings.get('aiModel')) || DEFAULT_PROXY_MODEL;
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
   const resp = await fetch(PROXY_URL, {

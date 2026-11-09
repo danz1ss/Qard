@@ -1,5 +1,5 @@
 import Store from 'electron-store';
-import { AppSettings, DataSource, LearnerLevel } from '../../shared/types';
+import { DEFAULT_PROXY_MODEL, AppSettings, DataSource, LearnerLevel } from '../../shared/types';
 
 interface SettingsSchema {
   geminiApiKey?: string;
@@ -15,7 +15,7 @@ interface SettingsSchema {
 
 const defaultSettings: SettingsSchema = {
   aiProvider: 'proxyapi',
-  aiModel: 'gpt-4o-mini',
+  aiModel: DEFAULT_PROXY_MODEL,
   exampleCount: 3,
   dailyGoal: 20,
   learnerLevel: 'A1',
@@ -44,7 +44,7 @@ class SettingsService {
     return {
       geminiApiKey: this.store.get('geminiApiKey'),
       aiProvider: this.store.get('aiProvider', 'proxyapi'),
-      aiModel: this.store.get('aiModel', 'gpt-4o-mini'),
+      aiModel: this.store.get('aiModel', DEFAULT_PROXY_MODEL),
       aiBaseUrl: this.store.get('aiBaseUrl'),
       defaultDeckId: this.store.get('defaultDeckId'),
       exampleCount: this.store.get('exampleCount', 3),

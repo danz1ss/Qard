@@ -23,7 +23,7 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false
     },
-    title: 'Qard',
+    title: 'Qard YDN',
     icon: path.join(__dirname, '../../assets/icon.png')
   });
 

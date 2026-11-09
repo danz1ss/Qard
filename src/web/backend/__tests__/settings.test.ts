@@ -7,9 +7,17 @@ describe('webSettings', () => {
 
   it('возвращает дефолты при пустом хранилище', async () => {
     expect(await webSettings.get('aiProvider')).toBe('proxyapi');
+    expect(await webSettings.get('aiModel')).toBe('mistralai/mistral-small-2603');
     expect(await webSettings.get('exampleCount')).toBe(3);
     expect(await webSettings.get('dailyGoal')).toBe(20);
     expect(await webSettings.get('learnerLevel')).toBe('A1');
+  });
+
+  it('переносит прежний результат теста и сохраняет ручной выбор поверх него', async () => {
+    localStorage.setItem('qard:englishLevel', JSON.stringify('B1'));
+    expect(await webSettings.get('learnerLevel')).toBe('B1');
+    await webSettings.set('learnerLevel', 'C2');
+    expect((await webSettings.getAll()).learnerLevel).toBe('C2');
   });
 
   it('сохраняет и читает значение', async () => {

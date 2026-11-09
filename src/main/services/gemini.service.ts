@@ -1,5 +1,5 @@
 import OpenAI from 'openai'
-import { ParsedWord, BatchWordResult, LearnerLevel } from '../../shared/types'
+import { DEFAULT_PROXY_MODEL, ParsedWord, BatchWordResult, LearnerLevel } from '../../shared/types'
 import { buildBatchPrompt, parseBatchResponse } from '../../shared/ai-prompts'
 
 interface AIConfig {
@@ -10,7 +10,7 @@ interface AIConfig {
 
 class AIService {
 	private client: OpenAI | null = null
-	private model: string = 'gpt-4o-mini'
+	private model: string = DEFAULT_PROXY_MODEL
 
 	configure(config: AIConfig): void {
 		this.client = new OpenAI({
@@ -18,7 +18,7 @@ class AIService {
 			// Empty baseURL falls back to the official OpenAI endpoint
 			baseURL: config.baseURL || undefined,
 		})
-		this.model = config.model || 'gpt-4o-mini'
+		this.model = config.model || DEFAULT_PROXY_MODEL
 	}
 
 	private ensureInitialized(): void {

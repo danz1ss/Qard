@@ -3,11 +3,12 @@ import { useStore } from '../../store';
 import Input from '../common/Input';
 import Select from '../common/Select';
 import Button from '../common/Button';
-import { AI_PROVIDERS, LearnerLevel } from '../../../shared/types';
+import { AI_PROVIDERS, DEFAULT_PROXY_MODEL, LearnerLevel } from '../../../shared/types';
+import { EXTERNAL_PLACEMENT_URL } from '../../lib/placement';
 import { useT } from '../../prefs/PreferencesProvider';
 import './Settings.css';
 
-const Settings: React.FC = () => {
+const Settings: React.FC<{ onPlacement: () => void }> = ({ onPlacement }) => {
   const t = useT();
   const {
     geminiApiKey,
@@ -58,9 +59,12 @@ const Settings: React.FC = () => {
     value: p.id,
     label: p.label
   }));
-  const aiModelOptions = currentProvider.models.map((m) => ({
+  const availableModels = aiModel && !currentProvider.models.includes(aiModel)
+    ? [aiModel, ...currentProvider.models]
+    : currentProvider.models;
+  const aiModelOptions = availableModels.map((m) => ({
     value: m,
-    label: m
+    label: m === DEFAULT_PROXY_MODEL ? 'Mistral Small 4' : m
   }));
 
   const handleProviderChange = (providerId: string) => {
@@ -82,7 +86,7 @@ const Settings: React.FC = () => {
   }));
 
   const learnerLevelOptions: Array<{ value: LearnerLevel; label: string }> =
-    (['A0', 'A1', 'A2', 'B1', 'B2', 'C1'] as LearnerLevel[]).map((level) => ({
+    (['A0', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as LearnerLevel[]).map((level) => ({
       value: level,
       label: t(`setup.level${level}` as any)
     }));
@@ -109,6 +113,15 @@ const Settings: React.FC = () => {
         </p>
         <p className="help-text">{t('setup.levelChanges')}</p>
         <p className="help-text">{t('setup.levelSchedule')}</p>
+        <div className="placement-actions">
+          <Button type="button" variant="secondary" onClick={onPlacement}>{t('placement.open')}</Button>
+          <a className="placement-external" href={EXTERNAL_PLACEMENT_URL} target="_blank" rel="noopener noreferrer" onClick={(event) => {
+            if (!__IS_WEB__) {
+              event.preventDefault();
+              void window.electronAPI.shell.openExternal(EXTERNAL_PLACEMENT_URL);
+            }
+          }}>{t('placement.external')} ↗</a>
+        </div>
       </div>
 
       <div className="settings-section">

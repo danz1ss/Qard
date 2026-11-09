@@ -9,6 +9,7 @@ const LEVEL_GUIDANCE: Record<LearnerLevel, string> = {
 	B1: 'Use familiar general vocabulary and connected sentences that explain reasons, experiences, and plans. Common subordinate clauses and straightforward abstract ideas are appropriate. Avoid rare or specialist wording.',
 	B2: 'Use a broader range of vocabulary, natural collocations, and varied sentence structures in everyday, work, or discussion contexts. Explain distinctions precisely without rare synonyms or unnecessary jargon.',
 	C1: 'Use precise, nuanced vocabulary and natural complex sentences where useful, including abstract, professional, or academic contexts. Keep definitions clear and concise; avoid obscure vocabulary and complexity for its own sake.',
+	C2: 'Use natural phrasing across registers and fine distinctions where useful, with clear and concise definitions.',
 };
 
 /**
@@ -62,10 +63,12 @@ RULES:
    - Use full sentence definitions where possible (e.g., "If you ____, you...").
    - **Blank in Definition**: ALWAYS replace the target word with "______" (6 underscores) in the \`definition\` field ONLY.
    - **Clarity**: The definition must be easier to understand than the word itself.
+   - Include a real usage detail that makes the target word more appropriate than a likely synonym. Do not invent a strict difference where usage overlaps or reveal the target word or its forms.
 
 6. **Examples (definitionExample and examples)**:
    - **NO BLANKS**: Do NOT use underscores in \`definitionExample\` or the \`examples\` array.
    - **BOLD TARGET**: ALWAYS wrap the target word (or its forms) with \`<b>\` tags in both \`definitionExample\` and the \`examples\` array.
+   - Choose a natural situation or typical word combination in \`definitionExample\` so that the target is the most natural answer when hidden. Check the definition and hidden example together, and sharpen the context if a common synonym fits equally well.
    - Provide ${examplesPerMeaning} additional examples in the \`examples\` array.
    - Every additional example MUST use a different sentence and situation from \`definitionExample\` and all other examples. Never repeat the guessing example or make superficial variations of it.
 

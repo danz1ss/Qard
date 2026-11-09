@@ -6,6 +6,8 @@ import ImportModal from './ImportModal';
 import StudyHeader from './StudyHeader';
 import ConfirmModal from '../common/ConfirmModal';
 import CreateDeckModal from '../common/CreateDeckModal';
+import Button from '../common/Button';
+import { starterDeckName } from '../../lib/placement';
 import { useT } from '../../prefs/PreferencesProvider';
 import '@fontsource/rubik/400.css';
 import '@fontsource/rubik/500.css';
@@ -17,6 +19,7 @@ type NavTab = 'decks' | 'browse' | 'setup' | 'input' | 'generate' | 'preview';
 interface DecksProps {
   /** Переключение вкладок (для CTA пустого состояния). */
   onNavigate: (tab: NavTab) => void;
+  onPlacement: () => void;
 }
 
 const PlayIcon = () => (
@@ -61,9 +64,10 @@ const ImportIcon = () => (
   </svg>
 );
 
-const Decks: React.FC<DecksProps> = ({ onNavigate }) => {
+const Decks: React.FC<DecksProps> = ({ onNavigate, onPlacement }) => {
   const t = useT();
-  const { decks, refreshDecks, stats, refreshStats, dailyGoal, loadSettings } = useStore();
+  const { decks, refreshDecks, stats, refreshStats, dailyGoal, learnerLevel, loadSettings } = useStore();
+  const suggestedDeck = decks.find((deck) => deck.name === starterDeckName(learnerLevel));
   const [error, setError] = useState<string | null>(null);
   const [editingLimits, setEditingLimits] = useState<DeckWithCounts | null>(null);
   const [limitNew, setLimitNew] = useState('20');
@@ -201,6 +205,19 @@ const Decks: React.FC<DecksProps> = ({ onNavigate }) => {
       {stats && (stats.reviewedTotal > 0 || stats.studiedToday > 0) && (
         <StudyHeader stats={stats} goal={dailyGoal} />
       )}
+
+      <section className="placement-banner">
+        <div>
+          <h3>{t('placement.currentLevel').replace('{level}', learnerLevel)}</h3>
+          <p>{suggestedDeck ? t('placement.suggestedDeck').replace('{deck}', suggestedDeck.name) : t('placement.levelHint')}</p>
+        </div>
+        <div className="placement-actions">
+          {suggestedDeck && (
+            <Button type="button" onClick={() => setStudyingDeck(suggestedDeck)}>{t('placement.studyDeck')}</Button>
+          )}
+          <Button type="button" variant="secondary" onClick={onPlacement}>{t('placement.open')}</Button>
+        </div>
+      </section>
 
       {decks.length === 0 ? (
         /* ---------- Onboarding / Empty State (п.4) ---------- */

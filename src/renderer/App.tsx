@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useStore } from './store';
 import { useT } from './prefs/PreferencesProvider';
+import Placement from './components/Placement/Placement';
 import Settings from './components/Settings/Settings';
 import WordInput from './components/WordInput/WordInput';
 import Generation from './components/Generation/Generation';
@@ -12,17 +13,22 @@ import '@fontsource/rubik/500.css';
 import '@fontsource/rubik/600.css';
 import '@fontsource/rubik/700.css';
 import './App.css';
-import ydnLogo from './assets/ydn-logo.png';
+import qardMark from './assets/qard-mark.svg';
 import HeaderControls from './components/common/HeaderControls';
 
 const LogoMark = () => (
-  <img src={ydnLogo} alt="YDN" className="brand-logo" width={30} height={35} />
+  <img src={qardMark} alt="" className="brand-logo" width={30} height={35} />
 );
 
-type Tab = 'decks' | 'browse' | 'setup' | 'input' | 'generate' | 'preview';
+type Tab = 'decks' | 'browse' | 'setup' | 'input' | 'generate' | 'preview' | 'placement';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('decks');
+  const [placementOrigin, setPlacementOrigin] = useState<'decks' | 'setup'>('decks');
+  const openPlacement = (origin: 'decks' | 'setup') => {
+    setPlacementOrigin(origin);
+    setActiveTab('placement');
+  };
   const wordCount = useStore((s) => s.words.length);
   const t = useT();
 
@@ -95,7 +101,7 @@ const App: React.FC = () => {
       <main className="app-content">
         {activeTab === 'decks' && (
           <div className="tab-content">
-            <Decks onNavigate={setActiveTab} />
+            <Decks onNavigate={setActiveTab} onPlacement={() => openPlacement('decks')} />
           </div>
         )}
 
@@ -107,8 +113,12 @@ const App: React.FC = () => {
 
         {activeTab === 'setup' && (
           <div className="tab-content">
-            <Settings />
+            <Settings onPlacement={() => openPlacement('setup')} />
           </div>
+        )}
+
+        {activeTab === 'placement' && (
+          <Placement onExit={() => setActiveTab(placementOrigin)} onDecks={() => setActiveTab('decks')} />
         )}
 
         {activeTab === 'input' && (

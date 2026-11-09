@@ -1,9 +1,11 @@
 import { isRateLimited, markUsed, KVLike } from './ratelimit';
 
-const PROXYAPI_BASE = 'https://api.proxyapi.ru/openai/v1';
+const PROXYAPI_BASE = 'https://api.proxyapi.ru/v1';
+const LEGACY_PROXYAPI_BASE = 'https://api.proxyapi.ru/openai/v1';
 const ALLOWED_ORIGINS = [
   'http://localhost:8080',
   'https://qard-7rn.pages.dev',
+  'http://127.0.0.1:8080',
 ];
 
 interface Env {
@@ -74,7 +76,9 @@ export default {
     }
 
     const auth = userAuth || `Bearer ${env.PROXYAPI_KEY}`;
-    const upstream = await fetch(`${PROXYAPI_BASE}/chat/completions`, {
+    const usesProviderPrefix = typeof payload.model === 'string' && payload.model.includes('/');
+    const baseURL = usesProviderPrefix ? PROXYAPI_BASE : LEGACY_PROXYAPI_BASE;
+    const upstream = await fetch(`${baseURL}/chat/completions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: auth },
       body: JSON.stringify(payload),

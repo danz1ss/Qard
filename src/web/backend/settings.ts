@@ -1,4 +1,4 @@
-import { AppSettings, FieldMapping, LearnerLevel } from '../../shared/types';
+import { DEFAULT_PROXY_MODEL, AppSettings, FieldMapping, LearnerLevel } from '../../shared/types';
 
 const KEY = 'qard-settings';
 
@@ -16,7 +16,7 @@ interface SettingsSchema {
 
 const defaults: SettingsSchema = {
   aiProvider: 'proxyapi',
-  aiModel: 'gpt-4o-mini',
+  aiModel: DEFAULT_PROXY_MODEL,
   exampleCount: 3,
   dailyGoal: 20,
   learnerLevel: 'A1',
@@ -26,7 +26,12 @@ const defaults: SettingsSchema = {
 function read(): SettingsSchema {
   try {
     const raw = localStorage.getItem(KEY);
-    return raw ? { ...defaults, ...JSON.parse(raw) } : { ...defaults };
+    const stored: Partial<SettingsSchema> = raw ? JSON.parse(raw) : {};
+    if (!stored.learnerLevel) {
+      const previousLevel = JSON.parse(localStorage.getItem('qard:englishLevel') ?? 'null');
+      if (['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].includes(previousLevel)) stored.learnerLevel = previousLevel;
+    }
+    return { ...defaults, ...stored };
   } catch {
     return { ...defaults };
   }
