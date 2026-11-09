@@ -5,6 +5,16 @@ export { ParsedWord, PartOfSpeech } from '../utils/wordParser';
 
 export type LearnerLevel = 'A0' | 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 
+export interface CardMeaning {
+  wordType: string;
+  definition: string;
+  definitionExample: string;
+  translation?: string;
+  definitionExampleTranslation?: string;
+  examples: string[];
+  transcription?: string;
+}
+
 export interface GeneratedCard {
   id: string;
   word: string;
@@ -16,6 +26,7 @@ export interface GeneratedCard {
   transcription?: string;
   examples: string[];
   exampleType?: string;
+  secondaryMeaning?: CardMeaning;
   audioFilename?: string;
   audioData?: Buffer;
   isDuplicate?: boolean;
@@ -192,6 +203,7 @@ export interface StoredCard {
   definitionExampleTranslation: string;
   transcription: string;
   examples: string[];
+  secondaryMeaning?: CardMeaning;
   audioFilename: string | null;
   tags: string;
   createdAt: number;
@@ -216,6 +228,7 @@ export interface NewCardInput {
   definitionExampleTranslation?: string;
   transcription: string;
   examples: string[];
+  secondaryMeaning?: CardMeaning;
   audioFilename?: string | null;
   tags?: string;
 }
@@ -231,12 +244,14 @@ export interface CardTextUpdate {
   transcription: string;
   examples: string[];
   tags: string;
+  secondaryMeaning?: CardMeaning | null;
 }
 
 export type CardStatusFilter = 'new' | 'learning' | 'review';
 
 export interface CardSearchQuery {
   text?: string;
+  words?: string[];
   deckId?: number;
   status?: CardStatusFilter;
   tag?: string;
@@ -343,6 +358,7 @@ export const IPC_CHANNELS = {
   CARD_SEARCH: 'card:search',
   CARD_GET: 'card:get',
   CARD_LIST_WORDS: 'card:listWords',
+  CARD_APPEND_MEANING: 'card:appendMeaning',
   REVIEW_GET_QUEUE: 'review:getQueue',
   REVIEW_ANSWER: 'review:answer',
   REVIEW_PREVIEW_INTERVALS: 'review:previewIntervals',

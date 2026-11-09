@@ -21,6 +21,7 @@ const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved })
   const [definitionExampleTranslation, setDefinitionExampleTranslation] = useState(card.definitionExampleTranslation);
   const [transcription, setTranscription] = useState(card.transcription);
   const [examples, setExamples] = useState(card.examples.join('\n'));
+  const [secondaryMeaning, setSecondaryMeaning] = useState(card.secondaryMeaning);
   const [tags, setTags] = useState(card.tags);
   const [saving, setSaving] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
@@ -38,6 +39,7 @@ const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved })
         definitionExampleTranslation,
         transcription,
         examples: examples.split('\n').map((s) => s.trim()).filter(Boolean),
+        ...(card.secondaryMeaning && { secondaryMeaning: secondaryMeaning ?? null }),
         tags: tags.trim()
       });
       onSaved();
@@ -83,10 +85,28 @@ const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved })
           onChange={(e) => setExamples(e.target.value)}
         />
         <Input label={t('browse.fieldTags')} value={tags} onChange={(e) => setTags(e.target.value)} />
+        {secondaryMeaning && (
+          <fieldset className="card-edit-meaning">
+            <legend>{t('preview.meaningNumber').replace('{n}', '2')}</legend>
+            <Input label={t('browse.fieldPartOfSpeech')} value={secondaryMeaning.wordType}
+              onChange={(e) => setSecondaryMeaning({ ...secondaryMeaning, wordType: e.target.value })} />
+            <Input label={t('browse.fieldDefinition')} value={secondaryMeaning.definition}
+              onChange={(e) => setSecondaryMeaning({ ...secondaryMeaning, definition: e.target.value })} />
+            <Input label={t('browse.fieldTranslation')} value={secondaryMeaning.translation ?? ''}
+              onChange={(e) => setSecondaryMeaning({ ...secondaryMeaning, translation: e.target.value })} />
+            <Input label={t('browse.fieldDefExample')} value={secondaryMeaning.definitionExample}
+              onChange={(e) => setSecondaryMeaning({ ...secondaryMeaning, definitionExample: e.target.value })} />
+            <Input label={t('browse.fieldDefExampleTranslation')} value={secondaryMeaning.definitionExampleTranslation ?? ''}
+              onChange={(e) => setSecondaryMeaning({ ...secondaryMeaning, definitionExampleTranslation: e.target.value })} />
+            <Button type="button" size="small" variant="secondary" onClick={() => setSecondaryMeaning(undefined)}>
+              {t('preview.meaningRemove').replace('{n}', '2')}
+            </Button>
+          </fieldset>
+        )}
         <div className="modal-actions">
           <Button variant="danger" onClick={() => setConfirmingDelete(true)}>{t('modal.delete')}</Button>
           <Button variant="secondary" onClick={onClose}>{t('modal.cancel')}</Button>
-          <Button onClick={save} disabled={saving}>
+          <Button onClick={save} disabled={saving || !!(secondaryMeaning && !secondaryMeaning.definition.trim())}>
             {saving ? t('modal.saving') : t('modal.save')}
           </Button>
         </div>

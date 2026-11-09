@@ -197,25 +197,14 @@ export const useCardGeneration = () => {
         continue;
       }
 
-      // Create a card for each meaning
-      const audioFilename = `${pw.word}_${Date.now()}.mp3`;
-
-      meanings.forEach((meaning: WordMeaningResponse, index: number) => {
-        const card: GeneratedCard = {
-          id: nextCardId(),
-          word: pw.word, // Use clean word for card
-          wordType: meaning.wordType,
-          definition: meaning.definition,
-          definitionExample: meaning.definitionExample,
-          translation: meaning.translation,
-          definitionExampleTranslation: meaning.definitionExampleTranslation,
-          transcription: meaning.transcription,
-          examples: meaning.examples,
-          exampleType: meaning.exampleType,
-          audioFilename: index === 0 ? audioFilename : `${pw.word}_${Date.now()}_${index}.mp3`,
-          audioData: audioBuffer as any
-        };
-        addGeneratedCard(card);
+      const [primary, secondaryMeaning] = meanings;
+      addGeneratedCard({
+        ...primary,
+        id: nextCardId(),
+        word: pw.word,
+        secondaryMeaning,
+        audioFilename: `${pw.word}_${Date.now()}.mp3`,
+        audioData: audioBuffer as any
       });
 
       completedWords++;

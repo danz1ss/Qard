@@ -4,7 +4,6 @@ import {
   GeneratedCard,
   NewCardInput
 } from '../../shared/types';
-import { useStore } from '../store';
 
 export type SaveStatus = 'idle' | 'saving' | 'success' | 'error';
 
@@ -27,40 +26,18 @@ function toInput(card: GeneratedCard): NewCardInput {
     definitionExampleTranslation: card.definitionExampleTranslation ?? '',
     transcription: card.transcription ?? '',
     examples: card.examples,
+    secondaryMeaning: card.secondaryMeaning,
     audioFilename: card.audioData ? card.audioFilename ?? null : null,
     tags: 'anki-generator'
   };
 }
 
 export const useSaveToCollection = () => {
-  const { generatedCards, setGeneratedCards } = useStore();
   const [status, setStatus] = useState<SaveStatus>('idle');
   const [savedCount, setSavedCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  /** Помечает isDuplicate по словам, уже существующим в колоде deckId. */
-  const markDuplicates = async (deckId: number) => {
-    const words = await window.electronAPI.collection.listWords(deckId);
-    const existing = new Set(words);
-    const { generatedCards: cards } = useStore.getState();
-    setGeneratedCards(
-      cards.map((c) => ({
-        ...c,
-        isDuplicate: existing.has(c.word.toLowerCase())
-      }))
-    );
-  };
-
-  const saveAll = async (deckId: number, includeDuplicates: boolean) => {
-    const cards = generatedCards.filter(
-      (c) => !c.error && (includeDuplicates || !c.isDuplicate)
-    );
-    if (cards.length === 0) {
-      setError('Нечего сохранять (все карточки — дубликаты или с ошибками).');
-      setStatus('error');
-      return;
-    }
-
+  const saveAll = async (deckId: number, cards: GeneratedCard[]) => {
     setStatus('saving');
     setError(null);
     try {
@@ -83,9 +60,11 @@ export const useSaveToCollection = () => {
       setSavedCount(ids.length);
       setStatus('success');
       setTimeout(() => setStatus('idle'), 3000);
+      return true;
     } catch (e: any) {
       setError(e.message || 'Unknown error');
       setStatus('error');
+      return false;
     }
   };
 
@@ -94,5 +73,5 @@ export const useSaveToCollection = () => {
     setError(null);
   };
 
-  return { saveAll, markDuplicates, resetStatus, status, savedCount, error };
+  return { saveAll, resetStatus, status, savedCount, error };
 };

@@ -43,6 +43,16 @@ describe('ai-prompts', () => {
     expect(meaning.definitionExampleTranslation).toBe('Я бегу.');
   });
 
+  it('keeps two distinct meanings with their own guessing examples and removes repeated examples', () => {
+    const primary = { wordType: 'noun', definition: 'Financial institution', translation: 'банк', definitionExample: 'I went to the <b>bank</b>.', examples: ['We sat on the bank of the river.'] };
+    const duplicate = { ...primary, definition: 'A place that keeps your money.', definitionExample: 'The bank closes at five.' };
+    const second = { wordType: 'noun', definition: 'Land next to a river', translation: 'берег', definitionExample: 'We sat on the <b>bank</b> of the river.', examples: ['I went to the bank.', 'They walked down the <b>bank</b>.'] };
+    const third = { wordType: 'verb', definition: 'Tilt while turning', definitionExample: 'The pilot had to <b>bank</b>.' };
+    const { meanings } = parseBatchResponse(JSON.stringify([{ word: 'bank', meanings: [primary, duplicate, second, third] }]))[0];
+    expect(meanings.map(meaning => meaning.definitionExample)).toEqual([primary.definitionExample, second.definitionExample]);
+    expect(meanings.map(meaning => meaning.examples)).toEqual([[], ['They walked down the <b>bank</b>.']]);
+  });
+
   it('parseBatchResponse бросает на отсутствие массива', () => {
     expect(() => parseBatchResponse('нет json')).toThrow();
   });

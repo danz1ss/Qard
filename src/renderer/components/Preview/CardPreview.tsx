@@ -4,9 +4,11 @@ import Button from '../common/Button';
 import { parseBold } from '../Review/htmlText';
 import { useT } from '../../prefs/PreferencesProvider';
 import { uniqueAdditionalExamples } from '../../../shared/utils/examples';
+import { cardMeanings } from '../../../shared/utils/meanings';
 
 interface CardPreviewProps {
   card: GeneratedCard;
+  onRemoveMeaning?: (index: number) => void;
 }
 
 /** Рендер строки с сырыми <b>…</b> как текст + визуально жирное слово (п.5). */
@@ -22,9 +24,9 @@ const RichText: React.FC<{ html: string }> = ({ html }) => (
   </>
 );
 
-const CardPreview: React.FC<CardPreviewProps> = ({ card }) => {
+const CardPreview: React.FC<CardPreviewProps> = ({ card, onRemoveMeaning }) => {
   const t = useT();
-  const additionalExamples = uniqueAdditionalExamples(card.definitionExample, card.examples || []);
+  const meanings = cardMeanings(card);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
   const handlePlayAudio = async () => {
@@ -65,50 +67,67 @@ const CardPreview: React.FC<CardPreviewProps> = ({ card }) => {
 
   return (
     <div className="card-preview">
-      <div className="card-section">
-        <h4>{t('preview.wordType')}</h4>
-        <p>{card.wordType}</p>
-      </div>
-
-      <div className="card-section">
-        <h4>{t('review.definition')}</h4>
-        <p><RichText html={card.definition} /></p>
-      </div>
-
-      {card.translation && (
-        <div className="card-section">
-          <h4>{t('preview.translation')}</h4>
-          <p>{card.translation}</p>
-        </div>
-      )}
-
-      {card.definitionExample && (
-        <div className="card-section">
-          <h4>{t('preview.defExample')}</h4>
-          <p><RichText html={card.definitionExample} /></p>
-          {card.definitionExampleTranslation && (
-            <p className="example-translation">{card.definitionExampleTranslation}</p>
-          )}
-        </div>
-      )}
-
-      {card.transcription && (
-        <div className="card-section">
-          <h4>{t('preview.transcription')}</h4>
-          <p>{card.transcription}</p>
-        </div>
-      )}
-
-      {additionalExamples.length > 0 && (
-        <div className="card-section">
-          <h4>{t('preview.examples')}</h4>
-          {additionalExamples.map((example, index) => (
-            <div key={index} className="example-item">
-              <p className="example-sentence"><RichText html={example} /></p>
+      {meanings.map((meaning, index) => {
+        const additionalExamples = uniqueAdditionalExamples(meaning.definitionExample, meaning.examples);
+        return (
+          <section className="preview-meaning" key={index}>
+            {meanings.length > 1 && (
+              <div className="preview-meaning-header">
+                <h3>{t('preview.meaningNumber').replace('{n}', String(index + 1))}</h3>
+                {onRemoveMeaning && (
+                  <Button type="button" size="small" variant="secondary" onClick={() => onRemoveMeaning(index)}>
+                    {t('preview.meaningRemove').replace('{n}', String(index + 1))}
+                  </Button>
+                )}
+              </div>
+            )}
+            <div className="card-section">
+              <h4>{t('preview.wordType')}</h4>
+              <p>{meaning.wordType}</p>
             </div>
-          ))}
-        </div>
-      )}
+
+            <div className="card-section">
+              <h4>{t('review.definition')}</h4>
+              <p><RichText html={meaning.definition} /></p>
+            </div>
+
+            {meaning.translation && (
+              <div className="card-section">
+                <h4>{t('preview.translation')}</h4>
+                <p>{meaning.translation}</p>
+              </div>
+            )}
+
+            {meaning.definitionExample && (
+              <div className="card-section">
+                <h4>{t('preview.defExample')}</h4>
+                <p><RichText html={meaning.definitionExample} /></p>
+                {meaning.definitionExampleTranslation && (
+                  <p className="example-translation">{meaning.definitionExampleTranslation}</p>
+                )}
+              </div>
+            )}
+
+            {meaning.transcription && (
+              <div className="card-section">
+                <h4>{t('preview.transcription')}</h4>
+                <p>{meaning.transcription}</p>
+              </div>
+            )}
+
+            {additionalExamples.length > 0 && (
+              <div className="card-section">
+                <h4>{t('preview.examples')}</h4>
+                {additionalExamples.map((example, index) => (
+                  <div key={index} className="example-item">
+                    <p className="example-sentence"><RichText html={example} /></p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        );
+      })}
 
       {card.exampleType && (
         <div className="card-section">

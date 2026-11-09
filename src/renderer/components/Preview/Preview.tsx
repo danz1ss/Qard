@@ -6,43 +6,60 @@ import Select from '../common/Select';
 import CreateDeckModal from '../common/CreateDeckModal';
 import CardPreview from './CardPreview';
 import { useT } from '../../prefs/PreferencesProvider';
+import { CardMeaning, GeneratedCard, StoredCard } from '../../../shared/types';
+import { normalizeWord, planCardSave } from '../../../shared/utils/meanings';
 import './Preview.css';
 
 const Preview: React.FC = () => {
   const t = useT();
   const {
     generatedCards,
+    setGeneratedCards,
     removeGeneratedCard,
     decks,
     refreshDecks,
     defaultDeckId,
     setDefaultDeckId
   } = useStore();
-  const { saveAll, markDuplicates, resetStatus, status, savedCount, error } =
+  const { saveAll, resetStatus, status, savedCount, error } =
     useSaveToCollection();
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
-  const [includeDuplicates, setIncludeDuplicates] = useState(false);
   const [targetDeckId, setTargetDeckId] = useState<number | null>(defaultDeckId);
   const [creatingDeck, setCreatingDeck] = useState(false);
+  const [matchResult, setMatchResult] = useState<{ key: string; cards: StoredCard[] }>();
+  const [lookupFailed, setLookupFailed] = useState(false);
+  const [revision, setRevision] = useState(0);
+  const [merging, setMerging] = useState(false);
+  const [mergeMessage, setMergeMessage] = useState<{ text: string; failed: boolean }>();
 
-  const duplicateCount = generatedCards.filter((c) => c.isDuplicate).length;
   const isSaving = status === 'saving';
+  const busy = isSaving || merging;
+  const wordsKey = JSON.stringify([...new Set(generatedCards.filter(card => !card.error).map(card => normalizeWord(card.word)))]);
+  const lookupKey = `${targetDeckId}:${revision}:${wordsKey}`;
+  const matches = matchResult?.key === lookupKey ? matchResult.cards : undefined;
+  const drafts = generatedCards.map(card => ({ card, plan: matches && !card.error ? planCardSave(card, matches) : undefined }));
+  const duplicateCount = drafts.filter(({ plan }) => plan?.kind === 'duplicate').length;
+  const newCards = drafts.filter(({ plan }) => plan?.kind === 'new').map(({ card }) => card);
 
   useEffect(() => {
     refreshDecks();
   }, []);
 
-  // Дубликаты пересчитываются при смене целевой колоды
   useEffect(() => {
-    if (targetDeckId !== null && generatedCards.length > 0) {
-      markDuplicates(targetDeckId);
-    }
-  }, [targetDeckId, generatedCards.length]);
+    if (targetDeckId === null) return;
+    let active = true;
+    setLookupFailed(false);
+    window.electronAPI.collection.searchCards({ deckId: targetDeckId, words: JSON.parse(wordsKey), limit: -1, offset: 0 })
+      .then(({ cards }) => { if (active) setMatchResult({ key: lookupKey, cards }); })
+      .catch(() => { if (active) setLookupFailed(true); });
+    return () => { active = false; };
+  }, [targetDeckId, lookupKey, wordsKey]);
 
   const handleDeckChange = (value: string) => {
     const id = value ? parseInt(value) : null;
     setTargetDeckId(id);
     setDefaultDeckId(id);
+    setMergeMessage(undefined);
   };
 
   // Создаёт колоду и сразу выбирает её целевой (бросает ошибку — модалка покажет её).
@@ -54,8 +71,38 @@ const Preview: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (targetDeckId === null) return;
-    await saveAll(targetDeckId, includeDuplicates);
+    if (targetDeckId === null || busy || !newCards.length) return;
+    if (await saveAll(targetDeckId, newCards)) setRevision(value => value + 1);
+  };
+
+  const appendMeaning = async (card: GeneratedCard, target: StoredCard, meaning: CardMeaning) => {
+    if (targetDeckId === null || busy) return;
+    setMerging(true);
+    setMergeMessage(undefined);
+    try {
+      const added = await window.electronAPI.collection.appendMeaning(targetDeckId, target.id, card.word, meaning);
+      setMergeMessage({ text: t(added ? 'preview.meaningAdded' : 'preview.meaningChanged'), failed: !added });
+    } catch {
+      setMergeMessage({ text: t('preview.meaningSaveError'), failed: true });
+    } finally {
+      setRevision(value => value + 1);
+      setMerging(false);
+    }
+  };
+
+  const removeMeaning = (card: GeneratedCard, index: number) => {
+    const second = card.secondaryMeaning;
+    if (!second) return;
+    const changed = index === 0 ? {
+      ...card,
+      ...second,
+      transcription: second.transcription,
+      exampleType: undefined,
+      audioData: card.transcription === second.transcription ? card.audioData : undefined,
+      audioFilename: card.transcription === second.transcription ? card.audioFilename : undefined,
+      secondaryMeaning: undefined,
+    } : { ...card, secondaryMeaning: undefined };
+    setGeneratedCards(generatedCards.map(draft => draft.id === card.id ? changed : draft));
   };
 
   const handleRemoveCard = (id: string) => {
@@ -124,17 +171,19 @@ const Preview: React.FC = () => {
               value={targetDeckId !== null ? String(targetDeckId) : ''}
               onChange={(v) => handleDeckChange(v)}
               options={deckOptions}
+              disabled={busy}
             />
             <Button
               onClick={() => setCreatingDeck(true)}
               variant="secondary"
               size="small"
+              disabled={busy}
             >
               {t('preview.newDeck')}
             </Button>
             <Button
               onClick={status === 'error' ? resetStatus : handleSave}
-              disabled={isSaving || targetDeckId === null}
+              disabled={busy || (status !== 'error' && !newCards.length)}
               variant={getButtonVariant()}
               size="large"
             >
@@ -142,35 +191,33 @@ const Preview: React.FC = () => {
             </Button>
           </div>
 
-          {duplicateCount > 0 && (
-            <label className="duplicate-toggle">
-              <input
-                type="checkbox"
-                checked={includeDuplicates}
-                onChange={(e) => setIncludeDuplicates(e.target.checked)}
-              />
-              {' '}{t('preview.saveDuplicates').replace('{n}', String(duplicateCount))}
-            </label>
+          {error && <div className="adding-error">{t('preview.error').replace('{msg}', error)}</div>}
+          {mergeMessage && <p role={mergeMessage.failed ? 'alert' : 'status'}>{mergeMessage.text}</p>}
+          {lookupFailed && (
+            <p role="alert">{t('preview.meaningLookupError')}{' '}
+              <Button size="small" variant="secondary" onClick={() => setRevision(value => value + 1)}>{t('preview.errorRetry')}</Button>
+            </p>
           )}
 
-          {error && <div className="adding-error">{t('preview.error').replace('{msg}', error)}</div>}
-
           <div className="card-list">
-            {generatedCards.map((card) => (
+            {drafts.map(({ card, plan }) => (
               <div key={card.id} className="card-item">
-                <div className="card-header" onClick={() => handleToggleCard(card.id)}>
-                  <div className="card-title">
+                <div className="card-header">
+                  <button type="button" className="card-title" aria-expanded={expandedCard === card.id} onClick={() => handleToggleCard(card.id)}>
                     <span className="card-word">{card.word}</span>
                     {card.transcription && (
                       <span className="card-transcription">{card.transcription}</span>
                     )}
-                    {card.isDuplicate && (
+                    {plan?.kind === 'duplicate' && (
                       <span className="card-badge duplicate">{t('preview.alreadyInDeck')}</span>
                     )}
+                    {plan?.kind === 'merge' && <span className="card-badge">{t('preview.meaningNew')}</span>}
+                    {plan?.kind === 'full' && <span className="card-badge">{t('preview.meaningFull')}</span>}
                     {card.error && (
                       <span className="card-badge error">{t('preview.errorBadge')}</span>
                     )}
-                  </div>
+                    <span className="expand-icon" aria-hidden="true">{expandedCard === card.id ? '▼' : '▶'}</span>
+                  </button>
                   <div className="card-actions">
                     <Button
                       onClick={(e) => {
@@ -179,16 +226,29 @@ const Preview: React.FC = () => {
                       }}
                       variant="danger"
                       size="small"
+                      disabled={busy}
                     >
                       {t('preview.remove')}
                     </Button>
-                    <span className="expand-icon">
-                      {expandedCard === card.id ? '▼' : '▶'}
-                    </span>
                   </div>
                 </div>
 
-                {expandedCard === card.id && <CardPreview card={card} />}
+                {expandedCard === card.id && (
+                  <>
+                    <CardPreview card={card} onRemoveMeaning={busy ? undefined : index => removeMeaning(card, index)} />
+                    {plan?.kind === 'merge' && (
+                      <div className="meaning-merge">
+                        <p>{t('preview.meaningMergeInto').replace('{meaning}', plan.target.translation || plan.target.definition || plan.target.word)}</p>
+                        {plan.novel.map((meaning, index) => (
+                          <Button key={index} type="button" size="small" variant="secondary" disabled={busy}
+                            onClick={() => void appendMeaning(card, plan.target, meaning)}>
+                            {t('preview.meaningAdd').replace('{meaning}', meaning.translation || meaning.definition)}
+                          </Button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             ))}
           </div>

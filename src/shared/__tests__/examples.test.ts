@@ -13,6 +13,7 @@ describe('additional examples', () => {
 
   it('filters generated data while preserving the primary example', () => {
     const meaning = parseBatchResponse(JSON.stringify([{ word: 'run', meanings: [{
+      definition: 'To move quickly on foot.',
       definitionExample: 'I <b>run</b> home.',
       examples: ['I run home.', 'We <b>run</b> daily.', 'We run daily!'],
     }] }]))[0].meanings[0];

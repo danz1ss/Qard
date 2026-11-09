@@ -1,5 +1,6 @@
 import initSqlJs, { Database, SqlJsStatic } from 'sql.js';
 import {
+  CardMeaning,
   CardSearchQuery,
   CardSearchResult,
   CardState,
@@ -13,6 +14,7 @@ import {
   StoredCard,
   StudyStats
 } from '../../shared/types';
+import { cardMeanings, hasTwoMeanings, normalizeWord, sameMeaning } from '../../shared/utils/meanings';
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS meta (
@@ -39,6 +41,7 @@ CREATE TABLE IF NOT EXISTS cards (
   definition_example_translation TEXT NOT NULL DEFAULT '',
   transcription TEXT NOT NULL DEFAULT '',
   examples_json TEXT NOT NULL DEFAULT '[]',
+  secondary_meaning_json TEXT,
   audio_filename TEXT,
   tags TEXT NOT NULL DEFAULT '',
   created_at INTEGER NOT NULL,
@@ -72,7 +75,7 @@ CREATE TABLE IF NOT EXISTS review_log (
 CREATE INDEX IF NOT EXISTS idx_log_card ON review_log(card_id);
 CREATE INDEX IF NOT EXISTS idx_log_time ON review_log(reviewed_at);
 
-INSERT OR IGNORE INTO meta (key, value) VALUES ('schema_version', '2');
+INSERT OR IGNORE INTO meta (key, value) VALUES ('schema_version', '3');
 `;
 
 /** Начало локального дня (полночь) для timestamp в мс. */
@@ -175,7 +178,10 @@ export class CollectionService {
         "ALTER TABLE cards ADD COLUMN definition_example_translation TEXT NOT NULL DEFAULT ''"
       );
     }
-    this.db.run("UPDATE meta SET value = '2' WHERE key = 'schema_version'");
+    if (!columns.has('secondary_meaning_json')) {
+      this.db.run('ALTER TABLE cards ADD COLUMN secondary_meaning_json TEXT');
+    }
+    this.db.run("UPDATE meta SET value = '3' WHERE key = 'schema_version'");
   }
 
   // ===== Decks =====
@@ -317,6 +323,17 @@ export class CollectionService {
 
   // ===== Cards =====
 
+  addGeneratedCards(deckId: number, inputs: NewCardInput[], now: number): number[] {
+    const existing = new Set(this.listWords(deckId).map(normalizeWord));
+    const newCards = inputs.filter(card => {
+      const word = normalizeWord(card.word);
+      if (!word || existing.has(word)) return false;
+      existing.add(word);
+      return true;
+    });
+    return this.addCards(deckId, newCards, now);
+  }
+
   addCards(deckId: number, inputs: NewCardInput[], now: number): number[] {
     const ids: number[] = [];
     for (const c of inputs) {
@@ -324,8 +341,8 @@ export class CollectionService {
         `INSERT INTO cards (
           deck_id, word, word_type, definition, definition_example,
           translation, definition_example_translation, transcription,
-          examples_json, audio_filename, tags, created_at, due
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          examples_json, secondary_meaning_json, audio_filename, tags, created_at, due
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           deckId,
           c.word,
@@ -336,6 +353,7 @@ export class CollectionService {
           c.definitionExampleTranslation ?? '',
           c.transcription,
           JSON.stringify(c.examples),
+          c.secondaryMeaning ? JSON.stringify(c.secondaryMeaning) : null,
           c.audioFilename ?? null,
           c.tags ?? '',
           now,
@@ -355,11 +373,23 @@ export class CollectionService {
     return row ? this.rowToCard(row) : null;
   }
 
+  appendCardMeaning(deckId: number, id: number, word: string, meaning: CardMeaning): boolean {
+    const card = this.getCard(id);
+    if (!card || card.deckId !== deckId || normalizeWord(card.word) !== normalizeWord(word) ||
+        card.secondaryMeaning || sameMeaning(card, meaning) || !meaning.definition.trim()) return false;
+    const known = this.searchCards({ deckId, words: [word], limit: -1, offset: 0 }).cards.flatMap(cardMeanings);
+    if (hasTwoMeanings(known) || known.some(item => sameMeaning(item, meaning))) return false;
+    this.db.run('UPDATE cards SET secondary_meaning_json = ? WHERE id = ?', [JSON.stringify(meaning), id]);
+    this.mutated();
+    return true;
+  }
+
   updateCardText(u: CardTextUpdate): void {
     this.db.run(
       `UPDATE cards SET word = ?, word_type = ?, definition = ?,
         definition_example = ?, translation = ?, definition_example_translation = ?,
-        transcription = ?, examples_json = ?, tags = ?
+        transcription = ?, examples_json = ?, tags = ?,
+        secondary_meaning_json = CASE WHEN ? THEN ? ELSE secondary_meaning_json END
        WHERE id = ?`,
       [
         u.word,
@@ -371,6 +401,8 @@ export class CollectionService {
         u.transcription,
         JSON.stringify(u.examples),
         u.tags,
+        u.secondaryMeaning !== undefined ? 1 : 0,
+        u.secondaryMeaning ? JSON.stringify(u.secondaryMeaning) : null,
         u.id
       ]
     );
@@ -418,14 +450,27 @@ export class CollectionService {
     const where: string[] = [];
     const params: any[] = [];
 
+    if (q.words) {
+      const keys = new Set(q.words.map(normalizeWord).filter(Boolean));
+      if (!keys.size) return { total: 0, cards: [] };
+      const ids = this.all(
+        'SELECT id, word FROM cards' + (q.deckId === undefined ? '' : ' WHERE deck_id = ?'),
+        q.deckId === undefined ? [] : [q.deckId]
+      ).filter(row => keys.has(normalizeWord(row.word))).map(row => row.id);
+      if (!ids.length) return { total: 0, cards: [] };
+      where.push(`id IN (${ids.map(() => '?').join(',')})`);
+      params.push(...ids);
+    }
+
     if (q.text) {
       const like = `%${likeEscape(q.text)}%`;
       where.push(
         `(word LIKE ? ESCAPE '\\' OR definition LIKE ? ESCAPE '\\'
           OR translation LIKE ? ESCAPE '\\' OR definition_example LIKE ? ESCAPE '\\'
-          OR definition_example_translation LIKE ? ESCAPE '\\' OR examples_json LIKE ? ESCAPE '\\')`
+          OR definition_example_translation LIKE ? ESCAPE '\\' OR examples_json LIKE ? ESCAPE '\\'
+          OR secondary_meaning_json LIKE ? ESCAPE '\\')`
       );
-      params.push(like, like, like, like, like, like);
+      params.push(like, like, like, like, like, like, like);
     }
     if (q.deckId !== undefined) {
       where.push('deck_id = ?');
@@ -592,6 +637,7 @@ export class CollectionService {
       definitionExampleTranslation: row.definition_example_translation ?? '',
       transcription: row.transcription,
       examples: JSON.parse(row.examples_json),
+      secondaryMeaning: row.secondary_meaning_json ? JSON.parse(row.secondary_meaning_json) : undefined,
       audioFilename: row.audio_filename ?? null,
       tags: row.tags,
       createdAt: row.created_at,

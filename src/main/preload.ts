@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { IPC_CHANNELS, LearnerLevel, ParsedWord } from '../shared/types';
+import { CardMeaning, IPC_CHANNELS, LearnerLevel, ParsedWord } from '../shared/types';
 
 // Expose protected methods that allow the renderer process to use
 // ipcRenderer without exposing the entire object
@@ -45,6 +45,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.invoke(IPC_CHANNELS.CARD_ADD, deckId, cards, audio),
     updateCard: (update: any) =>
       ipcRenderer.invoke(IPC_CHANNELS.CARD_UPDATE, update),
+    appendMeaning: (deckId: number, id: number, word: string, meaning: CardMeaning) =>
+      ipcRenderer.invoke(IPC_CHANNELS.CARD_APPEND_MEANING, deckId, id, word, meaning),
     deleteCards: (ids: number[]) =>
       ipcRenderer.invoke(IPC_CHANNELS.CARD_DELETE, ids),
     moveCards: (ids: number[], deckId: number) =>

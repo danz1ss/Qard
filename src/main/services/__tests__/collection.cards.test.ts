@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import initSqlJs from 'sql.js';
 import { CollectionService } from '../collection.service';
 import { CardState, NewCardInput } from '../../../shared/types';
+import { planCardSave, reviewMeaning } from '../../../shared/utils/meanings';
 
 function input(word: string, extra: Partial<NewCardInput> = {}): NewCardInput {
   return {
@@ -60,6 +61,7 @@ describe('CollectionService: cards', () => {
     const legacyDb = new SQL.Database(current.export());
     legacyDb.run('ALTER TABLE cards DROP COLUMN definition_example_translation');
     legacyDb.run('ALTER TABLE cards DROP COLUMN translation');
+    legacyDb.run('ALTER TABLE cards DROP COLUMN secondary_meaning_json');
     legacyDb.run("UPDATE meta SET value = '1' WHERE key = 'schema_version'");
 
     const migrated = new CollectionService();
@@ -68,6 +70,30 @@ describe('CollectionService: cards', () => {
     expect(card.word).toBe('legacy');
     expect(card.translation).toBe('');
     expect(card.definitionExampleTranslation).toBe('');
+    expect(reviewMeaning(card)).toEqual(card);
+  });
+
+  it('merges a distinct meaning into the reviewed card and preserves its review history', async () => {
+    const river = { wordType: 'noun', definition: 'Land beside a river', translation: 'берег', definitionExample: 'We sat on the <b>bank</b>.', examples: [] };
+    const primary = input('Bank', { translation: 'банк', definition: 'A place that keeps your money' });
+    const [id] = col.addGeneratedCards(deckId, [primary, { ...primary, word: 'bank' }], 100);
+    const review = { cardId: id, rating: 3 as const, state: CardState.Review, due: 1000, stability: 10, difficulty: 3, elapsedDays: 4, scheduledDays: 9, reviewedAt: 400 };
+    col.applyAnswer({ ...review, id, reps: 1, lapses: 0, learningSteps: 0, lastReview: 400 }, review);
+    const existing = col.searchCards({ deckId, words: ['BANK'], limit: -1, offset: 0 }).cards;
+    expect(existing).toHaveLength(1);
+    expect(planCardSave({ ...primary, definition: 'An institution for money' }, existing).kind).toBe('duplicate');
+    expect(planCardSave({ ...primary, secondaryMeaning: river }, existing)).toMatchObject({ kind: 'merge', target: { id }, novel: [river] });
+    col.export(); // Web autosave exports a live database between these actions.
+    expect(col.appendCardMeaning(deckId, id, 'bank', river)).toBe(true);
+    expect(col.appendCardMeaning(deckId, id, 'bank', { ...river, translation: 'другое', definition: 'another meaning' })).toBe(false);
+    expect(col.addGeneratedCards(deckId, [primary], 500)).toEqual([]);
+    const restored = new CollectionService();
+    await restored.init(col.export());
+    const saved = restored.getCard(id)!;
+    expect(saved).toMatchObject({ id, reps: 1, due: 1000, lastReview: 400, secondaryMeaning: river });
+    expect(reviewMeaning(saved)).toEqual(river);
+    expect(reviewMeaning({ ...saved, reps: 2 }).translation).toBe('банк');
+    expect(restored.getStudyStats(500).reviewedTotal).toBe(1);
   });
 
   it('updates text fields', () => {

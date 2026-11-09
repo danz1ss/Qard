@@ -1,6 +1,7 @@
 import { IpcMain } from 'electron';
 import {
   AudioUpload,
+  CardMeaning,
   CardSearchQuery,
   CardTextUpdate,
   IPC_CHANNELS,
@@ -37,11 +38,14 @@ export function setupCollectionHandlers(
       for (const a of audio) {
         await media.save(a.filename, a.data);
       }
-      return col.addCards(deckId, cards, Date.now());
+      return col.addGeneratedCards(deckId, cards, Date.now());
     }
   );
   ipcMain.handle(IPC_CHANNELS.CARD_UPDATE, (_e, update: CardTextUpdate) =>
     col.updateCardText(update)
+  );
+  ipcMain.handle(IPC_CHANNELS.CARD_APPEND_MEANING, (_e, deckId: number, id: number, word: string, meaning: CardMeaning) =>
+    col.appendCardMeaning(deckId, id, word, meaning)
   );
   ipcMain.handle(IPC_CHANNELS.CARD_DELETE, async (_e, ids: number[]) => {
     const orphans = col.deleteCards(ids);

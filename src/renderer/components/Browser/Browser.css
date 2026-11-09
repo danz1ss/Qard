@@ -148,3 +148,11 @@
 .examples-textarea:focus {
   border-color: var(--accent);
 }
+
+.card-edit-meaning {
+  min-width: 0;
+  margin-block: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+}

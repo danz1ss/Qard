@@ -2,6 +2,7 @@ import {
   AudioUpload,
   BatchWordResult,
   AppSettings,
+  CardMeaning,
   CardSearchQuery,
   CardSearchResult,
   CardTextUpdate,
@@ -44,6 +45,7 @@ export interface ElectronAPI {
     updateDeckLimits: (id: number, newPerDay: number, reviewsPerDay: number) => Promise<void>;
     addCards: (deckId: number, cards: NewCardInput[], audio: AudioUpload[]) => Promise<number[]>;
     updateCard: (update: CardTextUpdate) => Promise<void>;
+    appendMeaning: (deckId: number, id: number, word: string, meaning: CardMeaning) => Promise<boolean>;
     deleteCards: (ids: number[]) => Promise<void>;
     moveCards: (ids: number[], deckId: number) => Promise<void>;
     searchCards: (query: CardSearchQuery) => Promise<CardSearchResult>;

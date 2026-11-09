@@ -1,6 +1,7 @@
 import { BatchWordResult, LearnerLevel, ParsedWord } from './types';
 import { formatPartOfSpeech } from './utils/wordParser';
-import { uniqueAdditionalExamples } from './utils/examples';
+import { exampleKey } from './utils/examples';
+import { sameMeaning } from './utils/meanings';
 
 const LEVEL_GUIDANCE: Record<LearnerLevel, string> = {
 	A0: 'Use the simplest familiar words, very short sentences, and concrete objects or actions. Prefer basic subject-verb-object sentences. Avoid idioms and subordinate clauses.',
@@ -31,7 +32,7 @@ export function buildBatchPrompt(
 
 	return `You are an expert lexicographer creating adaptive vocabulary flashcards.
 
-TASK: For EACH word below, generate 1 MAIN meaning. Customize the language based on the input word.
+TASK: For EACH word below, generate its most common everyday meaning and, if useful, one other common meaning. Customize the language based on the input word.
 
 LEARNER LEVEL: ${learnerLevel}
 
@@ -48,16 +49,15 @@ RULES:
 2. **Level Adaptation**:
    - The learner is at ${learnerLevel === 'A0' ? 'absolute beginner level (A0 in this app)' : `CEFR ${learnerLevel}`}. Definitions and examples must not exceed CEFR ${definitionLevel} vocabulary and grammar, apart from the target word itself.
    - Guidance for ${learnerLevel}: ${LEVEL_GUIDANCE[learnerLevel]}
-   - Keep the supplied target word and its most common meaning at every level. Adapt the surrounding vocabulary, grammar, and contexts; do not replace it with a harder word or choose a rarer meaning just because the level is higher.
+   - Keep the supplied target word and its most common meaning first at every level. Adapt the surrounding vocabulary, grammar, and contexts; do not replace the target word or choose a rarer meaning just because the level is higher.
    - The level is a ceiling, not a requirement to make every sentence difficult. Definitions must remain easier to understand than the target word.
 
-3. **Meaning Limit**: Generate only 1 most common/important meaning per word.
+3. **Meaning Limit**: Return at most 2 meanings per word, ordered by common everyday usage. The second must have a distinct sense and a different guessing example. Omit rare, specialist, and merely rephrased senses. Never invent a second meaning to fill the list.
 
 4. **Part of Speech Constraint**:
    - If "(verb only)" is specified: Generate only verb definitions (or Russian "глагол").
    - If "(noun only)" is specified: Generate only noun definitions (or Russian "существительное").
-   - If "(any part of speech)" is specified: Pick the most common part of speech.
-   - ALL meanings for a word MUST be the SAME part of speech.
+   - If "(any part of speech)" is specified: Meanings may use different parts of speech if both are common.
 
 5. **Definition Style (COBUILD)**:
    - Use full sentence definitions where possible (e.g., "If you ____, you...").
@@ -69,8 +69,8 @@ RULES:
    - **NO BLANKS**: Do NOT use underscores in \`definitionExample\` or the \`examples\` array.
    - **BOLD TARGET**: ALWAYS wrap the target word (or its forms) with \`<b>\` tags in both \`definitionExample\` and the \`examples\` array.
    - Choose a natural situation or typical word combination in \`definitionExample\` so that the target is the most natural answer when hidden. Check the definition and hidden example together, and sharpen the context if a common synonym fits equally well.
-   - Provide ${examplesPerMeaning} additional examples in the \`examples\` array.
-   - Every additional example MUST use a different sentence and situation from \`definitionExample\` and all other examples. Never repeat the guessing example or make superficial variations of it.
+   - Provide ${examplesPerMeaning} additional examples for the main meaning. For the second meaning, set \`examples\` to an empty array and provide just its guessing example.
+   - Every additional example MUST use a different sentence and situation from both meanings' guessing examples and all other examples. Never repeat a guessing example or make superficial variations of it.
 
 7. **Transcription**:
    - Provide IPA transcription for the word.
@@ -111,8 +111,7 @@ Respond with a JSON array where each object represents ONE word with its meaning
 
 IMPORTANT:
 - Process ALL ${parsedWords.length} words
-- Generate ONLY 1 meaning per word (not more!)
-- ALL meanings for one word MUST have the SAME wordType
+- Return 1 or 2 distinct meanings per word
 - Strictly follow part of speech constraints when specified
 - Respond with ONLY the JSON array, no other text`
 }
@@ -129,19 +128,36 @@ export function parseBatchResponse(text: string): BatchWordResult[] {
 
 	const parsed = JSON.parse(jsonMatch[0]) as any[]
 
-	return parsed.map((wordResult: any) => ({
-		word: wordResult.word || '',
-		meanings: (wordResult.meanings || []).map((meaning: any) => ({
+	return parsed.map((wordResult: any) => {
+		const meanings: BatchWordResult['meanings'] = (wordResult.meanings || []).map((meaning: any) => ({
 			wordType: meaning.wordType || '',
 			definition: meaning.definition || '',
 			definitionExample: meaning.definitionExample || '',
 			translation: meaning.translation || '',
 			definitionExampleTranslation: meaning.definitionExampleTranslation || '',
 			exampleType: meaning.exampleType || '',
-			examples: uniqueAdditionalExamples(meaning.definitionExample || '', meaning.examples || []),
+			examples: Array.isArray(meaning.examples) ? meaning.examples.filter((example: unknown) => typeof example === 'string') : [],
 			transcription: (meaning.transcription || '')
 				.replace(/\//g, '')
 				.trim(),
-		})),
-	}))
+		}))
+		const selected: typeof meanings = []
+		for (const meaning of meanings) {
+			const clue = exampleKey(meaning.definitionExample)
+			if (!meaning.definition.trim() || (selected.length && !clue) || selected.some(existing =>
+				sameMeaning(existing, meaning) || exampleKey(existing.definitionExample) === clue)) continue
+			selected.push(meaning)
+			if (selected.length === 2) break
+		}
+		const seenExamples = new Set(selected.map(meaning => exampleKey(meaning.definitionExample)))
+		for (const meaning of selected) {
+			meaning.examples = meaning.examples.filter(example => {
+				const key = exampleKey(example)
+				if (!key || seenExamples.has(key)) return false
+				seenExamples.add(key)
+				return true
+			})
+		}
+		return { word: wordResult.word || '', meanings: selected }
+	})
 }

@@ -146,8 +146,16 @@
 .card-title {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 15px;
   flex: 1;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
 }
 
 .card-word {
@@ -256,4 +264,45 @@
 .example-russian {
   color: var(--ivory-dim);
   font-style: italic;
+}
+
+.preview-meaning + .preview-meaning {
+  border-top: 1px solid var(--border-soft);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+}
+
+.preview-meaning-header,
+.meaning-merge {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.preview-meaning-header {
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.preview-meaning-header h3,
+.meaning-merge p {
+  margin: 0;
+}
+
+.meaning-merge {
+  padding: var(--space-4);
+  border-top: 1px solid var(--border-soft);
+}
+
+.meaning-merge p {
+  flex-basis: 100%;
+  color: var(--ivory-dim);
+  overflow-wrap: anywhere;
+}
+
+.meaning-merge button {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }

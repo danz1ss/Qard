@@ -8,6 +8,7 @@ import { playSfx } from '../../audio/sfx';
 import { usePrefs } from '../../prefs/PreferencesProvider';
 import { useStore } from '../../store';
 import { uniqueAdditionalExamples } from '../../../shared/utils/examples';
+import { cardMeanings, reviewMeaning } from '../../../shared/utils/meanings';
 
 function audioMimeFromFilename(filename: string): string {
   const ext = filename.slice(filename.lastIndexOf('.') + 1).toLowerCase();
@@ -179,9 +180,9 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
     return <div className="review">{t('review.loading')}</div>;
   }
 
-  const exampleFront =
-    card && hasBold(card.definitionExample) ? blankOut(card.definitionExample) : '';
-  const additionalExamples = card ? uniqueAdditionalExamples(card.definitionExample, card.examples) : [];
+  const meaning = card ? reviewMeaning(card) : null;
+  const exampleFront = meaning && hasBold(meaning.definitionExample) ? blankOut(meaning.definitionExample) : '';
+  const additionalExamples = meaning ? uniqueAdditionalExamples(meaning.definitionExample, meaning.examples) : [];
   const isBeginner = learnerLevel === 'A0' || learnerLevel === 'A1';
   const capsuleState = answered ? (correct ? 'is-correct' : 'is-wrong') : '';
 
@@ -198,7 +199,7 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
         </div>
       </div>
 
-      {!card ? (
+      {!card || !meaning ? (
         <div className="review-done">
           <p>{t('review.done')}</p>
           <Button onClick={onExit}>{t('review.toDecks')}</Button>
@@ -210,10 +211,10 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
               {isBeginner ? t('review.translation') : t('review.definition')}
             </div>
             <p className="capsule-text">
-              {isBeginner && card.translation ? (
-                stripTags(card.translation)
+              {isBeginner && meaning.translation ? (
+                stripTags(meaning.translation)
               ) : (
-                <Blanks text={stripTags(card.definition)} />
+                <Blanks text={stripTags(meaning.definition)} />
               )}
             </p>
             {exampleFront && (
@@ -222,9 +223,9 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
                 <p className="capsule-text">
                   <Blanks text={exampleFront} />
                 </p>
-                {isBeginner && card.definitionExampleTranslation && (
+                {isBeginner && meaning.definitionExampleTranslation && (
                   <p className="capsule-translation">
-                    {stripTags(card.definitionExampleTranslation)}
+                    {stripTags(meaning.definitionExampleTranslation)}
                   </p>
                 )}
               </>
@@ -263,21 +264,31 @@ const Review: React.FC<ReviewProps> = ({ deckId, deckName, onExit }) => {
 
               <div className="review-reveal">
                 <div className="reveal-word">{card.word}</div>
-                {card.translation && (
-                  <div className="reveal-translation">{card.translation}</div>
+                {!card.secondaryMeaning && meaning.translation && (
+                  <div className="reveal-translation">{meaning.translation}</div>
                 )}
-                {card.wordType && (
-                  <div className="reveal-type">{card.wordType}</div>
+                {meaning.wordType && (
+                  <div className="reveal-type">{meaning.wordType}</div>
                 )}
-                {card.transcription && (
+                {meaning.transcription && (
                   <div className="reveal-transcription">
-                    {stripTags(card.transcription)}
+                    {stripTags(meaning.transcription)}
                   </div>
                 )}
-                {card.audioFilename && (
+                {card.audioFilename && (!meaning.transcription || meaning.transcription === card.transcription) && (
                   <Button size="small" variant="secondary" onClick={playAudio}>
                     {t('review.audio')}
                   </Button>
+                )}
+                {card.secondaryMeaning && (
+                  <ol className="reveal-examples">
+                    {cardMeanings(card).map((sense, index) => (
+                      <li key={index}>
+                        <strong>{sense.translation || stripTags(sense.definition)}</strong>
+                        {sense.definitionExample && <> · <BoldText html={sense.definitionExample} /></>}
+                      </li>
+                    ))}
+                  </ol>
                 )}
                 {additionalExamples.length > 0 && (
                   <ul className="reveal-examples">
