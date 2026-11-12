@@ -69,6 +69,21 @@
   vertical-align: middle;
 }
 
+.card-badge.meaning-count {
+  margin-left: 0;
+  padding: 4px 10px;
+  background-color: #c3ddff;
+  color: #142945;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+:root[data-theme='light'] .card-badge.meaning-count {
+  background-color: #20558b;
+  color: #ffffff;
+}
+
 .card-badge.duplicate {
   background-color: rgba(243, 193, 104, 0.16);
   color: var(--amber);
@@ -273,7 +288,7 @@
 }
 
 .preview-meaning-header,
-.meaning-merge {
+.meaning-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -286,22 +301,22 @@
 }
 
 .preview-meaning-header h3,
-.meaning-merge p {
+.meaning-actions p {
   margin: 0;
 }
 
-.meaning-merge {
+.meaning-actions {
   padding: var(--space-4);
   border-top: 1px solid var(--border-soft);
 }
 
-.meaning-merge p {
+.meaning-actions p {
   flex-basis: 100%;
   color: var(--ivory-dim);
   overflow-wrap: anywhere;
 }
 
-.meaning-merge button {
+.meaning-actions button {
   max-width: 100%;
   white-space: normal;
   overflow-wrap: anywhere;

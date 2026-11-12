@@ -200,12 +200,11 @@ const Preview: React.FC = () => {
                       <span className="card-transcription">{card.transcription}</span>
                     )}
                     {card.secondaryMeaning && (
-                      <span className="card-badge">{t('preview.twoMeanings')}</span>
+                      <span className="card-badge meaning-count">{t('preview.twoMeanings')}</span>
                     )}
                     {plan?.kind === 'duplicate' && (
                       <span className="card-badge duplicate">{t('preview.alreadyInDeck')}</span>
                     )}
-                    {plan?.kind === 'merge' && <span className="card-badge">{t('preview.meaningNew')}</span>}
                     {plan?.kind === 'full' && <span className="card-badge">{t('preview.meaningFull')}</span>}
                     {card.error && (
                       <span className="card-badge error">{t('preview.errorBadge')}</span>
@@ -227,27 +226,29 @@ const Preview: React.FC = () => {
                   </div>
                 </div>
 
-                {expandedCard === card.id && (
-                  <>
-                    <CardPreview
-                      card={card}
-                      onToggleSecondaryMeaning={!busy && (targetDeckId === null || plan?.kind === 'new')
-                        ? () => toggleSecondaryMeaning(card)
-                        : undefined}
-                    />
-                    {plan?.kind === 'merge' && (
-                      <div className="meaning-merge">
-                        <p>{t('preview.meaningMergeInto').replace('{meaning}', plan.target.translation || plan.target.definition || plan.target.word)}</p>
-                        {plan.novel.map((meaning, index) => (
-                          <Button key={index} type="button" size="small" variant="secondary" disabled={busy}
-                            onClick={() => void appendMeaning(card, plan.target, meaning)}>
-                            {t('preview.meaningAdd').replace('{meaning}', meaning.translation || meaning.definition)}
-                          </Button>
-                        ))}
-                      </div>
-                    )}
-                  </>
+                {card.secondaryMeaning && (targetDeckId === null || plan?.kind === 'new') && (
+                  <div className="meaning-actions">
+                    <Button type="button" size="small"
+                      variant={card.includeSecondaryMeaning ? 'secondary' : 'primary'}
+                      disabled={busy} onClick={() => toggleSecondaryMeaning(card)}>
+                      {t(card.includeSecondaryMeaning ? 'preview.excludeSecondary' : 'preview.includeSecondary')}
+                    </Button>
+                  </div>
                 )}
+
+                {plan?.kind === 'merge' && (
+                  <div className="meaning-actions">
+                    <p>{t('preview.meaningMergeInto').replace('{meaning}', plan.target.translation || plan.target.word)}</p>
+                    {plan.novel.map((meaning, index) => (
+                      <Button key={index} type="button" size="small" disabled={busy}
+                        onClick={() => void appendMeaning(card, plan.target, meaning)}>
+                        {t('preview.meaningAdd').replace('{meaning}', meaning.translation || meaning.definition)}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+
+                {expandedCard === card.id && <CardPreview card={card} />}
               </div>
             ))}
           </div>

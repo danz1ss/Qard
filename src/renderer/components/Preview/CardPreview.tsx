@@ -8,7 +8,6 @@ import { cardMeanings } from '../../../shared/utils/meanings';
 
 interface CardPreviewProps {
   card: GeneratedCard;
-  onToggleSecondaryMeaning?: () => void;
 }
 
 /** Рендер строки с сырыми <b>…</b> как текст + визуально жирное слово (п.5). */
@@ -24,7 +23,7 @@ const RichText: React.FC<{ html: string }> = ({ html }) => (
   </>
 );
 
-const CardPreview: React.FC<CardPreviewProps> = ({ card, onToggleSecondaryMeaning }) => {
+const CardPreview: React.FC<CardPreviewProps> = ({ card }) => {
   const t = useT();
   const meanings = cardMeanings(card);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
@@ -74,11 +73,6 @@ const CardPreview: React.FC<CardPreviewProps> = ({ card, onToggleSecondaryMeanin
             {meanings.length > 1 && (
               <div className="preview-meaning-header">
                 <h3>{t(index === 0 ? 'preview.primaryMeaning' : 'preview.secondaryMeaning')}</h3>
-                {index === 1 && onToggleSecondaryMeaning && (
-                  <Button type="button" size="small" variant="secondary" onClick={onToggleSecondaryMeaning}>
-                    {t(card.includeSecondaryMeaning ? 'preview.excludeSecondary' : 'preview.includeSecondary')}
-                  </Button>
-                )}
               </div>
             )}
             <div className="card-section">
