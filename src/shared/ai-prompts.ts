@@ -52,7 +52,7 @@ RULES:
    - Keep the supplied target word and its most common meaning first at every level. Adapt the surrounding vocabulary, grammar, and contexts; do not replace the target word or choose a rarer meaning just because the level is higher.
    - The level is a ceiling, not a requirement to make every sentence difficult. Definitions must remain easier to understand than the target word.
 
-3. **Meaning Limit**: Return at most 2 meanings per word, ordered by common everyday usage. The second must have a distinct sense and a different guessing example. Omit rare, specialist, and merely rephrased senses. Never invent a second meaning to fill the list.
+3. **Meaning Limit**: Return one meaning by default: the most common everyday sense that fits the requested part of speech. Add a second meaning only when both senses are clearly common in everyday language, arise in different contexts, and need different guessing examples (e.g. bank as a financial institution and as the land beside a river). Omit rare, specialist, and closely related senses. If unsure about frequency or distinctness, return only the primary meaning.
 
 4. **Part of Speech Constraint**:
    - If "(verb only)" is specified: Generate only verb definitions (or Russian "глагол").
@@ -111,7 +111,7 @@ Respond with a JSON array where each object represents ONE word with its meaning
 
 IMPORTANT:
 - Process ALL ${parsedWords.length} words
-- Return 1 or 2 distinct meanings per word
+- Return one meaning unless a second passes the everyday frequency and distinctness criteria above
 - Strictly follow part of speech constraints when specified
 - Respond with ONLY the JSON array, no other text`
 }

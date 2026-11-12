@@ -8,7 +8,7 @@ import { cardMeanings } from '../../../shared/utils/meanings';
 
 interface CardPreviewProps {
   card: GeneratedCard;
-  onRemoveMeaning?: (index: number) => void;
+  onToggleSecondaryMeaning?: () => void;
 }
 
 /** Рендер строки с сырыми <b>…</b> как текст + визуально жирное слово (п.5). */
@@ -24,7 +24,7 @@ const RichText: React.FC<{ html: string }> = ({ html }) => (
   </>
 );
 
-const CardPreview: React.FC<CardPreviewProps> = ({ card, onRemoveMeaning }) => {
+const CardPreview: React.FC<CardPreviewProps> = ({ card, onToggleSecondaryMeaning }) => {
   const t = useT();
   const meanings = cardMeanings(card);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
@@ -73,10 +73,10 @@ const CardPreview: React.FC<CardPreviewProps> = ({ card, onRemoveMeaning }) => {
           <section className="preview-meaning" key={index}>
             {meanings.length > 1 && (
               <div className="preview-meaning-header">
-                <h3>{t('preview.meaningNumber').replace('{n}', String(index + 1))}</h3>
-                {onRemoveMeaning && (
-                  <Button type="button" size="small" variant="secondary" onClick={() => onRemoveMeaning(index)}>
-                    {t('preview.meaningRemove').replace('{n}', String(index + 1))}
+                <h3>{t(index === 0 ? 'preview.primaryMeaning' : 'preview.secondaryMeaning')}</h3>
+                {index === 1 && onToggleSecondaryMeaning && (
+                  <Button type="button" size="small" variant="secondary" onClick={onToggleSecondaryMeaning}>
+                    {t(card.includeSecondaryMeaning ? 'preview.excludeSecondary' : 'preview.includeSecondary')}
                   </Button>
                 )}
               </div>

@@ -90,19 +90,10 @@ const Preview: React.FC = () => {
     }
   };
 
-  const removeMeaning = (card: GeneratedCard, index: number) => {
-    const second = card.secondaryMeaning;
-    if (!second) return;
-    const changed = index === 0 ? {
-      ...card,
-      ...second,
-      transcription: second.transcription,
-      exampleType: undefined,
-      audioData: card.transcription === second.transcription ? card.audioData : undefined,
-      audioFilename: card.transcription === second.transcription ? card.audioFilename : undefined,
-      secondaryMeaning: undefined,
-    } : { ...card, secondaryMeaning: undefined };
-    setGeneratedCards(generatedCards.map(draft => draft.id === card.id ? changed : draft));
+  const toggleSecondaryMeaning = (card: GeneratedCard) => {
+    setGeneratedCards(generatedCards.map(draft => draft.id === card.id
+      ? { ...draft, includeSecondaryMeaning: !draft.includeSecondaryMeaning }
+      : draft));
   };
 
   const handleRemoveCard = (id: string) => {
@@ -208,6 +199,9 @@ const Preview: React.FC = () => {
                     {card.transcription && (
                       <span className="card-transcription">{card.transcription}</span>
                     )}
+                    {card.secondaryMeaning && (
+                      <span className="card-badge">{t('preview.twoMeanings')}</span>
+                    )}
                     {plan?.kind === 'duplicate' && (
                       <span className="card-badge duplicate">{t('preview.alreadyInDeck')}</span>
                     )}
@@ -235,7 +229,12 @@ const Preview: React.FC = () => {
 
                 {expandedCard === card.id && (
                   <>
-                    <CardPreview card={card} onRemoveMeaning={busy ? undefined : index => removeMeaning(card, index)} />
+                    <CardPreview
+                      card={card}
+                      onToggleSecondaryMeaning={!busy && (targetDeckId === null || plan?.kind === 'new')
+                        ? () => toggleSecondaryMeaning(card)
+                        : undefined}
+                    />
                     {plan?.kind === 'merge' && (
                       <div className="meaning-merge">
                         <p>{t('preview.meaningMergeInto').replace('{meaning}', plan.target.translation || plan.target.definition || plan.target.word)}</p>

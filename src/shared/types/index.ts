@@ -27,6 +27,7 @@ export interface GeneratedCard {
   examples: string[];
   exampleType?: string;
   secondaryMeaning?: CardMeaning;
+  includeSecondaryMeaning?: boolean;
   audioFilename?: string;
   audioData?: Buffer;
   isDuplicate?: boolean;

@@ -16,7 +16,7 @@ function toBase64(buffer: ArrayBuffer): string {
   return btoa(binary);
 }
 
-function toInput(card: GeneratedCard): NewCardInput {
+export function toInput(card: GeneratedCard): NewCardInput {
   return {
     word: card.word,
     wordType: card.wordType,
@@ -26,7 +26,7 @@ function toInput(card: GeneratedCard): NewCardInput {
     definitionExampleTranslation: card.definitionExampleTranslation ?? '',
     transcription: card.transcription ?? '',
     examples: card.examples,
-    secondaryMeaning: card.secondaryMeaning,
+    secondaryMeaning: card.includeSecondaryMeaning ? card.secondaryMeaning : undefined,
     audioFilename: card.audioData ? card.audioFilename ?? null : null,
     tags: 'anki-generator'
   };
