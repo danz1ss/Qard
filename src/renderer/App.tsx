@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { useStore } from './store';
+import React, { useState } from 'react';
 import { useT } from './prefs/PreferencesProvider';
 import Placement from './components/Placement/Placement';
 import Settings from './components/Settings/Settings';
@@ -29,15 +28,7 @@ const App: React.FC = () => {
     setPlacementOrigin(origin);
     setActiveTab('placement');
   };
-  const wordCount = useStore((s) => s.words.length);
   const t = useT();
-
-  // Мобильная лента вкладок: активная вкладка всегда в зоне видимости
-  useEffect(() => {
-    document
-      .querySelector('.tab.active')
-      ?.scrollIntoView({ inline: 'nearest', block: 'nearest', behavior: 'smooth' });
-  }, [activeTab]);
 
   return (
     <div className="app">
@@ -86,8 +77,7 @@ const App: React.FC = () => {
           onClick={() => setActiveTab('generate')}
         >
           {t('nav.generate')}
-          {wordCount > 0 && <span className="tab-badge">{wordCount}</span>}
-        </button>
+       </button>
         <button
           className={`tab ${activeTab === 'preview' ? 'active' : ''}`}
           onClick={() => setActiveTab('preview')}

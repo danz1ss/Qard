@@ -10,6 +10,7 @@
   justify-content: center;
   width: 34px;
   height: 34px;
+  padding: 0;
   border-radius: var(--space-2);
   border: 1px solid var(--border-soft);
   background: var(--surface);

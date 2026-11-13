@@ -21,7 +21,7 @@ const Preview: React.FC = () => {
     defaultDeckId,
     setDefaultDeckId
   } = useStore();
-  const { saveAll, resetStatus, status, savedCount, error } =
+  const { saveAll, status, savedCount, error } =
     useSaveToCollection();
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
   const [targetDeckId, setTargetDeckId] = useState<number | null>(defaultDeckId);
@@ -72,7 +72,10 @@ const Preview: React.FC = () => {
 
   const handleSave = async () => {
     if (targetDeckId === null || busy || !newCards.length) return;
-    if (await saveAll(targetDeckId, newCards)) setRevision(value => value + 1);
+    if (await saveAll(targetDeckId, newCards)) {
+      newCards.forEach(({ id }) => removeGeneratedCard(id));
+      setRevision(value => value + 1);
+    }
   };
 
   const appendMeaning = async (card: GeneratedCard, target: StoredCard, meaning: CardMeaning) => {
@@ -81,6 +84,7 @@ const Preview: React.FC = () => {
     setMergeMessage(undefined);
     try {
       const added = await window.electronAPI.collection.appendMeaning(targetDeckId, target.id, card.word, meaning);
+      if (added) removeGeneratedCard(card.id);
       setMergeMessage({ text: t(added ? 'preview.meaningAdded' : 'preview.meaningChanged'), failed: !added });
     } catch {
       setMergeMessage({ text: t('preview.meaningSaveError'), failed: true });
@@ -143,6 +147,11 @@ const Preview: React.FC = () => {
         {t('preview.description')}
       </p>
 
+      {mergeMessage && <p role={mergeMessage.failed ? 'alert' : 'status'}>{mergeMessage.text}</p>}
+      {generatedCards.length === 0 && status === 'success' && (
+        <p role="status">{getButtonText()}</p>
+      )}
+
       {generatedCards.length === 0 ? (
         <div className="empty-state">
           <p>{t('preview.empty')}</p>
@@ -173,8 +182,8 @@ const Preview: React.FC = () => {
               {t('preview.newDeck')}
             </Button>
             <Button
-              onClick={status === 'error' ? resetStatus : handleSave}
-              disabled={busy || (status !== 'error' && !newCards.length)}
+              onClick={handleSave}
+              disabled={busy || !newCards.length}
               variant={getButtonVariant()}
               size="large"
             >
@@ -183,8 +192,7 @@ const Preview: React.FC = () => {
           </div>
 
           {error && <div className="adding-error">{t('preview.error').replace('{msg}', error)}</div>}
-          {mergeMessage && <p role={mergeMessage.failed ? 'alert' : 'status'}>{mergeMessage.text}</p>}
-          {lookupFailed && (
+         {lookupFailed && (
             <p role="alert">{t('preview.meaningLookupError')}{' '}
               <Button size="small" variant="secondary" onClick={() => setRevision(value => value + 1)}>{t('preview.errorRetry')}</Button>
             </p>

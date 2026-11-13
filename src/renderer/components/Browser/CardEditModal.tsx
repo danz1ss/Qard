@@ -87,7 +87,7 @@ const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved })
         <Input label={t('browse.fieldTags')} value={tags} onChange={(e) => setTags(e.target.value)} />
         {secondaryMeaning && (
           <fieldset className="card-edit-meaning">
-            <legend>{t('preview.meaningNumber').replace('{n}', '2')}</legend>
+            <legend>{t('preview.secondaryMeaning')}</legend>
             <Input label={t('browse.fieldPartOfSpeech')} value={secondaryMeaning.wordType}
               onChange={(e) => setSecondaryMeaning({ ...secondaryMeaning, wordType: e.target.value })} />
             <Input label={t('browse.fieldDefinition')} value={secondaryMeaning.definition}
@@ -99,7 +99,7 @@ const CardEditModal: React.FC<CardEditModalProps> = ({ card, onClose, onSaved })
             <Input label={t('browse.fieldDefExampleTranslation')} value={secondaryMeaning.definitionExampleTranslation ?? ''}
               onChange={(e) => setSecondaryMeaning({ ...secondaryMeaning, definitionExampleTranslation: e.target.value })} />
             <Button type="button" size="small" variant="secondary" onClick={() => setSecondaryMeaning(undefined)}>
-              {t('preview.meaningRemove').replace('{n}', '2')}
+              {t('preview.excludeSecondary')}
             </Button>
           </fieldset>
         )}
